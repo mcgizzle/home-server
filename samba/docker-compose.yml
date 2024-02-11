@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  samba:
+    image: ghcr.io/servercontainers/samba:latest
+    container_name: samba-server
+    network_mode: host
+    volumes:
+      #- "/media/pi/T7 Touch:/shares/media"
+      - ./myshare:/shares/media
+      - ./config:/etc/samba
+      - /etc/avahi/services/:/external/avahi
+    environment:
+      SAMBA_SHARE_NAME: Public
+      WSDD2_DISABLE: 1
+      SAMBA_SHARE_BROWSABLE: yes
+      SAMBA_SHARE_WRITABLE: yes
+      SAMBA_SHARE_GUEST_OK: yes
+      SAMBA_CONF_LOG_LEVEL: 5
+      SAMBA_VOLUME_CONFIG_public: "[Public]; path=/shares/media; guest ok = yes; read only = no; browseable = yes"
+    restart: unless-stopped
+
+  filebrowser:
+    image: filebrowser/filebrowser
+    container_name: filebrowser
+    volumes:
+      - "/media/pi/T7 Touch:/srv"
+    ports:
+      - "8888:80" # Expose Filebrowser on port 8080
+    restart: unless-stopped
+

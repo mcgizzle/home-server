@@ -1,0 +1,30 @@
+version: '3'
+services:
+  sonarr:
+    image: linuxserver/sonarr:3.0.8.1507-ls151
+    container_name: sonarr
+    privileged: true
+    environment:
+      - PUID=1000 # Replace 1000 with your user id
+      - PGID=1000 # Replace 1000 with your group id
+      - TZ=Europe/London # Replace with your timezone
+    volumes:
+      - /sonar/config:/config # Sonarr configuration files
+      - /mnt/ssd/media/tv-shows:/tv # TV shows directory
+      - /mnt/ssd/media/downloads/tv:/downloads # TV shows directory
+    ports:
+      - 8989:8989 # Port used to access Sonarr web UI
+    restart: unless-stopped
+  prowlarr:
+    image: linuxserver/prowlarr:arm32v7-nightly-version-1.5.1.3411
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+

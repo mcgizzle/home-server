@@ -1,0 +1,21 @@
+version: '3'
+services:
+  plex:
+    container_name: plex
+    image: greensheep/plex-server-docker-rpi:latest
+    restart: unless-stopped
+    network_mode: host
+    platform: linux/arm/v7
+    security_opt:
+      - seccomp=unconfined
+    environment:
+      - PLEX_CLAIM=claim-_iTNsgq24TywaTzPFhBp
+      - PLEX_UID=1000
+      - SET_PLEX_UID=1000
+      - SET_PLEX_GID=1000
+      - PLEX_GID=1000
+    volumes:
+      - ./config:/config
+      - /mnt/ssd/media:/data
+      - /mnt/ssd:/transcode
+
