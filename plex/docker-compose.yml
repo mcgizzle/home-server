@@ -12,9 +12,9 @@ services:
       - PGID=1000
       - VERSION=docker
     volumes:
-      - ./config:/config
+      - /mnt/ssd/docker/home-server/plex/config:/config
       - /mnt/ssd/media/movies:/movies
       - /mnt/ssd/media/tv-shows:/tv
-      - /mnt/ssd:/transcode
+      - /mnt/ssd/docker/home-server/plex/transcode:/transcode
     restart: unless-stopped
 

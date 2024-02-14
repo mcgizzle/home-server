@@ -19,7 +19,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - ./radarr:/config
+      - /mnt/ssd/docker/home-server/radarr:/config
       - /mnt/ssd/media/movies:/movies #optional
       - /mnt/ssd/downloads:/downloads #optional
     ports:
@@ -37,7 +37,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - ./sonarr:/config
+      - /mnt/ssd/docker/home-server/sonarr:/config
       - /mnt/ssd/media/tv-shows:/tv #optional
       - /mnt/ssd/downloads:/downloads #optional
     ports:
@@ -54,7 +54,7 @@ services:
       - PGID=1000
       - TZ=Europe/London
     volumes:
-      - ./prowlarr:/config
+      - /mnt/ssd/docker/home-server/prowlarr:/config
     ports:
       - 9696:9696
     restart: unless-stopped

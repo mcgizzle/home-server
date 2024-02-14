@@ -7,7 +7,7 @@ services:
       - "9000:9000"
       - "8000:8000"
     volumes:
-      - portainer_data:/data
+      - /mnt/ssd/docker/home-server/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 
