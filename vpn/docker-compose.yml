@@ -1,0 +1,32 @@
+version: "3"
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    networks:
+      - torrent-net
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    ports:
+      - 8080:8080     # qBittorrent
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+    volumes:
+      - /mnt/ssd/docker/home-server/gluetun:/gluetun
+    environment:
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+      - VPN_SERVICE_PROVIDER=surfshark
+      - VPN_TYPE=wireguard
+      # OpenVPN:
+      #- OPENVPN_USER=2fYF6AeWneB2PEhe6qPpSPWx
+      #- OPENVPN_PASSWORD=KCec7ycbKdW6GwJg76tZTagX
+      # Wireguard:
+      - WIREGUARD_PRIVATE_KEY=uDymMz0D2jX5ZPTXNHoCRJVcDsXZgMXaNiEGXJ7Eknk=
+      - WIREGUARD_ADDRESSES=10.14.0.2/16
+
+networks:
+  torrent-net:
+    external: true

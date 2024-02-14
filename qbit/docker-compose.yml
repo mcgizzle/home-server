@@ -11,15 +11,5 @@ services:
       - /mnt/ssd/downloads:/downloads
       - /mnt/ssd/media/movies:/movies
       - /mnt/ssd/media/tv-shows:/tv-shows
-    ports:
-      - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
     restart: unless-stopped
-    networks:
-      - torrent-net
-
-networks:
-  torrent-net:
-    external: true
-
+    network_mode: container:gluetun # run on the vpn network
