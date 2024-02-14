@@ -1,0 +1,25 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:arm64v8-latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - WEBUI_PORT=8080
+    volumes:
+      - /config:/config
+      - /mnt/ssd/downloads:/downloads
+      - /mnt/ssd/media/movies:/movies
+      - /mnt/ssd/media/tv-shows:/tv-shows
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+    networks:
+      - torrent-net
+
+networks:
+  torrent-net:
+    external: true
+

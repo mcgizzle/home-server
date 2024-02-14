@@ -2,20 +2,19 @@ version: '3'
 services:
   plex:
     container_name: plex
-    image: greensheep/plex-server-docker-rpi:latest
-    restart: unless-stopped
+    image: lscr.io/linuxserver/plex:arm64v8-latest
     network_mode: host
-    platform: linux/arm/v7
-    security_opt:
-      - seccomp=unconfined
+      #security_opt:
+      #- seccomp=unconfined
     environment:
       - PLEX_CLAIM=claim-_iTNsgq24TywaTzPFhBp
-      - PLEX_UID=1000
-      - SET_PLEX_UID=1000
-      - SET_PLEX_GID=1000
-      - PLEX_GID=1000
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
     volumes:
       - ./config:/config
-      - /mnt/ssd/media:/data
+      - /mnt/ssd/media/movies:/movies
+      - /mnt/ssd/media/tv-shows:/tv
       - /mnt/ssd:/transcode
+    restart: unless-stopped
 
