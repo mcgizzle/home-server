@@ -61,6 +61,21 @@ services:
     networks:
       - torrent-net
 
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:arm64v8-latest
+    container_name: overseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /mnt/ssd/docker/home-server/overseerr:/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+    networks:
+      - torrent-net
+
 networks:
   torrent-net:
     external: true
