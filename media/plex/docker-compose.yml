@@ -4,8 +4,6 @@ services:
     container_name: plex
     image: lscr.io/linuxserver/plex:arm64v8-latest
     network_mode: host
-      #security_opt:
-      #- seccomp=unconfined
     environment:
       - PLEX_CLAIM=claim-_iTNsgq24TywaTzPFhBp
       - PUID=1000
