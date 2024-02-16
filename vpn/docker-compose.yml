@@ -23,6 +23,7 @@ services:
       #- OPENVPN_USER=2fYF6AeWneB2PEhe6qPpSPWx
       #- OPENVPN_PASSWORD=KCec7ycbKdW6GwJg76tZTagX
       # Wireguard:
+      - SERVER_HOSTNAMES=uk-lon.prod.surfshark.com
       - WIREGUARD_PRIVATE_KEY=uDymMz0D2jX5ZPTXNHoCRJVcDsXZgMXaNiEGXJ7Eknk=
       - WIREGUARD_ADDRESSES=10.14.0.2/16
 
