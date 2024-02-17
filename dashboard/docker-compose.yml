@@ -4,6 +4,8 @@ services:
     container_name: homarr
     image: ghcr.io/ajnart/homarr:latest
     restart: unless-stopped
+    ports:
+      - 7575:7575
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
       - /mnt/ssd/docker/home-server/homarr/configs:/app/data/configs
@@ -11,11 +13,9 @@ services:
       - /mnt/ssd/docker/home-server/homarr/data:/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.homarr.rule=Path(`/dash`)"
+      - "traefik.http.routers.homarr.rule=Host(`pi.local`) && PathPrefix(`/board`)"
       - "traefik.http.routers.homarr.entrypoints=web"
       - "traefik.http.services.homarr.loadbalancer.server.port=7575"
-      - "traefik.http.middlewares.dash-stripprefix.stripprefix.prefixes=/vitals"
-      - "traefik.http.routers.dash.middlewares=dash-stripprefix@docker"
     networks:
       - internal-net
   dash:
@@ -27,7 +27,7 @@ services:
       - /:/mnt/host:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dash.rule=Path(`/vitals`)"
+      - "traefik.http.routers.dash.rule=PathPrefix(`/vitals`)"
       - "traefik.http.routers.dash.entrypoints=web"
       - "traefik.http.services.dash.loadbalancer.server.port=3001"
       - "traefik.http.middlewares.dash-stripprefix.stripprefix.prefixes=/vitals"
