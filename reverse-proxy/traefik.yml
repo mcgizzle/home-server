@@ -1,0 +1,22 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+log:
+  level: DEBUG
+
+api:
+  dashboard: true
+  insecure: true # Only for development, use proper authentication for production
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+
