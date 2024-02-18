@@ -18,6 +18,11 @@ services:
       - 1900:1900/udp #optional
     networks:
       - torrent-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.pi.local`)"
+      - "traefik.http.routers.jellyfin.entrypoints=web"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     restart: unless-stopped
 
 networks:

@@ -9,8 +9,15 @@ services:
     volumes:
       - /mnt/ssd/docker/home-server/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.pi.local`)"
+      - "traefik.http.routers.portainer.entrypoints=web"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
     restart: always
+    networks:
+      - internal-net
 
-volumes:
-  portainer_data:
-
+networks:
+  internal-net:
+    external: true
