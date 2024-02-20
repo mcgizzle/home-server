@@ -27,11 +27,9 @@ services:
       - /:/mnt/host:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dash.rule=PathPrefix(`/vitals`)"
+      - "traefik.http.routers.dash.rule=Host(`vitals.pi.local`)"
       - "traefik.http.routers.dash.entrypoints=web"
       - "traefik.http.services.dash.loadbalancer.server.port=3001"
-      - "traefik.http.middlewares.dash-stripprefix.stripprefix.prefixes=/vitals"
-      - "traefik.http.routers.dash.middlewares=dash-stripprefix@docker"
     networks:
       - internal-net
 
