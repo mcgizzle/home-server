@@ -28,6 +28,7 @@ services:
     user: "1000"
     networks:
       - internal
+      - internal-net
     ports:
       - 3000:3000
     restart: unless-stopped
@@ -37,6 +38,11 @@ services:
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
       - /mnt/ssd/docker/home-server/grafana:/var/lib/grafana
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.pi.local`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   cadvisor:
     container_name: monitoring-cadvisor
@@ -82,3 +88,5 @@ services:
 networks:
   internal:
     driver: bridge
+  internal-net:
+    external: true
