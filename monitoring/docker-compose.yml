@@ -3,6 +3,7 @@ version: '3'
 services:
   prometheus:
     image: prom/prometheus
+    restart: unless-stopped
     container_name: prometheus
     user: "1000"
     command:
@@ -11,7 +12,6 @@ services:
       - 9090:9090
     networks:
       - internal
-    restart: unless-stopped
     volumes:
       - ./prometheus:/etc/prometheus
       - /mnt/ssd/docker/home-server/prometheus:/prometheus
@@ -24,6 +24,7 @@ services:
 
   grafana:
     image: grafana/grafana
+    restart: unless-stopped
     container_name: grafana
     user: "1000"
     networks:
@@ -31,7 +32,6 @@ services:
       - internal-net
     ports:
       - 3000:3000
-    restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
@@ -45,10 +45,10 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   cadvisor:
-    container_name: monitoring-cadvisor
     image: gcr.io/cadvisor/cadvisor:v0.47.1
-    hostname: rpi-cadvisor
     restart: unless-stopped
+    container_name: monitoring-cadvisor
+    hostname: rpi-cadvisor
     networks:
       - internal
     privileged: true

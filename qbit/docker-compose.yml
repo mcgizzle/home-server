@@ -1,6 +1,7 @@
 services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:arm64v8-latest
+    restart: unless-stopped
     container_name: qbittorrent
     environment:
       - PUID=1000
@@ -11,5 +12,4 @@ services:
       - /mnt/ssd/downloads:/downloads
       - /mnt/ssd/media/movies:/movies
       - /mnt/ssd/media/tv-shows:/tv-shows
-    restart: unless-stopped
     network_mode: container:gluetun # run on the vpn network

@@ -1,6 +1,7 @@
 services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:arm64v8-latest
+    restart: unless-stopped
     container_name: jellyfin
     environment:
       - PUID=1000
@@ -23,7 +24,6 @@ services:
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.pi.local`)"
       - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
-    restart: unless-stopped
 
 networks:
   torrent-net:

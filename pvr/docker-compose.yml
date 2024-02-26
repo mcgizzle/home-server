@@ -3,6 +3,7 @@ services:
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:v3.3.13
+    restart: unless-stopped
     container_name: flaresolverr
     environment:
       - LOG_LEVEL=info
@@ -13,6 +14,7 @@ services:
 
   radarr:
     image: lscr.io/linuxserver/radarr:arm64v8-latest
+    restart: unless-stopped
     container_name: radarr
     environment:
       - PUID=1000
@@ -24,7 +26,6 @@ services:
       - /mnt/ssd/downloads:/downloads #optional
     ports:
       - 7878:7878
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.radarr.rule=Host(`radarr.pi.local`)"
@@ -36,6 +37,7 @@ services:
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:arm64v8-latest
+    restart: unless-stopped
     container_name: sonarr
     environment:
       - PUID=1000
@@ -47,7 +49,6 @@ services:
       - /mnt/ssd/downloads:/downloads #optional
     ports:
       - 8989:8989
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sonarr.rule=Host(`sonarr.pi.local`)"
@@ -58,6 +59,7 @@ services:
 
   prowlarr:
     container_name: prowlarr
+    restart: unless-stopped
     image: lscr.io/linuxserver/prowlarr:arm64v8-latest
     environment:
       - PUID=1000
@@ -67,7 +69,6 @@ services:
       - /mnt/ssd/docker/home-server/prowlarr:/config
     ports:
       - 9696:9696
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.pi.local`)"
@@ -78,6 +79,7 @@ services:
 
   overseerr:
     image: lscr.io/linuxserver/overseerr:arm64v8-latest
+    restart: unless-stopped
     container_name: overseerr
     environment:
       - PUID=1000
@@ -87,7 +89,6 @@ services:
       - /mnt/ssd/docker/home-server/overseerr:/config
     ports:
       - 5055:5055
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.overseerr.rule=Host(`requests.pi.local`)"

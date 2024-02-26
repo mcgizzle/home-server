@@ -2,6 +2,7 @@ version: '3'
 services:
   plex:
     container_name: plex
+    restart: unless-stopped
     image: lscr.io/linuxserver/plex:arm64v8-latest
     network_mode: host
     environment:
@@ -19,5 +20,4 @@ services:
       - "traefik.http.routers.plex.rule=Host(`plex.pi.local`)"
       - "traefik.http.routers.plex.entrypoints=web"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"
-    restart: unless-stopped
 

@@ -2,6 +2,7 @@ version: '3.3'
 services:
   portainer:
     image: portainer/portainer-ce:latest
+    restart: unless-stopped
     container_name: portainer
     ports:
       - "9000:9000"
@@ -14,7 +15,6 @@ services:
       - "traefik.http.routers.portainer.rule=Host(`portainer.pi.local`)"
       - "traefik.http.routers.portainer.entrypoints=web"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-    restart: always
     networks:
       - internal-net
 

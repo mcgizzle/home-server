@@ -2,6 +2,7 @@ version: "3"
 services:
   gluetun:
     image: qmcgaw/gluetun:latest
+    restart: unless-stopped
     container_name: gluetun
     networks:
       - internal-net

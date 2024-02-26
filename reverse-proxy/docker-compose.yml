@@ -3,6 +3,7 @@ version: '3'
 services:
   traefik:
     image: arm64v8/traefik
+    restart: unless-stopped
     command:
       - "--log.level=DEBUG"
       - "--api.dashboard=true"
