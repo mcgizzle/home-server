@@ -25,9 +25,9 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.pihole.rule=Host(`pihole.pi.local`)"
       - "traefik.http.routers.pihole.entrypoints=web"
-      - "traefik.http.services.pihole.loadbalancer.server.port=81"
+        #- "traefik.http.services.pihole.loadbalancer.server.port=81"
       - 'traefik.http.middlewares.pihole.addprefix.prefix=/admin'
-        #- 'traefik.http.services.pihole.loadBalancer.server.port=80'
+      - 'traefik.http.services.pihole.loadBalancer.server.port=80'
     networks:
       - internal-net
 
