@@ -3,18 +3,19 @@ services:
   tailscale-pi:
     image: ghcr.io/tailscale/tailscale:latest
     hostname: tailscale-pi
+    container_name: tailscale-pi
     environment:
-      - TS_AUTHKEY=${TS_CLIENT_SECRET}?ephemeral=true
-      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_AUTHKEY=$TS_AUTH_KEY
+        #- TS_EXTRA_ARGS=--reset
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container --advertise-routes=192.168.1.0/24 
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
-      - TS_ACCEPT_DNS=false
     volumes:
       - ${MNT_DOCKER_HS}/tailscale:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
     cap_add:
-      - net_admin
-      - sys_module
+      - NET_ADMIN
+      - SYS_MODULE
     privileged: true
     network_mode: "host"
     restart: unless-stopped
