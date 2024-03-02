@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  debian-rpi:
+    image: debian-ssh
+    container_name: ansible-debian-rpi
+    volumes:
+    - ./shared:/shared
+    tty: true
+    stdin_open: true
+    ports:
+      - "2222:22"
+

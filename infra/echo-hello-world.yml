@@ -1,0 +1,10 @@
+---
+- name: Echo Hello World into a Docker Container
+  hosts: docker_containers
+  become: yes
+
+  tasks:
+    - name: Echo Hello World to a File
+      ansible.builtin.shell:
+        cmd: echo "Hello World" > /shared/hello_world.txt
+
