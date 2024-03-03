@@ -1,0 +1,22 @@
+- name: Main
+  hosts: vms
+  vars:
+    swap_size_mb: 1024
+    git_user_email: mcgroas@tcd.ie
+    git_user_name: mcgizzle
+  tasks:
+    - name: Initial setup
+      ansible.builtin.include_tasks:
+        file: tasks/initial_setup.yml
+    
+    - name: SWAP
+      ansible.builtin.include_tasks:
+        file: tasks/swap.yml
+
+    - name: GIT
+      ansible.builtin.include_tasks:
+        file: tasks/git.yml
+
+    - name: SSH
+      ansible.builtin.include_tasks:
+        file: tasks/ssh.yml
