@@ -1,0 +1,27 @@
+- name: Create directories for Pathogen for a specific user
+  file:
+    path: "{{ ansible_env.HOME }}/.vim/{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - autoload
+    - bundle
+
+- name: Install Pathogen
+  get_url:
+    url: https://tpo.pe/pathogen.vim
+    dest: "{{ ansible_env.HOME }}/.vim/autoload/pathogen.vim"
+    mode: '0644'
+
+
+- name: Install neomake
+  ansible.builtin.git:
+    repo: https://github.com/neomake/neomake
+    dest: "{{ ansible_env.HOME }}/.vim/bundle/neomake"
+
+- name: use nvim for vi
+  alternatives: name=vi path=/usr/bin/nvim
+- name: use nvim for vim
+  alternatives: name=vim path=/usr/bin/nvim
+- name: use nvim for editor
+  alternatives: name=editor path=/usr/bin/nvim

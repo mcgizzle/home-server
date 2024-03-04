@@ -1,2 +1,3 @@
 infra/shared/
-infra/id_rsa.pub
+infra/ssh
+.idea

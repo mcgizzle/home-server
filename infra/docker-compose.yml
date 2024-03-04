@@ -2,6 +2,7 @@ version: '3.8'
 services:
   debian-rpi:
     image: debian-ssh
+    restart: unless-stopped
     container_name: ansible-debian-rpi
     volumes:
     - ./shared:/shared

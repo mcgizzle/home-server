@@ -1,0 +1,4 @@
+- name: Clone home-server repository
+  git:
+    repo: 'git@github.com:mcgizzle/home-server.git'
+    dest: "{{ansible_env.HOME}}/code/home-server"
