@@ -1,6 +1,6 @@
 services:
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:arm64v8-latest
+    image: lscr.io/linuxserver/qbittorrent:arm64v8-libtorrentv1 # https://github.com/qdm12/gluetun/discussions/1562#discussioncomment-5889922
     restart: unless-stopped
     container_name: qbittorrent
     environment:
@@ -13,3 +13,5 @@ services:
       - /mnt/ssd/media/movies:/movies
       - /mnt/ssd/media/tv-shows:/tv-shows
     network_mode: container:gluetun # run on the vpn network
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
