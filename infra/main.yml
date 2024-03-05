@@ -19,10 +19,6 @@
       ansible.builtin.include_tasks:
         file: tasks/git.yml
 
-    - name: Home server
-      ansible.builtin.include_tasks:
-        file: tasks/home-server.yml
-
     - name: zsh
       ansible.builtin.include_tasks:
         file: tasks/zsh.yml
@@ -34,3 +30,12 @@
     - name: Setup nvim
       ansible.builtin.include_tasks:
         file: tasks/vim.yml
+
+    - name: Install Docker
+      ansible.builtin.include_tasks:
+        file: tasks/docker.yml
+
+    - name: Home server
+      ansible.builtin.include_tasks:
+        file: tasks/home-server.yml
+

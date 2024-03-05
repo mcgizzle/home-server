@@ -2,3 +2,8 @@
   git:
     repo: 'git@github.com:mcgizzle/home-server.git'
     dest: "{{ansible_env.HOME}}/code/home-server"
+
+- name: Start all services
+  ansible.builtin.shell: deploy.sh
+  args:
+    chdir: "{{ansible_env.HOME}}/code/home-server"
