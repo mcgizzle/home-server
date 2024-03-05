@@ -6,6 +6,7 @@
     git_user_name: mcgizzle
     dotfiles_repo: "https://github.com/mcgizzle/dotfiles"
     cfg_dir: "{{ ansible_env.HOME }}/.cfg"
+    home_server_path: "{{ ansible_env.HOME }}/code/home-server"
   tasks:
     - name: Initial setup
       ansible.builtin.include_tasks:
@@ -34,6 +35,14 @@
     - name: Install Docker
       ansible.builtin.include_tasks:
         file: tasks/docker.yml
+
+#    - name: Increase swap
+#      ansible.builtin.include_tasks:
+#        file: tasks/swap.yml
+
+    - name: Setup tailscale
+      ansible.builtin.include_tasks:
+        file: tasks/tailscale.yml
 
     - name: Home server
       ansible.builtin.include_tasks:

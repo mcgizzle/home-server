@@ -1,0 +1,51 @@
+- name: Check if /etc/sysctl.d exists
+  ansible.builtin.stat:
+    path: /etc/sysctl.d
+  register: sysctl_d
+
+- name: Set IP forwarding in /etc/sysctl.d/99-tailscale.conf
+  block:
+    - name: Ensure net.ipv4.ip_forward is set to 1
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.d/99-tailscale.conf
+        line: 'net.ipv4.ip_forward = 1'
+        create: yes
+
+    - name: Ensure net.ipv6.conf.all.forwarding is set to 1
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.d/99-tailscale.conf
+        line: 'net.ipv6.conf.all.forwarding = 1'
+        create: yes
+
+    - name: Reload sysctl configuration
+      ansible.builtin.command:
+        cmd: sysctl -p /etc/sysctl.d/99-tailscale.conf
+      ignore_errors: "{{ is_docker | bool }}"
+  when: sysctl_d.stat.exists
+
+- name: Set IP forwarding in /etc/sysctl.conf
+  block:
+    - name: Ensure net.ipv4.ip_forward is set to 1
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        line: 'net.ipv4.ip_forward = 1'
+        create: yes
+
+    - name: Ensure net.ipv6.conf.all.forwarding is set to 1
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        line: 'net.ipv6.conf.all.forwarding = 1'
+        create: yes
+
+    - name: Reload sysctl configuration
+      ansible.builtin.command:
+        cmd: sysctl -p /etc/sysctl.conf
+      ignore_errors: "{{ is_docker | bool }}"
+
+  when: not sysctl_d.stat.exists
+
+- name: Load ip6table_filter
+  community.general.modprobe:
+    name: ip6table_filter
+    state: present
+  ignore_errors: "{{ is_docker | bool }}"
