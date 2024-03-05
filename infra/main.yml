@@ -4,19 +4,33 @@
     swap_size_mb: 1024
     git_user_email: mcgroas@tcd.ie
     git_user_name: mcgizzle
+    dotfiles_repo: "https://github.com/mcgizzle/dotfiles"
+    cfg_dir: "{{ ansible_env.HOME }}/.cfg"
   tasks:
     - name: Initial setup
       ansible.builtin.include_tasks:
-        file: tasks/initial_setup.yml
-    
-    - name: SWAP
+        file: tasks/initial-setup.yml
+
+    - name: SSH
       ansible.builtin.include_tasks:
-        file: tasks/swap.yml
+        file: tasks/ssh.yml
 
     - name: GIT
       ansible.builtin.include_tasks:
         file: tasks/git.yml
 
-    - name: SSH
+    - name: Home server
       ansible.builtin.include_tasks:
-        file: tasks/ssh.yml
+        file: tasks/home-server.yml
+
+    - name: zsh
+      ansible.builtin.include_tasks:
+        file: tasks/zsh.yml
+
+    - name: Dotfiles
+      ansible.builtin.include_tasks:
+        file: tasks/dotfiles.yml
+
+    - name: Setup nvim
+      ansible.builtin.include_tasks:
+        file: tasks/vim.yml

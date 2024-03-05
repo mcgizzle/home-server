@@ -13,14 +13,14 @@ RUN mkdir /var/run/sshd
 #RUN echo 'root:YOUR_PASSWORD' | chpasswd
 
 # Copy the public key to authorized_keys
-COPY id_rsa.pub /root/.ssh/authorized_keys
+COPY id_ed25519.pub /root/.ssh/authorized_keys
 
 # Correct permissions for .ssh and authorized_keys
 RUN chmod 700 /root/.ssh && chmod 600 /root/.ssh/authorized_keys
 
-# Standard SSH port
+RUN service ssh start
+
 EXPOSE 22
 
-# Run SSHD
 CMD ["/usr/sbin/sshd", "-D"]
 

@@ -1,0 +1,50 @@
+- name: Install zsh
+  ansible.builtin.apt:
+    name: zsh  # Specifies the package to install.
+    state: present  # Ensures the package is installed; 'latest' can be used to ensure the newest version.
+    update_cache: yes  # Updates the package cache before installing, akin to running 'apt-get update'.
+
+- name: Install Oh My Zsh # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/ohmyzsh/ohmyzsh.git
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh"
+    depth: 1
+
+- name: Install zsh-autosuggestions plugin # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    depth: 1
+
+- name: Install zsh-completions plugin # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-completions
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/zsh-completions"
+    depth: 1
+
+- name: Install zsh-syntax-highlighting plugin # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+    depth: 1
+
+# install spaceship git clone https://github.com/spaceship-prompt/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
+- name: Install spaceship theme # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/spaceship-prompt/spaceship-prompt.git
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/spaceship-prompt"
+    depth: 1
+  when: ansible_distribution == 'Darwin'
+
+- name: Create symlink for spaceship theme # noqa: latest
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/spaceship-prompt/spaceship.zsh-theme"
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/themes/spaceship.zsh-theme"
+    state: link
+  when: ansible_distribution == 'Darwin'
+
+- name: Change the default shell to zsh
+  ansible.builtin.user:
+    name: root
+    shell: /bin/zsh
+

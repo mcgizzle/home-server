@@ -1,0 +1,29 @@
+- name: Update sshd_config
+  become: true
+  blockinfile:
+    dest: "/etc/ssh/sshd_config"
+    insertafter: "^Include /etc/ssh/sshd_config"
+    block: |
+      Protocol 2
+      PasswordAuthentication no
+      PermitEmptyPasswords no
+      PermitRootLogin yes
+      MaxAuthTries 10
+
+- name: Restart the SSH service
+  ansible.builtin.service:
+    name: ssh
+    state: restarted
+  when: not is_docker
+
+- name: Copy SSH private key
+  copy:
+    src: ./ssh/vm-ssh-key
+    dest: "{{ ansible_env.HOME }}/.ssh/id_ed25519"
+    mode: '0600'
+
+- name: Copy SSH public key
+  copy:
+    src: ./ssh/vm-ssh-key.pub
+    dest: "{{ ansible_env.HOME }}/.ssh/id_ed25519.pub"
+    mode: '0644'

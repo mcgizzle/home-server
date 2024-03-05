@@ -1,0 +1,23 @@
+- name: Setup email
+  git_config:
+    name: user.email
+    scope: global
+    value: "{{ git_user_email }}"
+
+- name: Setup name
+  git_config:
+    name: user.name
+    scope: global
+    value: "{{ git_user_name }}"
+
+- name: Configure Git to use the SSH key
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.gitconfig"
+    create: yes
+    line: "url = git@github.com:.insteadOf https://github.com/"
+
+- name: Add GitHub.com SSH key to known_hosts
+  ansible.builtin.shell:
+    cmd: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+  args:
+    executable: /bin/bash
