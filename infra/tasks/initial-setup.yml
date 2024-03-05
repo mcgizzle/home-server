@@ -24,4 +24,5 @@
       - git
       - curl
       - neovim
-      - lsb-release
+      - lsb-release # for docker
+      - kmod # for modprobe
