@@ -14,7 +14,7 @@ services:
       - 8080:8080     # qBittorrent
       - 8888:8888/tcp # HTTP proxy
     volumes:
-      - /mnt/ssd/docker/home-server/gluetun:/gluetun
+      - "${DOCKER_VOLUME_PATH}"/gluetun:/gluetun
     environment:
       - HTTPPROXY=on
       - VPN_SERVICE_PROVIDER=surfshark
