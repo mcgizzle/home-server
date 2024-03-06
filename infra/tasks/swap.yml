@@ -1,6 +1,7 @@
 - name: Disable swap
   shell: dphys-swapfile swapoff
   become: true
+  ignore_errors: "{{ is_docker | bool }}"
 
 - name: Edit swap
   lineinfile:
@@ -16,3 +17,4 @@
 - name: Enable swap
   shell: dphys-swapfile swapon
   become: true
+  ignore_errors: "{{ is_docker | bool }}"

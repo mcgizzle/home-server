@@ -4,6 +4,6 @@
     dest: "{{ home_server_path }}"
 
 - name: Start all services
-  ansible.builtin.shell: deploy.sh
+  ansible.builtin.shell: "{{ home_server_path }}/deploy.sh"
   args:
     chdir: "{{ home_server_path }}"
