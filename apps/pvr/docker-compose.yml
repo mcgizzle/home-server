@@ -21,9 +21,9 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - "${DOCKER_VOLUME_PATH}"/radarr:/config
-      - "${MEDIA_MOUNT_PATH}"/movies:/movies #optional
-      - "${DOWNLOADS_MOUNT_PATH}:/downloads" #optional
+      - "$DOCKER_VOLUME_PATH/radarr:/config"
+      - "$MEDIA_MOUNT_PATH/movies:/movies" #optional
+      - "$DOWNLOADS_MOUNT_PATH:/downloads" #optional
     ports:
       - 7878:7878
     labels:
@@ -44,9 +44,9 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - "${DOCKER_VOLUME_PATH}"/sonarr:/config
-      - "${MEDIA_MOUNT_PATH}"/tv-shows:/tv #optional
-      - "${DOWNLOADS_MOUNT_PATH}:/downloads" #optional
+      - "$DOCKER_VOLUME_PATH/sonarr:/config"
+      - "$MEDIA_MOUNT_PATH/tv-shows:/tv" #optional
+      - "$DOWNLOADS_MOUNT_PATH:/downloads" #optional
     ports:
       - 8989:8989
     labels:
@@ -66,7 +66,7 @@ services:
       - PGID=1000
       - TZ=Europe/London
     volumes:
-      - "${DOCKER_VOLUME_PATH}"/prowlarr:/config
+      - "$DOCKER_VOLUME_PATH/prowlarr:/config"
     ports:
       - 9696:9696
     labels:
@@ -86,7 +86,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - "${DOCKER_VOLUME_PATH}"/overseerr:/config
+      - "$DOCKER_VOLUME_PATH/overseerr:/config"
     ports:
       - 5055:5055
     labels:

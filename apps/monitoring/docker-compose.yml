@@ -14,7 +14,7 @@ services:
       - internal
     volumes:
       - ./prometheus:/etc/prometheus
-      - "${DOCKER_VOLUME_PATH}"/prometheus:/prometheus
+      - "$DOCKER_VOLUME_PATH/prometheus:/prometheus"
     depends_on:
       - cadvisor
       - node-exporter
@@ -37,7 +37,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=grafana
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
-      - "${DOCKER_VOLUME_PATH}"/grafana:/var/lib/grafana
+      - "$DOCKER_VOLUME_PATH/grafana:/var/lib/grafana"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.pi.local`)"

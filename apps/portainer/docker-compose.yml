@@ -8,7 +8,7 @@ services:
       - "9000:9000"
       - "8000:8000"
     volumes:
-      - "${DOCKER_VOLUME_PATH}"/portainer:/data
+      - "$DOCKER_VOLUME_PATH/portainer:/data"
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - "traefik.enable=true"

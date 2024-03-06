@@ -11,10 +11,10 @@ services:
       - PGID=1000
       - VERSION=docker
     volumes:
-      - "${DOCKER_VOLUME_PATH}"/plex/config:/config
-      - "${MEDIA_MOUNT_PATH}"/movies:/movies
-      - "${MEDIA_MOUNT_PATH}"/tv-shows:/tv
-      - "${DOCKER_VOLUME_PATH}"/plex/transcode:/transcode
+      - "$DOCKER_VOLUME_PATH/plex/config:/config"
+      - "$MEDIA_MOUNT_PATH/movies:/movies"
+      - "$MEDIA_MOUNT_PATH/tv-shows:/tv"
+      - "$DOCKER_VOLUME_PATH/plex/transcode:/transcode"
         #   labels:
         #- "traefik.enable=true"
         #- "traefik.http.routers.plex.rule=Host(`plex.pi.local`)"
