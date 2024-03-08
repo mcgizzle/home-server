@@ -1,0 +1,4 @@
+[vms]
+debian_container ansible_host=localhost ansible_port=2022 ansible_user=root ansible_ssh_private_key_file=/Users/mcgizzle/.ssh/id_ed25519
+
+

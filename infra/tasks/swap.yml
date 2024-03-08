@@ -1,20 +1,30 @@
+- name: Check if dphys-swapfile exists
+  command: which dphys-swapfile
+  register: dphys_swapfile_check
+  ignore_errors: true
+  changed_when: false
+
 - name: Disable swap
   shell: dphys-swapfile swapoff
   become: true
   ignore_errors: "{{ is_docker | bool }}"
+  when: dphys_swapfile_check.rc == 0
 
-- name: Edit swap
+- name: Edit swap configuration
   lineinfile:
     path: /etc/dphys-swapfile
     regexp: '^CONF_SWAPSIZE'
     line: "CONF_SWAPSIZE={{ swap_size_mb }}"
   become: true
+  when: dphys_swapfile_check.rc == 0
 
 - name: Setup swap
   shell: dphys-swapfile setup
   become: true
+  when: dphys_swapfile_check.rc == 0
 
 - name: Enable swap
   shell: dphys-swapfile swapon
   become: true
   ignore_errors: "{{ is_docker | bool }}"
+  when: dphys_swapfile_check.rc == 0

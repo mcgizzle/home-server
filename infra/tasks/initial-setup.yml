@@ -1,3 +1,7 @@
+- name: Set default value of is_docker to false
+  set_fact:
+    is_docker: false
+
 - name: Check if running inside Docker
   stat:
     path: /.dockerenv
