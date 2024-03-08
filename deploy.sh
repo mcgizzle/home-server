@@ -12,7 +12,7 @@ directories=(
   'apps/portainer'
   'apps/dashboard'
   'apps/watchtower'
-  #'apps/tailscale'
+  'apps/tailscale'
 )
 
 for dir in "${directories[@]}"; do
