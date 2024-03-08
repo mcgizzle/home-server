@@ -24,6 +24,7 @@ directories=(
   'apps/monitoring'
   'apps/qbit'
   'apps/media/plex'
+  'apps/media/tautulli'
   'apps/portainer'
   'apps/dashboard'
   'apps/watchtower'
