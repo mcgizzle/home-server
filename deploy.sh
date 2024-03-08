@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SCRIPT_DIR=$(dirname "$0")
+source "${SCRIPT_DIR}/.env"
+
 # Initialize variables
 pull_only=false
 
