@@ -1,0 +1,8 @@
+# Self-update crontab at 00:00 (midnight) daily
+0 0 * * * crontab $HOME/code/home-server/infra/crontab
+
+# Update IP address on cloudflare
+0 11 * * * /bin/bash $HOME/code/cloudflare-ddns-updater/cloudflare-template.sh > logs/cloudflare.txt 2>&1
+
+# Restart qbittorrent, there is a bug which causes it to stop working
+0 3 * * * /bin/bash $HOME/code/home-server/apps/qbit/restart.sh > logs/qbit-restart.txt 2>&1
