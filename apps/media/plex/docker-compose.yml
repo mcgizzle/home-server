@@ -13,11 +13,7 @@ services:
     volumes:
       - "$DOCKER_VOLUME_PATH/plex/config:/config"
       - "$MEDIA_MOUNT_PATH/movies:/movies"
+      - "$MEDIA_MOUNT_PATH/movies4k:/movies4k"
       - "$MEDIA_MOUNT_PATH/tv-shows:/tv"
       - "$DOCKER_VOLUME_PATH/plex/transcode:/transcode"
-        #   labels:
-        #- "traefik.enable=true"
-        #- "traefik.http.routers.plex.rule=Host(`plex.pi.local`)"
-        #- "traefik.http.routers.plex.entrypoints=web"
-        #- "traefik.http.services.plex.loadbalancer.server.port=32400"
 
