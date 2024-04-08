@@ -110,6 +110,8 @@ services:
       - "$DOCKER_VOLUME_PATH/overseerr:/config"
     ports:
       - 5055:5055
+    dns:
+      - 1.1.1.1
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.overseerr.rule=Host(`requests.pi.local`)"
