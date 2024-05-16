@@ -17,7 +17,7 @@ done
 
 # List of directories with docker-compose.yml files
 directories=(
-  'apps/dns'
+#  'apps/dns'
   'apps/reverse-proxy'
   'apps/pvr'
   'apps/vpn'
@@ -26,7 +26,7 @@ directories=(
   'apps/media/plex'
   'apps/portainer'
   'apps/dashboard'
-  'apps/tailscale'
+#  'apps/tailscale'
 )
 
 for dir in "${directories[@]}"; do
