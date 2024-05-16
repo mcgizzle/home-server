@@ -6,7 +6,7 @@
   ignore_errors: yes
 
 - name: Attempt to checkout the dotfiles repository
-  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ ansible_env.HOME }} checkout"
+  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ansible_facts.env.HOME }} checkout"
   register: checkout
   ignore_errors: yes
   changed_when: "'Checked out config.' in checkout.stdout"
@@ -14,18 +14,18 @@
 - name: Backup existing dotfiles if checkout fails
   block:
     - name: Find files that would be overwritten by checkout
-      shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ ansible_env.HOME }} checkout 2>&1 | egrep '\\s+\\.' | awk '{print $1}'"
+      shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ansible_facts.env.HOME }} checkout 2>&1 | egrep '\\s+\\.' | awk '{print $1}'"
       register: files_to_backup
       ignore_errors: true
 
     - name: Create backup directory
       file:
-        path: "{{ ansible_env.HOME }}/.config-backup"
+        path: "{{ansible_facts.env.HOME }}/.config-backup"
         state: directory
       when: files_to_backup.stderr != ""
 
     - name: Move files to backup directory
-      command: "mv {{ item }} {{ ansible_env.HOME }}/.config-backup/{{ item | basename }}"
+      command: "mv {{ item }} {{ansible_facts.env.HOME }}/.config-backup/{{ item | basename }}"
       loop: "{{ files_to_backup.stderr_lines }}"
       loop_control:
         label: "{{ item }}"
@@ -33,8 +33,8 @@
   when: checkout.rc != 0
 
 - name: Retry checkout after moving conflicting files
-  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ ansible_env.HOME }} checkout"
+  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ansible_facts.env.HOME }} checkout"
   when: checkout.rc != 0
 
 - name: Set Git configuration to ignore untracked files
-  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ ansible_env.HOME }} config status.showUntrackedFiles no"
+  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ansible_facts.env.HOME }} config status.showUntrackedFiles no"

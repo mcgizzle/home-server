@@ -1,0 +1,38 @@
+- name: Create a Python virtual environment
+  command: python3 -m venv /opt/venv
+
+- name: Upgrade pip in the virtual environment
+  command: /opt/venv/bin/pip install --upgrade pip
+
+- name: Install wheel in the virtual environment
+  command: /opt/venv/bin/pip install wheel
+
+- name: Install Docker SDK for Python in virtual environment
+  command: /opt/venv/bin/pip install docker docker-compose
+
+- name: Set the Python interpreter to use the virtual environment
+  set_fact:
+    ansible_python_interpreter: /opt/venv/bin/python
+
+- name: Source the .env file
+  include_vars:
+    file: "{{ home_server_path }}/.env"
+    name: env_vars
+  when: not pull_only
+
+- name: Pull images or start containers
+  docker_compose:
+    project_src: "{{ home_server_path }}/{{ item }}"
+    state: "{{ 'present' if pull_only else 'started' }}"
+    pull: "{{ pull_only }}"
+  loop: "{{ directories }}"
+
+- name: Display completion message
+  debug:
+    msg: "All images pulled."
+  when: pull_only
+
+- name: Display completion message
+  debug:
+    msg: "All projects started."
+  when: not pull_only

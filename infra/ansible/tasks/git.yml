@@ -12,7 +12,7 @@
 
 - name: Configure Git to use the SSH key
   lineinfile:
-    path: "{{ ansible_env.HOME }}/.gitconfig"
+    path: "{{ansible_facts.env.HOME }}/.gitconfig"
     create: yes
     line: "url = git@github.com:.insteadOf https://github.com/"
 

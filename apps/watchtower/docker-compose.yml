@@ -2,7 +2,7 @@ version: "3"
 
 services:
   watchtower:
-    image: containrrr/watchtower:armhf-latest
+    image: containrrr/watchtower:latest
     environment:
       #      - WATCHTOWER_DEBUG=true
       - WATCHTOWER_RUN_ONCE=true

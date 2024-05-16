@@ -3,7 +3,7 @@ services:
   plex:
     container_name: plex
     restart: unless-stopped
-    image: lscr.io/linuxserver/plex:arm64v8-latest
+    image: lscr.io/linuxserver/plex:latest
     network_mode: host
     environment:
       - PLEX_CLAIM=claim-_iTNsgq24TywaTzPFhBp

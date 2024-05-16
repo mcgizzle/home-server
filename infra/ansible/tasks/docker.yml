@@ -19,7 +19,7 @@
 - name: Install docker repository to apt
   become: true
   apt_repository:
-    repo: deb [arch=arm64] https://download.docker.com/linux/debian "{{ os_codename.stdout }}" stable
+    repo: deb [arch=amd64] https://download.docker.com/linux/debian "{{ os_codename.stdout }}" stable
     state: present
 
 - name: Install docker packages

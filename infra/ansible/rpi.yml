@@ -1,0 +1,51 @@
+- name: rpi
+  hosts: vms
+  vars:
+    swap_size_mb: 1024
+    git_user_email: mcgroas@tcd.ie
+    git_user_name: mcgizzle
+    dotfiles_repo: "https://github.com/mcgizzle/dotfiles"
+    cfg_dir: "{{ansible_facts.env.HOME }}/.cfg"
+    home_server_repo: "git@github.com:mcgizzle/home-server.git"
+    home_server_path: "{{ansible_facts.env.HOME }}/code/home-server"
+  tasks:
+    - name: Initial setup
+      ansible.builtin.include_tasks:
+        file: tasks/initial-setup.yml
+
+    - name: SSH
+      ansible.builtin.include_tasks:
+        file: tasks/ssh.yml
+
+    - name: GIT
+      ansible.builtin.include_tasks:
+        file: tasks/git.yml
+
+    - name: zsh
+      ansible.builtin.include_tasks:
+        file: tasks/zsh.yml
+
+    - name: Dotfiles
+      ansible.builtin.include_tasks:
+        file: tasks/dotfiles.yml
+
+    - name: Setup nvim
+      ansible.builtin.include_tasks:
+        file: tasks/vim.yml
+
+    - name: Install Docker
+      ansible.builtin.include_tasks:
+        file: tasks/docker.yml
+
+    - name: Increase swap
+      ansible.builtin.include_tasks:
+        file: tasks/swap.yml
+
+    - name: Setup tailscale
+      ansible.builtin.include_tasks:
+        file: tasks/tailscale.yml
+
+    - name: Home server
+      ansible.builtin.include_tasks:
+        file: tasks/home-server.yml
+

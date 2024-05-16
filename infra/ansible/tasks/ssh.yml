@@ -5,7 +5,7 @@
     insertafter: "^Include /etc/ssh/sshd_config"
     block: |
       Protocol 2
-      PasswordAuthentication no
+      PasswordAuthentication yes
       PermitEmptyPasswords no
       PermitRootLogin yes
       MaxAuthTries 10
@@ -18,12 +18,12 @@
 
 - name: Copy SSH private key
   copy:
-    src: ./ssh/vm-ssh-key
-    dest: "{{ ansible_env.HOME }}/.ssh/id_ed25519"
+    src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519"
+    dest: "{{ ansible_facts.env.HOME }}/.ssh/id_ed25519"
     mode: '0600'
 
 - name: Copy SSH public key
   copy:
-    src: ./ssh/vm-ssh-key.pub
-    dest: "{{ ansible_env.HOME }}/.ssh/id_ed25519.pub"
+    src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
+    dest: "{{ ansible_facts.env.HOME }}/.ssh/id_ed25519.pub"
     mode: '0644'
