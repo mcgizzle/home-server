@@ -26,7 +26,6 @@ directories=(
   'apps/media/plex'
   'apps/portainer'
   'apps/dashboard'
-  'apps/watchtower'
   'apps/tailscale'
 )
 
