@@ -13,7 +13,7 @@ services:
       - internal-net
 
   radarr:
-    image: lscr.io/linuxserver/radarr:arm64v8-latest
+    image: lscr.io/linuxserver/radarr:latest
     restart: unless-stopped
     container_name: radarr
     environment:
@@ -35,7 +35,7 @@ services:
       - internal-net
 
   radarr4k:
-    image: lscr.io/linuxserver/radarr:arm64v8-latest
+    image: lscr.io/linuxserver/radarr:latest
     restart: unless-stopped
     container_name: radarr4k
     environment:
@@ -57,7 +57,7 @@ services:
       - internal-net
 
   sonarr:
-    image: lscr.io/linuxserver/sonarr:arm64v8-latest
+    image: lscr.io/linuxserver/sonarr:latest
     restart: unless-stopped
     container_name: sonarr
     environment:
@@ -81,7 +81,7 @@ services:
   prowlarr:
     container_name: prowlarr
     restart: unless-stopped
-    image: lscr.io/linuxserver/prowlarr:arm64v8-latest
+    image: lscr.io/linuxserver/prowlarr:latest
     environment:
       - PUID=1000
       - PGID=1000
@@ -99,7 +99,7 @@ services:
       - internal-net
 
   overseerr:
-    image: lscr.io/linuxserver/overseerr:arm64v8-latest
+    image: lscr.io/linuxserver/overseerr:latest
     restart: unless-stopped
     container_name: overseerr
     environment:

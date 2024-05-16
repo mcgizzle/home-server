@@ -3,7 +3,3 @@
     repo: 'git@github.com:mcgizzle/home-server.git'
     dest: "{{ home_server_path }}"
 
-- name: Start all services
-  ansible.builtin.shell: "{{ home_server_path }}/deploy.sh"
-  args:
-    chdir: "{{ home_server_path }}"
