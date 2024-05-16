@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   tailscale-pi:
     image: ghcr.io/tailscale/tailscale:latest
