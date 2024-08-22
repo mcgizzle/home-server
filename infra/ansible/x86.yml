@@ -50,13 +50,13 @@
       ansible.builtin.include_tasks:
         file: tasks/docker.yml
 
-    - name: Setup tailscale
-      ansible.builtin.include_tasks:
-        file: tasks/tailscale.yml
-
     - name: SSH
       ansible.builtin.include_tasks:
         file: tasks/ssh.yml
+
+    - name: Hardware Transcoding
+      ansible.builtin.include_tasks:
+        file: tasks/hw-transcode.yml
 
     - name: Home server
       ansible.builtin.include_tasks:

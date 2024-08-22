@@ -1,0 +1,23 @@
+- name: Install software-properties-common, gives us add-apt-repository
+  apt:
+    name: software-properties-common
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == 'Debian'
+
+# add-apt-repository -y -c non-free
+- name: Add non-free repository, required for intel-media-va-driver-non-free
+  apt_repository:
+    repo: "deb http://deb.debian.org/debian {{ ansible_distribution_release }} non-free"
+    state: present
+  when: ansible_os_family == 'Debian'
+
+# driver for intel quicksync
+- name: Install intel-media-va-driver-non-free
+  apt:
+    name: intel-media-va-driver-non-free
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == 'Debian'
