@@ -25,7 +25,7 @@ directories=(
   'apps/qbit'
   'apps/media/plex'
   'apps/portainer'
-  'apps/dashboard'
+  'apps/cloudflared'
 #  'apps/tailscale'
 )
 
