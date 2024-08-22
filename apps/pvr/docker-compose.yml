@@ -48,7 +48,7 @@ services:
       - 7879:7878
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr4k.rule=Host(`radarr4k.pi.local`)"
+      - "traefik.http.routers.radarr4k.rule=Host(`radarr4k.${DOMAIN}`)"
       - "traefik.http.routers.radarr4k.entrypoints=web"
       - "traefik.http.services.radarr4k.loadbalancer.server.port=7878"
     networks:
@@ -70,7 +70,7 @@ services:
       - 8989:8989
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.pi.local`)"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)"
       - "traefik.http.routers.sonarr.entrypoints=web"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
     networks:
@@ -90,7 +90,7 @@ services:
       - 9696:9696
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.pi.local`)"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)"
       - "traefik.http.routers.prowlarr.entrypoints=web"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     networks:
@@ -112,7 +112,7 @@ services:
       - 1.1.1.1
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.overseerr.rule=Host(`requests.pi.local`)"
+      - "traefik.http.routers.overseerr.rule=Host(`requests.${DOMAIN}`)"
       - "traefik.http.routers.overseerr.entrypoints=web"
       - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
     networks:
