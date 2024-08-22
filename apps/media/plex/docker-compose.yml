@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     image: lscr.io/linuxserver/plex:latest
     network_mode: host
+    devices:
+      - /dev/dri:/dev/dri
     environment:
       - PLEX_CLAIM=claim-_iTNsgq24TywaTzPFhBp
       - PUID=0
