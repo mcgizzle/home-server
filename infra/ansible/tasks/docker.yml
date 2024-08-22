@@ -33,11 +33,6 @@
       - docker-buildx-plugin
       - docker-compose-plugin
 
-- name: Reboot the machine to make the docker.service start # see: https://bbs.archlinux.org/viewtopic.php?id=267694
-  become: true
-  reboot:
-  when: not is_docker
-
 - name: Enable docker.service
   become: true
   service:

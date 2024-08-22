@@ -1,6 +1,4 @@
-version: '3'
 services:
-
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:v3.3.13
     restart: unless-stopped
