@@ -1,6 +1,5 @@
 services:
   qbittorrent:
-    #image: lscr.io/linuxserver/qbittorrent:arm64v8-libtorrentv1 # https://github.com/qdm12/gluetun/discussions/1562#discussioncomment-5889922
     image: lscr.io/linuxserver/qbittorrent:latest
     restart: unless-stopped
     container_name: qbittorrent

@@ -2,7 +2,6 @@ services:
   watchtower:
     image: containrrr/watchtower:latest
     environment:
-      #      - WATCHTOWER_DEBUG=true
       - WATCHTOWER_RUN_ONCE=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
