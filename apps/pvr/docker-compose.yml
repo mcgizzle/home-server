@@ -26,31 +26,9 @@ services:
       - 7878:7878
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.pi.local`)"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.pi.${DOMAIN}`)"
       - "traefik.http.routers.radarr.entrypoints=web"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
-    networks:
-      - internal-net
-
-  radarr4k:
-    image: lscr.io/linuxserver/radarr:latest
-    restart: unless-stopped
-    container_name: radarr4k
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-    volumes:
-      - "$DOCKER_VOLUME_PATH/radarr4k:/config"
-      - "$MEDIA_MOUNT_PATH/movies4k:/movies-4k" 
-      - "$DOWNLOADS_MOUNT_PATH:/downloads" 
-    ports:
-      - 7879:7878
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.radarr4k.rule=Host(`radarr4k.${DOMAIN}`)"
-      - "traefik.http.routers.radarr4k.entrypoints=web"
-      - "traefik.http.services.radarr4k.loadbalancer.server.port=7878"
     networks:
       - internal-net
 
