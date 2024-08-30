@@ -1,0 +1,27 @@
+services:
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    networks:
+      - internal-net
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Etc/UTC
+    volumes:
+      - "$DOCKER_VOLUME_PATH/readarr:/config"
+      - "$MEDIA_MOUNT_PATH/books:/books"
+      - "$DOWNLOADS_MOUNT_PATH:/downloads"
+    ports:
+      - 8787:8787
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`readarr.${DOMAIN}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=web"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+    restart: unless-stopped
+
+networks:
+  internal-net:
+    external: true
+

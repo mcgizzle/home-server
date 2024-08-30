@@ -1,1 +1,0 @@
-/dev/sda1 /mnt/ssd exfat defaults,uid=1000,gid=1000 0 0
