@@ -17,6 +17,6 @@ api:
 
 providers:
   docker:
-    endpoint: "unix:///var/run/docker.sock"
-    exposedByDefault: false
+    endpoint: "ssh://root@192.168.0.100:22"
+    useBindPortIP: false
 

@@ -2,10 +2,14 @@ services:
   traefik:
     image: traefik:latest
     restart: unless-stopped
+    environment:
+      - PUID=0
+      - PGID=0
     command:
       - "--log.level=DEBUG"
       - "--api.dashboard=true"
       - "--providers.docker=true"
+      - "--api.insecure=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=internal-net"
       - "--entrypoints.web.address=:80"
@@ -16,8 +20,16 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik.yml:/etc/traefik/traefik.yml"
+      # TODO: Mount custom SSh dir
+      - ~/.ssh:/root/.ssh/
+      - ./entrypoint.sh:/entrypoint.sh
     networks:
       - internal-net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik.service=api@internal
 
 networks:
   internal-net:
