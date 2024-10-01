@@ -22,11 +22,7 @@ services:
       - SERVER_HOSTNAMES=uk-lon.prod.surfshark.com
       - WIREGUARD_PRIVATE_KEY=uDymMz0D2jX5ZPTXNHoCRJVcDsXZgMXaNiEGXJ7Eknk=
       - WIREGUARD_ADDRESSES=10.14.0.2/16
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.gluetun.rule=Host(`torrent.${DOMAIN}`)"
-      - "traefik.http.routers.gluetun.entrypoints=web"
-      - "traefik.http.services.gluetun.loadbalancer.server.port=8081"
+
 
 networks:
   internal-net:

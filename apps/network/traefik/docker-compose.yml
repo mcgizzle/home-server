@@ -5,6 +5,8 @@ services:
     environment:
       - PUID=0
       - PGID=0
+      - DOMAIN=${DOMAIN}
+      - PRIMARY_IP=${PRIMARY_IP}
     command:
       - "--log.level=DEBUG"
       - "--api.dashboard=true"
@@ -21,15 +23,11 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./traefik.yml:/etc/traefik/traefik.yml"
-      # TODO: Mount custom SSh dir
-      - ~/.ssh:/root/.ssh/
       - ./entrypoint.sh:/entrypoint.sh
+      - ./routes.yml:/routes.yml.template
     networks:
       - internal-net
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
-      - traefik.http.routers.traefik.service=api@internal
+
 
 networks:
   internal-net:

@@ -16,7 +16,7 @@ api:
   insecure: true # Only for development, use proper authentication for production
 
 providers:
-  docker:
-    endpoint: "ssh://root@192.168.0.100:22"
-    useBindPortIP: false
+  file:
+    filename: ./routes.yml
+
 

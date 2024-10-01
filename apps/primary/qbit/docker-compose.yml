@@ -13,5 +13,3 @@ services:
       - "$MEDIA_MOUNT_PATH/movies:/movies"
       - "$MEDIA_MOUNT_PATH/tv-shows:/tv-shows"
     network_mode: container:gluetun # run on the vpn network
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"

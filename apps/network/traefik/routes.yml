@@ -1,0 +1,94 @@
+http:
+  routers:
+    router0:
+      entryPoints:
+        - web
+      service: sonarr
+      rule: Host(`sonarr.${DOMAIN}`)
+    router1:
+        entryPoints:
+            - web
+        service: radarr
+        rule: Host(`radarr.${DOMAIN}`)
+    router2:
+        entryPoints:
+            - web
+        service: prowlarr
+        rule: Host(`prowlarr.${DOMAIN}`)
+    router3:
+        entryPoints:
+            - web
+        service: torrent
+        rule: Host(`torrent.${DOMAIN}`)
+    router4:
+        entryPoints:
+            - web
+        service: grafana
+        rule: Host(`grafana.${DOMAIN}`)
+    router5:
+        entryPoints:
+            - web
+        service: prometheus
+        rule: Host(`prometheus.${DOMAIN}`)
+    router6:
+        entryPoints:
+            - web
+        service: readarr
+        rule: Host(`readarr.${DOMAIN}`)
+    router7:
+        entryPoints:
+            - web
+        service: traefik
+        rule: Host(`traefik.${DOMAIN}`)
+    router8:
+        entryPoints:
+            - web
+        service: pihole
+        rule: Host(`pihole.${DOMAIN}`)
+
+  services:
+    sonarr:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:8989
+        passHostHeader: false
+    radarr:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:7878
+        passHostHeader: false
+    prowlarr:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:9696
+        passHostHeader: false
+    torrent:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:8081
+        passHostHeader: false
+    grafana:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:3000
+        passHostHeader: false
+    prometheus:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:9090
+        passHostHeader: false
+    readarr:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:8787
+        passHostHeader: false
+    traefik:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:8080
+        passHostHeader: false
+    pihole:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:81
+        passHostHeader: false

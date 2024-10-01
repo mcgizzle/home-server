@@ -1,8 +1,8 @@
 #!/bin/sh
-set -e
+set -eu
 
-# add openssh for ssh docker connection
-apk add openssh
+apk add gettext
+envsubst < /routes.yml.template > /routes.yml
 
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then

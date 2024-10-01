@@ -14,11 +14,6 @@ services:
       - "$DOWNLOADS_MOUNT_PATH:/downloads"
     ports:
       - 8787:8787
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`readarr.${DOMAIN}`)"
-      - "traefik.http.routers.prowlarr.entrypoints=web"
-      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
 
 networks:

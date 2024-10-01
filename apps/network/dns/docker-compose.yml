@@ -19,13 +19,6 @@ services:
     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
     cap_add:
       - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`pihole.pi.local`)"
-      - "traefik.http.routers.pihole.entrypoints=web"
-        #- "traefik.http.services.pihole.loadbalancer.server.port=81"
-      - 'traefik.http.middlewares.pihole.addprefix.prefix=/admin'
-      - 'traefik.http.services.pihole.loadBalancer.server.port=80'
     networks:
       - internal-net
 
