@@ -3,7 +3,7 @@
 set -eo pipefail
 
 SCRIPT_DIR=$(dirname "$0")
-source "${SCRIPT_DIR}/.env"
+source "${SCRIPT_DIR}/env.sh"
 
 pull_only=false
 restart=false
@@ -18,7 +18,7 @@ function usage() {
 function deploy() {
   deploys=$1
   for dir in $deploys; do
-    echo "Processing $dir"
+    echo "🚀 $dir"
     options=""
     if [ "$restart" = true ]; then
       options="up --force-recreate -d"
@@ -60,8 +60,4 @@ done
 
 deploy "$apps"
 
-if [ "$pull_only" = true ]; then
-  echo "All images pulled."
-else
-  echo "All projects started."
-fi
+echo "👍 Done"
