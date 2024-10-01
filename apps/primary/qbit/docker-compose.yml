@@ -4,8 +4,8 @@ services:
     restart: unless-stopped
     container_name: qbittorrent
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=0
+      - PGID=0
       - WEBUI_PORT=8081
     volumes:
       - "$DOCKER_VOLUME_PATH/qbittorrent:/config"
