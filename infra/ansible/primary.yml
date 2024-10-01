@@ -8,19 +8,6 @@
     cfg_dir: "{{ ansible_facts.env.HOME }}/.cfg"
     home_server_repo: "git@github.com:mcgizzle/home-server.git"
     home_server_path: "{{ ansible_facts.env.HOME }}/code/home-server"
-    directories:
-      - 'apps/dns'
-      - 'apps/reverse-proxy'
-      - 'apps/pvr'
-      - 'apps/vpn'
-      - 'apps/monitoring'
-      - 'apps/qbit'
-      - 'apps/media/plex'
-      - 'apps/portainer'
-      - 'apps/dashboard'
-      - 'apps/watchtower'
-      - 'apps/tailscale'
-    pull_only: true
   tasks:
     - name: Debug user home directory
       debug:
@@ -58,6 +45,6 @@
       ansible.builtin.include_tasks:
         file: tasks/hw-transcode.yml
 
-    - name: Home server
+    - name: Pull code
       ansible.builtin.include_tasks:
         file: tasks/home-server-repo.yml

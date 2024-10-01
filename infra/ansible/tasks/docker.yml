@@ -53,3 +53,9 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
+
+- name: Create docker network
+  docker_network:
+    name: internal-net
+    state: present
+    driver: bridge

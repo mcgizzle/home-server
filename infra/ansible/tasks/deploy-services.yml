@@ -14,9 +14,9 @@
   set_fact:
     ansible_python_interpreter: /opt/venv/bin/python
 
-- name: Source the .env file
+- name: Source the env file
   include_vars:
-    file: "{{ home_server_path }}/.env"
+    file: "{{ home_server_path }}/env.sh"
     name: env_vars
   when: not pull_only
 
