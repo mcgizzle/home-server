@@ -4,6 +4,8 @@ services:
     hostname: tailscale-network
     container_name: tailscale-network
     environment:
+      - PUID=1001
+      - PGID=1001
       - TS_EXTRA_ARGS=--advertise-exit-node --advertise-tags=tag:container --advertise-routes=192.168.1.0/24,192.168.0.0/24
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false

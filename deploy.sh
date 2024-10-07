@@ -7,12 +7,14 @@ source "${SCRIPT_DIR}/env.sh"
 
 pull_only=false
 restart=false
+down=false
 
 function usage() {
   echo "Usage: ./deploy.sh <primary|network> [options]"
   echo "Options:"
   echo "  -r, --restart  Restart the app"
   echo "  -p, --pull-only  Pull images only"
+  echo "  -d, --down  Stop the app"
 }
 
 function deploy() {
@@ -25,6 +27,9 @@ function deploy() {
     fi
     if [ "$pull_only" = true ]; then
       options="pull"
+    fi
+    if [ "$down" = true ]; then
+      options="down"
     else
       options="up -d"
     fi
@@ -49,6 +54,7 @@ while [[ "$#" -gt 1 ]]; do
   case $2 in
   -r | --restart) restart=true ;;
   -p | --pull-only) pull_only=true ;;
+  -d | --down) down=true ;;
   *)
     echo "Unknown option: $2$"
     usage
