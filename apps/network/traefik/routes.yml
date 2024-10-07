@@ -44,12 +44,30 @@ http:
       entryPoints:
         - web
       service: pihole
+      middlewares:
+        - pihole-admin
       rule: Host(`pihole.${DOMAIN}`)
     router9:
       entryPoints:
         - web
       service: pve
+      tls: {}
       rule: Host(`pve.${DOMAIN}`)
+    router10:
+        entryPoints:
+            - web
+        service: plex
+        tls: {}
+        rule: Host(`plex.${DOMAIN}`)
+  middlewares:
+    pihole-redirect:
+      redirectRegex:
+        regex: ^/?$
+        replacement: /admin
+        permanent: true
+    pihole-admin:
+      addPrefix:
+        prefix: /admin
 
   services:
     sonarr:
@@ -87,6 +105,12 @@ http:
         servers:
           - url: http://${PRIMARY_IP}:8787
         passHostHeader: false
+    plex:
+      loadBalancer:
+        servers:
+          - url: http://${PRIMARY_IP}:32400
+        passHostHeader: false
+
     traefik:
       loadBalancer:
         servers:

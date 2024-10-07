@@ -13,8 +13,8 @@ Within `apps`, there are sets of services for two hosts:
 ```
 
 ## TODO
-[ ] - Sort out users/groups
-[ ] - Add ssh keys to 1pass 
-[ ] - Create LXC for side projects
-[ ] - Add proper metric dashboards
-[ ] - Improve docs
+- [ ]  Sort out users/groups
+- [x]  Add ssh keys to 1pass 
+- [ ]  Create LXC for side projects
+- [ ]  Add proper metric dashboards
+- [ ]  Improve docs
