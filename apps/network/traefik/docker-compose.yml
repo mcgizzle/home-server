@@ -15,16 +15,14 @@ services:
       - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--api.insecure=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=internal-net"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - --serversTransport.insecureSkipVerify=true
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
       - "./traefik.yml:/etc/traefik/traefik.yml"
       - ./entrypoint.sh:/entrypoint.sh
       - ./routes.yml:/routes.yml.template
