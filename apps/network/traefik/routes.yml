@@ -6,45 +6,50 @@ http:
       service: sonarr
       rule: Host(`sonarr.${DOMAIN}`)
     router1:
-        entryPoints:
-            - web
-        service: radarr
-        rule: Host(`radarr.${DOMAIN}`)
+      entryPoints:
+        - web
+      service: radarr
+      rule: Host(`radarr.${DOMAIN}`)
     router2:
-        entryPoints:
-            - web
-        service: prowlarr
-        rule: Host(`prowlarr.${DOMAIN}`)
+      entryPoints:
+        - web
+      service: prowlarr
+      rule: Host(`prowlarr.${DOMAIN}`)
     router3:
-        entryPoints:
-            - web
-        service: torrent
-        rule: Host(`torrent.${DOMAIN}`)
+      entryPoints:
+        - web
+      service: torrent
+      rule: Host(`torrent.${DOMAIN}`)
     router4:
-        entryPoints:
-            - web
-        service: grafana
-        rule: Host(`grafana.${DOMAIN}`)
+      entryPoints:
+        - web
+      service: grafana
+      rule: Host(`grafana.${DOMAIN}`)
     router5:
-        entryPoints:
-            - web
-        service: prometheus
-        rule: Host(`prometheus.${DOMAIN}`)
+      entryPoints:
+        - web
+      service: prometheus
+      rule: Host(`prometheus.${DOMAIN}`)
     router6:
-        entryPoints:
-            - web
-        service: readarr
-        rule: Host(`readarr.${DOMAIN}`)
+      entryPoints:
+        - web
+      service: readarr
+      rule: Host(`readarr.${DOMAIN}`)
     router7:
-        entryPoints:
-            - web
-        service: traefik
-        rule: Host(`traefik.${DOMAIN}`)
+      entryPoints:
+        - web
+      service: traefik
+      rule: Host(`traefik.${DOMAIN}`)
     router8:
-        entryPoints:
-            - web
-        service: pihole
-        rule: Host(`pihole.${DOMAIN}`)
+      entryPoints:
+        - web
+      service: pihole
+      rule: Host(`pihole.${DOMAIN}`)
+    router9:
+      entryPoints:
+        - web
+      service: pve
+      rule: Host(`pve.${DOMAIN}`)
 
   services:
     sonarr:
@@ -90,5 +95,10 @@ http:
     pihole:
       loadBalancer:
         servers:
-          - url: http://${PRIMARY_IP}:81
+          - url: http://${NETWORK_IP}:81
+        passHostHeader: false
+    pve:
+      loadBalancer:
+        servers:
+          - url: http://${PVE_IP}:8006
         passHostHeader: false

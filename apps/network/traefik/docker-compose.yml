@@ -2,11 +2,14 @@ services:
   traefik:
     image: traefik:latest
     restart: unless-stopped
+    container_name: traefik
     environment:
       - PUID=0
       - PGID=0
       - DOMAIN=${DOMAIN}
       - PRIMARY_IP=${PRIMARY_IP}
+      - PVE_IP=${PVE_IP}
+      - NETWORK_IP=${NETWORK_IP}
     command:
       - "--log.level=DEBUG"
       - "--api.dashboard=true"
