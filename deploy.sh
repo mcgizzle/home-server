@@ -8,13 +8,15 @@ source "${SCRIPT_DIR}/env.sh"
 pull_only=false
 restart=false
 down=false
+update=false
 
 function usage() {
   echo "Usage: ./deploy.sh <primary|network> [options]"
   echo "Options:"
   echo "  -r, --restart  Restart the app"
-  echo "  -p, --pull-only  Pull images only"
-  echo "  -d, --down  Stop the app"
+  echo "  -p, --pull-only  Pull latest image"
+  echo "  -d, --down  Stop the app & remove container"
+  echo "  -u, --update Pull latest image & restart"
 }
 
 function deploy() {
@@ -22,6 +24,8 @@ function deploy() {
   for dir in $deploys; do
     echo "🚀 $dir"
     options=""
+    cmd="docker compose -f $dir/docker-compose.yml"
+
     if [ "$restart" = true ]; then
       options="up --force-recreate -d"
     fi
@@ -30,10 +34,14 @@ function deploy() {
     fi
     if [ "$down" = true ]; then
       options="down"
+    fi
+    if [ "$update" = true ]; then
+      eval "$cmd pull"
+      options="up --force-recreate -d"
     else
       options="up -d"
     fi
-    full_cmd="docker compose -f $dir/docker-compose.yml $options"
+    full_cmd="$cmd $options"
     eval "$full_cmd"
   done
 }
@@ -55,6 +63,7 @@ while [[ "$#" -gt 1 ]]; do
   -r | --restart) restart=true ;;
   -p | --pull-only) pull_only=true ;;
   -d | --down) down=true ;;
+  -u | --update) update=true ;;
   *)
     echo "Unknown option: $2$"
     usage
