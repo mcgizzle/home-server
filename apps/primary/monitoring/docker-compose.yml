@@ -3,7 +3,7 @@ services:
     image: prom/prometheus
     restart: unless-stopped
     container_name: prometheus
-    user: "1000"
+    user: "1001"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
@@ -24,7 +24,7 @@ services:
     image: grafana/grafana
     restart: unless-stopped
     container_name: grafana
-    user: "1000"
+    user: "1001"
     networks:
       - internal
       - internal-net

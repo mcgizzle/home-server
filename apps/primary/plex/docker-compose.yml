@@ -8,8 +8,8 @@ services:
       - /dev/dri:/dev/dri
     environment:
       - PLEX_CLAIM=claim-_iTNsgq24TywaTzPFhBp
-      - PUID=0
-      - PGID=0
+      - PUID=1001
+      - PGID=1001
       - VERSION=docker
     volumes:
       - "$DOCKER_VOLUME_PATH/plex/config:/config"
