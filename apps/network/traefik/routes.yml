@@ -51,7 +51,6 @@ http:
       entryPoints:
         - web
       service: pve
-      tls: {}
       rule: Host(`pve.${DOMAIN}`)
     router10:
         entryPoints:
