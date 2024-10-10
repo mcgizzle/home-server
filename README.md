@@ -1,16 +1,46 @@
 # home-server
 
-The repo is split into `apps` and `infra` directories. The `apps` directory contains all the applications that run on the server. The `infra` directory contains all the infrastructure code that provisions the server.
+## Overview 🌎
 
-Within `apps`, there are sets of services for two hosts:
-1. `primary` - The primary host that runs most services (e.g. plex, *arr, etc.)
-2. `network` - The network host that runs services that are critical for the server to function. (e.g. DNS, P2P VPN, Reverse Proxy, etc.)
+This repo contains the code that provisions and manages my home server. The server is a Proxmox host that runs a number of LXC containers.
 
-## Deploy
+The LXC containers run Debian 12, provisioned with Ansible.
+
+Apps are run from Docker containers within the LXC containers.
+
+## Host 
+
+Proxmox host is not setup nicely for development. Usually I just ssh or use the web interface.
+
+## LXCs ⛴️
+
+### Primary 📟
+
+Runs most of my services including all media services.
+
+### Network 🛜
+
+DNS, point-to-point VPN, and reverse proxy.
+
+## Deploy 🚀
 
 ```shell
-./deploy.sh <primary|network> [--pull-only] [--restart]
+./deploy.sh <primary|network> [--pull-only] [--restart] [--update]
 ```
+
+`--update` will pull the latest Docker images.
+
+
+## Development 🧑‍💻
+
+All code is managed in git.
+
+The servers filesystems are mounted using a 'Deployment' backed by SFTP. 
+
+The `.idea` directory is purposely not ignored to make this repeatable. 
+
+SSHing is easy with IntelliJ's terminal.
+
 
 ## TODO
 - [ ]  Sort out users/groups
