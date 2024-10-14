@@ -42,6 +42,14 @@ The `.idea` directory is purposely not ignored to make this repeatable.
 SSHing is easy with IntelliJ's terminal.
 
 
+### Ansible 🤖
+
+Ansible is used to provision the LXC containers.
+
+### Docs 📚
+
+* [Hardware transcoding](./docs/hardware-transcoding.md)
+
 ## TODO
 - [ ]  Sort out users/groups
 - [x]  Add ssh keys to 1pass 
