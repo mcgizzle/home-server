@@ -5,11 +5,11 @@ services:
     image: lscr.io/linuxserver/plex:latest
     network_mode: host
     devices:
-      - /dev/dri:/dev/dri
+      - /dev/dri/:/dev/dri/
     environment:
       - PLEX_CLAIM=claim-_iTNsgq24TywaTzPFhBp
-      - PUID=1001
-      - PGID=1001
+      - PUID=0
+      - PGID=0
       - VERSION=docker
     volumes:
       - "$DOCKER_VOLUME_PATH/plex/config:/config"
