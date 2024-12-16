@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="main.css">
+    <title>Rant Scores</title>
+</head>
+<body>
+<div class="flex items-center justify-center h-screen">
+    <div class="overflow-x-auto">
+        <table class="table">
+
+        <thead>
+            <tr>
+                <th>Home</th>
+                <th>Away</th>
+                <th>Rant Score</th>
+                <th>Spoiler-Free Explanation</th>
+                <th>Explanation</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range $index, $element := .}}
+            <tr>
+                <td>{{$element.Game.Away.Name}}</td>
+                <td>{{$element.Game.Home.Name}}</td>
+                <td>{{$element.Rant.Score}}</td>
+                <td><button class="btn-link" onclick="show('explanation',{{$index}})">ℹ️</button>
+                    <dialog id="explanation_{{$index}}" class="modal">
+                    <div class="modal-box">
+                        <h3 class="text-lg font-bold">What happened?</h3>
+                        <p class="py-4">{{.Rant.SpoilerFree}}</p>
+                        <div class="modal-action">
+                            <form method="dialog">
+                                <!-- if there is a button in form, it will close the modal -->
+                                <button class="btn">Close</button>
+                            </form>
+                        </div>
+                    </div>
+                </dialog>
+                </td>
+                <td><button class="btn-link" onclick="show('spoiler',{{$index}})">⚠️</button>
+                    <dialog id="spoiler_{{$index}}" class="modal">
+                        <div class="modal-box">
+                            <h3 class="text-lg font-bold">What happened?</h3>
+                            <p class="py-4">{{.Rant.Explanation}}</p>
+                            <div class="modal-action">
+                                <form method="dialog">
+                                    <button class="btn">Close</button>
+                                </form>
+                            </div>
+                        </div>
+                    </dialog>
+                </td>
+            </tr>
+
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+<script>
+    function show(prefix, index) {
+        document.getElementById(prefix + '_' + index).showModal();
+    }
+</script>
+</html>

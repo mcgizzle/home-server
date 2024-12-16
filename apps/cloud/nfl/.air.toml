@@ -1,0 +1,8 @@
+# Include specific files or directories
+include = [
+    "*.go",
+    "static/*"
+]
+
+# Adjust the reload delay (in milliseconds)
+delay = 1000
