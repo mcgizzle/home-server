@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+var ApiKey string
+
 type EventRef struct {
 	Ref string `json:"$ref"`
 }
@@ -259,15 +261,7 @@ type DetailsItem struct {
 
 func getDetails(ref string, page int) DetailsResponse {
 
-	log.Printf("Requesting %s", ref)
-
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s&page=%d", ref, page), nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	log.Printf("Requesting %s", req.URL.String())
 
 	if err != nil {
 		panic(err)
@@ -280,8 +274,6 @@ func getDetails(ref string, page int) DetailsResponse {
 	defer response.Body.Close()
 
 	var res DetailsResponse
-
-	// print body as string
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
@@ -303,17 +295,11 @@ func getDetailsPaged(ref string) []DetailsResponse {
 	var res DetailsResponse
 	res = getDetails(ref, 1)
 	details = append(details, res)
-	log.Printf("Got page 1 of %d", res.PageCount)
 	for i := 2; i <= res.PageCount; i++ {
 		res := getDetails(ref, i)
-		log.Printf("Got page %d of %d", i, res.PageCount)
 		details = append(details, res)
 	}
-
-	log.Printf("Got %d pages", len(details))
-
 	return details
-
 }
 
 func getTeamAndScore(response EventResponse) *Game {
@@ -374,14 +360,13 @@ const prompt = "Analyze the provided NFL game play-by-play data and generate a '
 	"Consider the overall 'wow' factor of the game. Were there memorable moments or plays that would be discussed for years to come? Be a tough critic - only truly exceptional games should score above 90!" +
 	"IMPORTANT: Return as JSON with shape : { 'score' : 0, 'explanation' : 'Your explanation here, may include game spoilers.', 'spoiler_free_explanation' : 'Your spoiler-free explanation here, do not include any details about the outcome of the game' }"
 
-// Define a struct to match the JSON structure
-type RantScore struct {
+type Rating struct {
 	Score       int    `json:"score"`
 	Explanation string `json:"explanation"`
 	SpoilerFree string `json:"spoiler_free_explanation"`
 }
 
-func aiRequest(game Game) RantScore {
+func aiRequest(game Game) Rating {
 	client := resty.New()
 	// {
 	//     "model": "gpt-4o-mini",
@@ -414,13 +399,10 @@ func aiRequest(game Game) RantScore {
 		},
 	}
 
-	post, err := client.R().SetAuthToken("sk-b0ple-Tx9ZeiMevWL_KnRh48MzC6wn_iTrRGR8UBQrT3BlbkFJvwPPYlbytt9UHYVAWmwmPuvbYgtYQ2ZAU08CeMqscA").SetBody(body).Post("https://api.openai.com/v1/chat/completions")
+	post, err := client.R().SetAuthToken(ApiKey).SetBody(body).Post("https://api.openai.com/v1/chat/completions")
 	if err != nil {
-		return RantScore{}
+		return Rating{}
 	}
-
-	//   "content": "```json\n{\n  \"rant_score\": 55,\n  \"explanation\": \"This game had a close score with the Eagles winning by 8 points, which is a positive factor. However, the overall excitement was dampened by a lack of significant big plays, as there were no passes over 50 yards or runs over 30 yards. The game featured only 5 total touchdowns, and while there were some moments of quarterback play, neither quarterback had a standout performance with high completion percentages. There were limited penalties, which is good, but the game lacked the dramatic momentum shifts or lead changes that typically elevate the excitement level. The final moments were somewhat tense, but overall, the game did not have the 'wow' factor or memorable moments that would make it a classic. Therefore, it scores a mediocre 55.\"\n}\n```",
-	// parse the JSON response
 
 	type OuterResponse struct {
 		Choices []struct {
@@ -430,9 +412,7 @@ func aiRequest(game Game) RantScore {
 		} `json:"choices"`
 	}
 
-	// Extract the JSON string from the response
 	var outerJsonResponse OuterResponse
-	// Unmarshal the JSON string into the struct
 	err = json.Unmarshal([]byte(post.String()), &outerJsonResponse)
 	if err != nil {
 		fmt.Println("Error unmarshaling JSON:", err)
@@ -446,7 +426,7 @@ func aiRequest(game Game) RantScore {
 	jsonString = strings.ReplaceAll(jsonString, "\\n", "")
 	jsonString = strings.ReplaceAll(jsonString, "\\\"", "\"")
 
-	var response RantScore
+	var response Rating
 
 	err = json.Unmarshal([]byte(jsonString), &response)
 	if err != nil {
@@ -456,33 +436,33 @@ func aiRequest(game Game) RantScore {
 	}
 
 	log.Printf("Response: %s", response.SpoilerFree)
-	log.Printf("Rant Score: %d", response.Score)
+	log.Printf("Rating Score: %d", response.Score)
 
 	return response
 
 }
 
 type Week struct {
-	Number int     `json:"number"`
-	Rants  []Ranty `json:"rants"`
+	Number  int         `json:"number"`
+	Ratings []RatedGame `json:"rants"`
 }
 
-type Ranty struct {
-	Rant RantScore `json:"rant"`
-	Game Game      `json:"game"`
+type RatedGame struct {
+	Rating Rating `json:"rating"`
+	Game   Game   `json:"game"`
 }
 
 func getResults() {
+
+	key := os.Getenv("OPENAI_API_KEY")
+	if key == "" {
+		panic("OPENAI_API_KEY not set")
+	}
+	ApiKey = key
+
 	eventRefs := listEvents()
 
-	println("eventRefs", eventRefs[0].Ref)
-
-	// reverse the order of the events
-	for i, j := 0, len(eventRefs)-1; i < j; i, j = i+1, j-1 {
-		eventRefs[i], eventRefs[j] = eventRefs[j], eventRefs[i]
-	}
-
-	var rantys []Ranty
+	var ratedGames []RatedGame
 
 	for _, eventRef := range eventRefs {
 		event := getEvent(eventRef.Ref)
@@ -498,25 +478,46 @@ func getResults() {
 
 		rantScore := aiRequest(game)
 
-		ranty := Ranty{
-			Rant: rantScore,
-			Game: game,
+		rating := RatedGame{
+			Rating: rantScore,
+			Game:   game,
 		}
 
-		rantys = append(rantys, ranty)
+		ratedGames = append(ratedGames, rating)
 
 	}
 
-	rantyJson, err := json.Marshal(rantys)
+	rawJson, err := json.Marshal(ratedGames)
 	if err != nil {
 		panic(err)
 	}
-	os.WriteFile("results/output.json", rantyJson, 0644)
+
+	err = os.WriteFile("results/output.json", rawJson, 0644)
+	if err != nil {
+		panic(err)
+
+	}
+}
+
+func sortRatings(ratings []RatedGame) []RatedGame {
+	for i := 0; i < len(ratings); i++ {
+		for j := i + 1; j < len(ratings); j++ {
+			if ratings[i].Rating.Score < ratings[j].Rating.Score {
+				ratings[i], ratings[j] = ratings[j], ratings[i]
+			}
+		}
+	}
+	return ratings
 }
 
 func main() {
 
 	tmpl := template.Must(template.ParseFiles("static/template.html"))
+
+	http.Handle("/run", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		getResults()
+		w.WriteHeader(http.StatusOK)
+	}))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		f, err := os.Open("results/output.json")
@@ -524,23 +525,16 @@ func main() {
 			panic(err)
 		}
 
-		var rants []Ranty
+		var ratings []RatedGame
 		decoder := json.NewDecoder(f)
-		err = decoder.Decode(&rants)
+		err = decoder.Decode(&ratings)
 		if err != nil {
 			panic(err)
 		}
 
-		// sort the rants by score
-		for i := 0; i < len(rants); i++ {
-			for j := i + 1; j < len(rants); j++ {
-				if rants[i].Rant.Score < rants[j].Rant.Score {
-					rants[i], rants[j] = rants[j], rants[i]
-				}
-			}
-		}
+		ratings = sortRatings(ratings)
 
-		err = tmpl.Execute(w, rants)
+		err = tmpl.Execute(w, ratings)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}

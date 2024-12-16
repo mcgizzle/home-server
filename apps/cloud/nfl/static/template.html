@@ -1,14 +1,15 @@
 <!doctype html>
-<html>
+<html data-theme="black">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="main.css">
-    <title>Rant Scores</title>
+    <title>Ratings</title>
 </head>
 <body>
-<div class="flex items-center justify-center h-screen">
+<div class="flex flex-col gap-12 items-center justify-center h-screen">
+    <h1>NFL Ratings</h1>
     <div class="overflow-x-auto">
         <table class="table">
 
@@ -16,9 +17,9 @@
             <tr>
                 <th>Home</th>
                 <th>Away</th>
-                <th>Rant Score</th>
-                <th>Spoiler-Free Explanation</th>
-                <th>Explanation</th>
+                <th>Rating</th>
+                <th>Why</th>
+                <th>Explanation (Spoilers!)</th>
             </tr>
             </thead>
             <tbody>
@@ -26,12 +27,12 @@
             <tr>
                 <td>{{$element.Game.Away.Name}}</td>
                 <td>{{$element.Game.Home.Name}}</td>
-                <td>{{$element.Rant.Score}}</td>
-                <td><button class="btn-link" onclick="show('explanation',{{$index}})">ℹ️</button>
+                <td>{{$element.Rating.Score}}</td>
+                <td><button class="btn-link" onclick="modalId('explanation',{{$index}})">ℹ️</button>
                     <dialog id="explanation_{{$index}}" class="modal">
                     <div class="modal-box">
                         <h3 class="text-lg font-bold">What happened?</h3>
-                        <p class="py-4">{{.Rant.SpoilerFree}}</p>
+                        <p class="py-4">{{.Rating.SpoilerFree}}</p>
                         <div class="modal-action">
                             <form method="dialog">
                                 <!-- if there is a button in form, it will close the modal -->
@@ -41,11 +42,11 @@
                     </div>
                 </dialog>
                 </td>
-                <td><button class="btn-link" onclick="show('spoiler',{{$index}})">⚠️</button>
+                <td><button class="btn-link" onclick="modalId('spoiler',{{$index}})">⚠️</button>
                     <dialog id="spoiler_{{$index}}" class="modal">
                         <div class="modal-box">
                             <h3 class="text-lg font-bold">What happened?</h3>
-                            <p class="py-4">{{.Rant.Explanation}}</p>
+                            <p class="py-4">{{.Rating.Explanation}}</p>
                             <div class="modal-action">
                                 <form method="dialog">
                                     <button class="btn">Close</button>
@@ -63,7 +64,7 @@
 </div>
 </body>
 <script>
-    function show(prefix, index) {
+    function modalId(prefix, index) {
         document.getElementById(prefix + '_' + index).showModal();
     }
 </script>
