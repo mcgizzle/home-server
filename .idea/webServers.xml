@@ -3,14 +3,14 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="5d72121e-4705-40f2-847d-978b6e8f8d41" name="network">
-        <fileTransfer rootFolder="/root" accessType="SFTP" host="192.168.0.200" port="22" sshConfigId="c47453df-1441-4e1d-b1b1-6cda4f5ef6a3" sshConfig="network" keyPair="true">
+        <fileTransfer rootFolder="/root" accessType="SFTP" host="192.168.1.97" port="22" sshConfigId="c47453df-1441-4e1d-b1b1-6cda4f5ef6a3" sshConfig="network" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
         </fileTransfer>
       </webServer>
       <webServer id="fe4dc35a-d102-41d2-9355-1f0993d06290" name="primary">
-        <fileTransfer rootFolder="/root" accessType="SFTP" host="192.168.0.100" port="22" sshConfigId="c6e19c90-137f-4bf1-bd82-7a54feab05e7" sshConfig="primary" keyPair="true">
+        <fileTransfer rootFolder="/root" accessType="SFTP" host="192.168.1.99" port="22" sshConfigId="c6e19c90-137f-4bf1-bd82-7a54feab05e7" sshConfig="primary" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
