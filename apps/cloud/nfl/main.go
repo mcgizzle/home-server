@@ -17,6 +17,7 @@ import (
 )
 
 var ApiKey string
+var DB_PATH = "data/results.db"
 
 type EventRef struct {
 	Ref string `json:"$ref"`
@@ -92,6 +93,7 @@ func listSpecificEvents(season string, week string) SpecificEvents {
 }
 
 type EventResponse struct {
+	Id           string         `json:"id"`
 	Competitions []Competitions `json:"competitions"`
 }
 
@@ -506,20 +508,21 @@ func produceRating(game Game) Rating {
 }
 
 type Result struct {
-	Id     int    `json:"id"`
-	Season string `json:"season"`
-	Week   string `json:"week"`
-	Rating Rating `json:"rating"`
-	Game   Game   `json:"game"`
+	Id      int    `json:"id"`
+	EventId string `json:"event_id"`
+	Season  string `json:"season"`
+	Week    string `json:"week"`
+	Rating  Rating `json:"rating"`
+	Game    Game   `json:"game"`
 }
 
 func initDb() *sql.DB {
-	db, err := sql.Open("sqlite3", "./results.db")
+	db, err := sql.Open("sqlite3", DB_PATH)
 	if err != nil {
 		log.Fatal(err)
 	}
 	sqlStmt := `
-	create table if not exists results (id integer not null primary key, week integer, season integer, rating integer, explanation text, spoiler_free_explanation text, game text);
+	create table if not exists results (id integer not null primary key, event_id integer, week integer, season integer, rating integer, explanation text, spoiler_free_explanation text, game text);
 	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
@@ -531,7 +534,7 @@ func initDb() *sql.DB {
 
 func saveResults(db *sql.DB, results []Result) {
 
-	stmt, err := db.Prepare("insert into results(season, week, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("insert into results(event_id, season, week, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -553,7 +556,12 @@ func saveResults(db *sql.DB, results []Result) {
 			log.Fatal(err)
 		}
 
-		_, err = stmt.Exec(seasonAsInt, weekAsInt, result.Rating.Score, result.Rating.Explanation, result.Rating.SpoilerFree, string(gameJson))
+		eventIdAsInt, err := strconv.Atoi(result.EventId)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, err = stmt.Exec(eventIdAsInt, seasonAsInt, weekAsInt, result.Rating.Score, result.Rating.Explanation, result.Rating.SpoilerFree, string(gameJson))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -562,7 +570,7 @@ func saveResults(db *sql.DB, results []Result) {
 }
 
 func loadResults(db *sql.DB) []Result {
-	rows, err := db.Query("select id, season, week, rating, explanation, spoiler_free_explanation, game from results order by season desc, week desc, rating desc")
+	rows, err := db.Query("select id, event_id, season, week, rating, explanation, spoiler_free_explanation, game from results order by season desc, week desc, rating desc")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -578,7 +586,7 @@ func loadResults(db *sql.DB) []Result {
 	for rows.Next() {
 		var result Result
 		var gameJson string
-		err = rows.Scan(&result.Id, &result.Season, &result.Week, &result.Rating.Score, &result.Rating.Explanation, &result.Rating.SpoilerFree, &gameJson)
+		err = rows.Scan(&result.Id, &result.EventId, &result.Season, &result.Week, &result.Rating.Score, &result.Rating.Explanation, &result.Rating.SpoilerFree, &gameJson)
 
 		if err != nil {
 			log.Fatal(err)
@@ -634,10 +642,11 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 		rantScore := produceRating(game)
 
 		result := Result{
-			Season: season,
-			Week:   week,
-			Rating: rantScore,
-			Game:   game,
+			EventId: event.Id,
+			Season:  season,
+			Week:    week,
+			Rating:  rantScore,
+			Game:    game,
 		}
 		results = append(results, result)
 
@@ -667,10 +676,11 @@ func fetchResults(season string, week string) []Result {
 		rantScore := produceRating(game)
 
 		result := Result{
-			Season: season,
-			Week:   week,
-			Rating: rantScore,
-			Game:   game,
+			EventId: eventId.Id,
+			Season:  season,
+			Week:    week,
+			Rating:  rantScore,
+			Game:    game,
 		}
 		results = append(results, result)
 	}
