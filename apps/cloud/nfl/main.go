@@ -747,7 +747,6 @@ func main() {
 		var groupedResults []ResultsByWeek
 
 		for _, result := range results {
-			log.Printf("Result: %s - %s", result.Season, result.Week)
 			var found bool
 			for i := range groupedResults {
 				if groupedResults[i].Season == result.Season && groupedResults[i].Week == result.Week {
