@@ -135,7 +135,12 @@ func getEvent(ref string) EventResponse {
 	if err != nil {
 		panic(err)
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Fatalf("Error closing response body: %s", err)
+		}
+	}(response.Body)
 
 	var res EventResponse
 	decoder := json.NewDecoder(response.Body)
@@ -206,7 +211,14 @@ func getScore(ref string) ScoreResponse {
 	return res
 }
 
-func getTeam(ref string) string {
+type TeamResponse struct {
+	DisplayName string `json:"displayName"`
+	Logos       []struct {
+		Href string `json:"href"`
+	} `json:"logos"`
+}
+
+func getTeam(ref string) TeamResponse {
 
 	req, err := http.NewRequest("GET", ref, nil)
 
@@ -220,9 +232,7 @@ func getTeam(ref string) string {
 	}
 	defer response.Body.Close()
 
-	var res struct {
-		DisplayName string `json:"displayName"`
-	}
+	var res TeamResponse
 
 	decoder := json.NewDecoder(response.Body)
 	err = decoder.Decode(&res)
@@ -230,7 +240,7 @@ func getTeam(ref string) string {
 		panic(err)
 	}
 
-	return res.DisplayName
+	return res
 }
 
 type RecordResponse struct {
@@ -269,6 +279,7 @@ type TeamResult struct {
 	Name   string  `json:"name"`
 	Score  float64 `json:"score"`
 	Record string  `json:"record"`
+	Logo   *string `json:"logo"`
 }
 
 type Game struct {
@@ -279,35 +290,6 @@ type Game struct {
 
 type StatsRef struct {
 	Ref string `json:"$ref"`
-}
-type StatsResponse struct {
-	Splits json.RawMessage `json:"splits"`
-}
-
-func getStats(ref string) StatsResponse {
-
-	req, err := http.NewRequest("GET", ref, nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer response.Body.Close()
-
-	var res StatsResponse
-
-	decoder := json.NewDecoder(response.Body)
-	err = decoder.Decode(&res)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return res
 }
 
 type DetailsRef struct {
@@ -384,7 +366,8 @@ func getTeamAndScore(response EventResponse) *Game {
 		record := getRecord(competitor.Record.Ref)
 
 		teamResult := TeamResult{
-			Name:   team,
+			Name:   team.DisplayName,
+			Logo:   &team.Logos[0].Href,
 			Score:  score.Value,
 			Record: record.Items[0].DisplayValue,
 		}
@@ -782,7 +765,7 @@ func main() {
 	})
 	http.HandleFunc("/main.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, "static/main.css") // Assuming "main.css" is in the "static" directory
+		http.ServeFile(w, r, "static/main.css")
 	})
 
 	log.Printf("Starting server on :8089")

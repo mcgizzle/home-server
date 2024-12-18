@@ -1,0 +1,17 @@
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token eyJhIjoiNTY3Y2Q1ZmVkYjExZDZlOTJhZmI0NTRlNmUwMjA2ZTgiLCJ0IjoiYjBkM2VkNTItYjdkOS00MWQ2LTkyMzgtYTljMzE0NzU4YmFmIiwicyI6Ik1EVmpaR0ZpTmpZdE1tTmxOQzAwWXpNMkxXRm1OVEF0Wm1VNE1EVTROekZsTVdZNSJ9
+    restart: unless-stopped
+
+  app:
+    image: nfl-ratings
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - 8089:8089
+    container_name: nfl-ratings
+    restart: unless-stopped

@@ -8,62 +8,63 @@
     <title>Ratings</title>
 </head>
 <body>
-<div class="flex flex-col gap-12 items-center justify-center h-screen">
-    <h1>NFL Ratings</h1>
-    <div class="overflow-x-auto">
+<div class="flex flex-col gap-12 items-center justify-center">
+    <h1 class="text-3xl font-bold">NFL Ratings</h1>
+    <div class="flex flex-col gap-12 items-center justify-center">
         {{ range $element := . }}
-        <h2 class="text-center">{{ $element.Season }} - {{ $element.Week }}</h2>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Home</th>
-                <th>Away</th>
-                <th>Rating</th>
-                <th>Explanation</th>
-                <th>Explanation (Spoilers!)</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{ range $index, $element := $element.Results }}
-            <tr>
-                <td>{{ $element.Game.Away.Name }}</td>
-                <td>{{ $element.Game.Home.Name }}</td>
-                <td class="text-center">{{ $element.Rating.Score }}</td>
-                <td class="text-center">
-                    <button class="btn-link" onclick="modalId('explanation_{{ $element.Id }}')">ℹ️</button>
-                    <dialog id="explanation_{{ $element.Id }}" class="modal">
+        <div class="badge badge-primary gap-2 text-xl p-4 rounded-lg">Week: {{ $element.Week }} - Season: {{
+            $element.Season }}
+        </div>
+
+        {{ range $index, $element := $element.Results }}
+        <div class="flex items-center card bg-base-100 w-96 shadow-lg">
+            <div class="flex flex-row items-center justify-between">
+                <figure>
+                    <img src="{{$element.Game.Away.Logo}}" alt="Away" width="150" height="150"/>
+                </figure>
+                <figure>
+                    <img src="{{$element.Game.Home.Logo}}" alt="Home" width="150" height="150"/>
+                </figure>
+            </div>
+            <div class="card-body">
+                <h2 class="card-title text-sm">{{$element.Game.Away.Name}} @ {{$element.Game.Home.Name}} </h2>
+                <div class="stat place-items-center">
+                    <div class="stat-title">Rating</div>
+                    <div class="stat-value">{{$element.Rating.Score}}</div>
+                </div>
+                <div class="flex flex-row card-actions justify-end">
+                    <button class="btn" onclick="modalId('spoiler_{{ $element.Id }}')">ℹ️</button>
+                    <dialog id="spoiler_{{ $element.Id }}" class="modal">
                         <div class="modal-box">
                             <h3 class="text-lg font-bold">What happened?</h3>
                             <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
                             <div class="modal-action">
                                 <form method="dialog">
-                                    <button class="btn">Close</button>
+                                    <button class="btn">❌</button>
                                 </form>
                             </div>
                         </div>
                     </dialog>
-                </td>
-                <td class="text-center">
-                    <button class="btn-link" onclick="modalId('spoiler_{{ $element.Id }}')">⚠️</button>
-                    <dialog id="spoiler_{{ $element.Id }}" class="modal">
+                    <button class="btn" onclick="modalId('explanation_{{ $element.Id }}')">⚠️</button>
+                    <dialog id="explanation_{{ $element.Id }}" class="modal">
                         <div class="modal-box">
                             <h3 class="text-lg font-bold">What happened?</h3>
                             <p class="py-4">{{ $element.Rating.Explanation }}</p>
                             <div class="modal-action">
                                 <form method="dialog">
-                                    <button class="btn">Close</button>
+                                    <button class="btn">❌</button>
                                 </form>
                             </div>
                         </div>
                     </dialog>
-                </td>
-            </tr>
-            {{ end }}
-            </tbody>
-        </table>
+                </div>
+            </div>
+        </div>
         {{ end }}
     </div>
+    {{ end }}
 </div>
+
 </body>
 <script>
     function modalId(id) {
