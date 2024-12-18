@@ -1,15 +1,19 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
+	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 var ApiKey string
@@ -18,7 +22,7 @@ type EventRef struct {
 	Ref string `json:"$ref"`
 }
 
-type EventsResponse struct {
+type LatestEvents struct {
 	Items []EventRef `json:"items"`
 	Meta  struct {
 		Parameters struct {
@@ -28,7 +32,8 @@ type EventsResponse struct {
 	} `json:"$meta"`
 }
 
-func listEvents() []EventRef {
+// Fetches data for the current week's games
+func listLatestEvents() LatestEvents {
 	// make GET request to https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events
 
 	req, err := http.NewRequest("GET", "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events", nil)
@@ -43,14 +48,47 @@ func listEvents() []EventRef {
 	}
 	defer response.Body.Close()
 
-	var res EventsResponse
+	var res LatestEvents
 	decoder := json.NewDecoder(response.Body)
 	err = decoder.Decode(&res)
 	if err != nil {
 		panic(err)
 	}
 
-	return res.Items
+	return res
+}
+
+type EventId struct {
+	Id string `json:"id"`
+}
+
+type SpecificEvents struct {
+	Events []EventId `json:"events"`
+}
+
+func listSpecificEvents(season string, week string) SpecificEvents {
+	// https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=2&dates=2024
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=%s&dates=%s", week, season), nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer response.Body.Close()
+
+	var res SpecificEvents
+	decoder := json.NewDecoder(response.Body)
+	err = decoder.Decode(&res)
+	if err != nil {
+		panic(err)
+	}
+
+	return res
 }
 
 type EventResponse struct {
@@ -108,6 +146,31 @@ func getEvent(ref string) EventResponse {
 	return res
 }
 
+func getEventById(id string) EventResponse {
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/%s", id), nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer response.Body.Close()
+
+	var res EventResponse
+	decoder := json.NewDecoder(response.Body)
+
+	err = decoder.Decode(&res)
+	if err != nil {
+		panic(err)
+	}
+
+	return res
+}
+
 type ScoreResponse struct {
 	Value float64 `json:"value"`
 }
@@ -124,7 +187,12 @@ func getScore(ref string) ScoreResponse {
 	if err != nil {
 		panic(err)
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(response.Body)
 
 	var res ScoreResponse
 	decoder := json.NewDecoder(response.Body)
@@ -366,13 +434,8 @@ type Rating struct {
 	SpoilerFree string `json:"spoiler_free_explanation"`
 }
 
-func aiRequest(game Game) Rating {
+func produceRating(game Game) Rating {
 	client := resty.New()
-	// {
-	//     "model": "gpt-4o-mini",
-	//     "messages": [{"role": "user", "content": "Say this is a test!"}],
-	//     "temperature": 0.7
-	//   }'
 
 	type Body struct {
 		Model       string  `json:"model"`
@@ -442,99 +505,268 @@ func aiRequest(game Game) Rating {
 
 }
 
-type Week struct {
-	Number  int         `json:"number"`
-	Ratings []RatedGame `json:"rants"`
-}
-
-type RatedGame struct {
+type Result struct {
+	Id     int    `json:"id"`
+	Season string `json:"season"`
+	Week   string `json:"week"`
 	Rating Rating `json:"rating"`
 	Game   Game   `json:"game"`
 }
 
-func getResults() {
-
-	key := os.Getenv("OPENAI_API_KEY")
-	if key == "" {
-		panic("OPENAI_API_KEY not set")
+func initDb() *sql.DB {
+	db, err := sql.Open("sqlite3", "./results.db")
+	if err != nil {
+		log.Fatal(err)
 	}
-	ApiKey = key
+	sqlStmt := `
+	create table if not exists results (id integer not null primary key, week integer, season integer, rating integer, explanation text, spoiler_free_explanation text, game text);
+	`
+	_, err = db.Exec(sqlStmt)
+	if err != nil {
+		log.Fatalf("%q: %s\n", err, sqlStmt)
+	}
 
-	eventRefs := listEvents()
+	return db
+}
 
-	var ratedGames []RatedGame
+func saveResults(db *sql.DB, results []Result) {
 
-	for _, eventRef := range eventRefs {
+	stmt, err := db.Prepare("insert into results(season, week, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	for _, result := range results {
+
+		gameJson, err := json.Marshal(result.Game)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		weekAsInt, err := strconv.Atoi(result.Week)
+		if err != nil {
+			log.Fatal(err)
+		}
+		seasonAsInt, err := strconv.Atoi(result.Season)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, err = stmt.Exec(seasonAsInt, weekAsInt, result.Rating.Score, result.Rating.Explanation, result.Rating.SpoilerFree, string(gameJson))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	log.Printf("Saved %d results", len(results))
+}
+
+func loadResults(db *sql.DB) []Result {
+	rows, err := db.Query("select id, season, week, rating, explanation, spoiler_free_explanation, game from results order by season desc, week desc, rating desc")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(rows)
+
+	var results []Result
+
+	for rows.Next() {
+		var result Result
+		var gameJson string
+		err = rows.Scan(&result.Id, &result.Season, &result.Week, &result.Rating.Score, &result.Rating.Explanation, &result.Rating.SpoilerFree, &gameJson)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal([]byte(gameJson), &result.Game)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		results = append(results, result)
+	}
+
+	return results
+}
+
+func fetchResultsForThisWeek(existingResults []Result) []Result {
+
+	eventRefs := listLatestEvents()
+
+	season := eventRefs.Meta.Parameters.Season[0]
+	week := eventRefs.Meta.Parameters.Week[0]
+
+	// Filter out events that have already been processed
+	var filteredEventRefs []EventRef
+	for _, eventRef := range eventRefs.Items {
+		shouldInclude := true
+		for _, result := range existingResults {
+			if result.Week == week && result.Season == season {
+				shouldInclude = false
+				log.Printf("Event already processed: %s - %s", season, week)
+				break
+			}
+		}
+		if shouldInclude {
+			filteredEventRefs = append(filteredEventRefs, eventRef)
+		}
+	}
+
+	var results []Result
+	for _, eventRef := range filteredEventRefs {
+		log.Printf("Processing event: %s - %s", season, week)
 		event := getEvent(eventRef.Ref)
-
-		println("event", event.Competitions[0].Competitors[0].Team.Ref)
 		maybeGame := getTeamAndScore(event)
 
 		// Game has not been played yet
 		if maybeGame == nil {
+			log.Printf("Game has not been played yet, skipping")
 			continue
 		}
 		game := *maybeGame
 
-		rantScore := aiRequest(game)
+		rantScore := produceRating(game)
 
-		rating := RatedGame{
+		result := Result{
+			Season: season,
+			Week:   week,
 			Rating: rantScore,
 			Game:   game,
 		}
-
-		ratedGames = append(ratedGames, rating)
+		results = append(results, result)
 
 	}
 
-	rawJson, err := json.Marshal(ratedGames)
-	if err != nil {
-		panic(err)
+	log.Printf("Produced %d results", len(results))
+
+	return results
+
+}
+
+func fetchResults(season string, week string) []Result {
+
+	specificEvents := listSpecificEvents(season, week)
+
+	var results []Result
+	for _, eventId := range specificEvents.Events {
+		log.Printf("Processing event: %s - %s", season, week)
+		event := getEventById(eventId.Id)
+		maybeGame := getTeamAndScore(event)
+		if maybeGame == nil {
+			log.Printf("Game has not been played yet, skipping")
+			continue
+		}
+		game := *maybeGame
+
+		rantScore := produceRating(game)
+
+		result := Result{
+			Season: season,
+			Week:   week,
+			Rating: rantScore,
+			Game:   game,
+		}
+		results = append(results, result)
 	}
 
-	err = os.WriteFile("results/output.json", rawJson, 0644)
-	if err != nil {
-		panic(err)
+	log.Printf("Produced %d results", len(results))
 
+	return results
+}
+
+func backgroundLatestEvents(db *sql.DB) {
+	ticker := time.NewTicker(1 * time.Hour)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			log.Println("Checking for new events")
+			results := loadResults(db)
+			newResults := fetchResultsForThisWeek(results)
+			saveResults(db, newResults)
+
+		}
 	}
 }
 
-func sortRatings(ratings []RatedGame) []RatedGame {
-	for i := 0; i < len(ratings); i++ {
-		for j := i + 1; j < len(ratings); j++ {
-			if ratings[i].Rating.Score < ratings[j].Rating.Score {
-				ratings[i], ratings[j] = ratings[j], ratings[i]
-			}
-		}
-	}
-	return ratings
+type ResultsByWeek struct {
+	Season  string
+	Week    string
+	Results []Result
 }
 
 func main() {
 
+	openAIKey := os.Getenv("OPENAI_API_KEY")
+	if openAIKey == "" {
+		log.Fatal("OPENAI_API_KEY not set")
+	}
+
+	ApiKey = openAIKey
+
+	db := initDb()
+
+	go backgroundLatestEvents(db)
+
 	tmpl := template.Must(template.ParseFiles("static/template.html"))
 
 	http.Handle("/run", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		getResults()
+
+		results := loadResults(db)
+		newResults := fetchResultsForThisWeek(results)
+		saveResults(db, newResults)
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	http.Handle("/backfill", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		week := r.URL.Query().Get("week")
+		season := r.URL.Query().Get("season")
+
+		if week == "" || season == "" {
+			http.Error(w, "Missing week or season", http.StatusBadRequest)
+			return
+		}
+
+		results := fetchResults(season, week)
+		saveResults(db, results)
+
 		w.WriteHeader(http.StatusOK)
 	}))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		f, err := os.Open("results/output.json")
-		if err != nil {
-			panic(err)
+		results := loadResults(db)
+		log.Printf("Loaded %d results", len(results))
+
+		var groupedResults []ResultsByWeek
+
+		for _, result := range results {
+			log.Printf("Result: %s - %s", result.Season, result.Week)
+			var found bool
+			for i := range groupedResults {
+				if groupedResults[i].Season == result.Season && groupedResults[i].Week == result.Week {
+					groupedResults[i].Results = append(groupedResults[i].Results, result)
+					found = true
+					break
+				}
+			}
+			if !found {
+				groupedResults = append(groupedResults, ResultsByWeek{
+					Season:  result.Season,
+					Week:    result.Week,
+					Results: []Result{result},
+				})
+			}
 		}
 
-		var ratings []RatedGame
-		decoder := json.NewDecoder(f)
-		err = decoder.Decode(&ratings)
-		if err != nil {
-			panic(err)
-		}
+		err := tmpl.Execute(w, groupedResults)
 
-		ratings = sortRatings(ratings)
-
-		err = tmpl.Execute(w, ratings)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -543,6 +775,8 @@ func main() {
 		w.Header().Set("Content-Type", "text/css")
 		http.ServeFile(w, r, "static/main.css") // Assuming "main.css" is in the "static" directory
 	})
+
+	log.Printf("Starting server on :8089")
 
 	err := http.ListenAndServe(":8089", nil)
 	if err != nil {

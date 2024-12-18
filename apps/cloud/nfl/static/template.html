@@ -11,42 +11,44 @@
 <div class="flex flex-col gap-12 items-center justify-center h-screen">
     <h1>NFL Ratings</h1>
     <div class="overflow-x-auto">
+        {{ range $element := . }}
+        <h2 class="text-center">{{ $element.Season }} - {{ $element.Week }}</h2>
         <table class="table">
-
-        <thead>
+            <thead>
             <tr>
                 <th>Home</th>
                 <th>Away</th>
                 <th>Rating</th>
-                <th>Why</th>
+                <th>Explanation</th>
                 <th>Explanation (Spoilers!)</th>
             </tr>
             </thead>
             <tbody>
-            {{range $index, $element := .}}
+            {{ range $index, $element := $element.Results }}
             <tr>
-                <td>{{$element.Game.Away.Name}}</td>
-                <td>{{$element.Game.Home.Name}}</td>
-                <td>{{$element.Rating.Score}}</td>
-                <td><button class="btn-link" onclick="modalId('explanation',{{$index}})">ℹ️</button>
-                    <dialog id="explanation_{{$index}}" class="modal">
-                    <div class="modal-box">
-                        <h3 class="text-lg font-bold">What happened?</h3>
-                        <p class="py-4">{{.Rating.SpoilerFree}}</p>
-                        <div class="modal-action">
-                            <form method="dialog">
-                                <!-- if there is a button in form, it will close the modal -->
-                                <button class="btn">Close</button>
-                            </form>
-                        </div>
-                    </div>
-                </dialog>
-                </td>
-                <td><button class="btn-link" onclick="modalId('spoiler',{{$index}})">⚠️</button>
-                    <dialog id="spoiler_{{$index}}" class="modal">
+                <td>{{ $element.Game.Away.Name }}</td>
+                <td>{{ $element.Game.Home.Name }}</td>
+                <td class="text-center">{{ $element.Rating.Score }}</td>
+                <td class="text-center">
+                    <button class="btn-link" onclick="modalId('explanation_{{ $element.Id }}')">ℹ️</button>
+                    <dialog id="explanation_{{ $element.Id }}" class="modal">
                         <div class="modal-box">
                             <h3 class="text-lg font-bold">What happened?</h3>
-                            <p class="py-4">{{.Rating.Explanation}}</p>
+                            <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
+                            <div class="modal-action">
+                                <form method="dialog">
+                                    <button class="btn">Close</button>
+                                </form>
+                            </div>
+                        </div>
+                    </dialog>
+                </td>
+                <td class="text-center">
+                    <button class="btn-link" onclick="modalId('spoiler_{{ $element.Id }}')">⚠️</button>
+                    <dialog id="spoiler_{{ $element.Id }}" class="modal">
+                        <div class="modal-box">
+                            <h3 class="text-lg font-bold">What happened?</h3>
+                            <p class="py-4">{{ $element.Rating.Explanation }}</p>
                             <div class="modal-action">
                                 <form method="dialog">
                                     <button class="btn">Close</button>
@@ -56,16 +58,16 @@
                     </dialog>
                 </td>
             </tr>
-
-            {{end}}
+            {{ end }}
             </tbody>
         </table>
+        {{ end }}
     </div>
 </div>
 </body>
 <script>
-    function modalId(prefix, index) {
-        document.getElementById(prefix + '_' + index).showModal();
+    function modalId(id) {
+        document.getElementById(id).showModal();
     }
 </script>
 </html>
