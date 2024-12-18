@@ -14,6 +14,9 @@
           <mappings>
             <mapping deploy="code/home-server" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/data" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>

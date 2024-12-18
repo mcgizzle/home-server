@@ -12,8 +12,7 @@
     <h1 class="text-3xl font-bold">NFL Ratings</h1>
     <div class="flex flex-col gap-12 items-center justify-center">
         {{ range $element := . }}
-        <div class="badge badge-primary gap-2 text-xl p-4 rounded-lg">Week: {{ $element.Week }} - Season: {{
-            $element.Season }}
+        <div class="badge badge-primary gap-2 text-xl p-4 rounded-lg">Week: {{ $element.Week }} - Season: {{ $element.Season }}
         </div>
 
         {{ range $index, $element := $element.Results }}
