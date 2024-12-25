@@ -552,8 +552,14 @@ func saveResults(db *sql.DB, results []Result) {
 	log.Printf("Saved %d results", len(results))
 }
 
-func loadResults(db *sql.DB) []Result {
-	rows, err := db.Query("select id, event_id, season, week, rating, explanation, spoiler_free_explanation, game from results order by season desc, week desc, rating desc")
+func loadResults(db *sql.DB, season string, week string) []Result {
+	if season == "" || week == "" {
+		log.Fatal("Season or week not provided")
+	}
+
+	selectQuery := "select id, event_id, season, week, rating, explanation, spoiler_free_explanation, game from results where season = ? and week = ? order by season desc, week desc, rating desc"
+
+	rows, err := db.Query(selectQuery, season, week)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -586,6 +592,40 @@ func loadResults(db *sql.DB) []Result {
 	return results
 }
 
+func loadSeasonsAndWeeks(db *sql.DB) []Week {
+	selectQuery := "select distinct season, week from results order by season desc, week desc"
+
+	rows, err := db.Query(selectQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(rows)
+
+	var seasonsAndWeeks []Week
+
+	for rows.Next() {
+		var season string
+		var week string
+		err = rows.Scan(&season, &week)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		seasonsAndWeeks = append(seasonsAndWeeks, Week{
+			Season: season,
+			Week:   week,
+		})
+	}
+
+	return seasonsAndWeeks
+}
+
 func fetchResultsForThisWeek(existingResults []Result) []Result {
 
 	eventRefs := listLatestEvents()
@@ -596,9 +636,10 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 	// Filter out events that have already been processed
 	var filteredEventRefs []EventRef
 	for _, eventRef := range eventRefs.Items {
+		event := getEvent(eventRef.Ref)
 		shouldInclude := true
 		for _, result := range existingResults {
-			if result.Week == week && result.Season == season {
+			if result.EventId == event.Id {
 				shouldInclude = false
 				log.Printf("Event already processed: %s - %s", season, week)
 				break
@@ -681,7 +722,8 @@ func backgroundLatestEvents(db *sql.DB) {
 		select {
 		case <-ticker.C:
 			log.Println("Checking for new events")
-			results := loadResults(db)
+			current := listLatestEvents().Meta.Parameters
+			results := loadResults(db, current.Season[0], current.Week[0])
 			newResults := fetchResultsForThisWeek(results)
 			saveResults(db, newResults)
 
@@ -689,10 +731,15 @@ func backgroundLatestEvents(db *sql.DB) {
 	}
 }
 
-type ResultsByWeek struct {
-	Season  string
-	Week    string
+type Week struct {
+	Season string
+	Week   string
+}
+
+type TemplateData struct {
 	Results []Result
+	Weeks   []Week
+	Current Week
 }
 
 func main() {
@@ -712,7 +759,8 @@ func main() {
 
 	http.Handle("/run", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		results := loadResults(db)
+		current := listLatestEvents().Meta.Parameters
+		results := loadResults(db, current.Season[0], current.Week[0])
 		newResults := fetchResultsForThisWeek(results)
 		saveResults(db, newResults)
 		w.WriteHeader(http.StatusOK)
@@ -734,30 +782,42 @@ func main() {
 	}))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		results := loadResults(db)
-		log.Printf("Loaded %d results", len(results))
+		week := r.URL.Query().Get("week")
+		season := r.URL.Query().Get("season")
 
-		var groupedResults []ResultsByWeek
-
-		for _, result := range results {
-			var found bool
-			for i := range groupedResults {
-				if groupedResults[i].Season == result.Season && groupedResults[i].Week == result.Week {
-					groupedResults[i].Results = append(groupedResults[i].Results, result)
-					found = true
-					break
-				}
-			}
-			if !found {
-				groupedResults = append(groupedResults, ResultsByWeek{
-					Season:  result.Season,
-					Week:    result.Week,
-					Results: []Result{result},
-				})
-			}
+		if week != "" && season == "" {
+			http.Error(w, "Missing season", http.StatusBadRequest)
+			return
+		}
+		if week == "" && season != "" {
+			http.Error(w, "Missing week", http.StatusBadRequest)
+			return
 		}
 
-		err := tmpl.Execute(w, groupedResults)
+		current := listLatestEvents().Meta.Parameters
+
+		if week == "" {
+			week = current.Week[0]
+		}
+		if season == "" {
+			season = current.Season[0]
+		}
+
+		results := loadResults(db, season, week)
+		log.Printf("Loaded %d results for season [%s] and week [%s]", len(results), season, week)
+		seasonWeeks := loadSeasonsAndWeeks(db)
+		log.Printf("Loaded %d weeks", len(seasonWeeks))
+
+		data := TemplateData{
+			Results: results,
+			Weeks:   seasonWeeks,
+			Current: Week{
+				Season: season,
+				Week:   week,
+			},
+		}
+
+		err := tmpl.Execute(w, data)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

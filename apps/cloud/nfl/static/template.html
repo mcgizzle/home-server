@@ -10,56 +10,57 @@
 <body>
 <div class="flex flex-col gap-12 items-center justify-center">
     <h1 class="text-3xl font-bold">NFL Ratings</h1>
-    <div class="flex flex-col gap-12 items-center justify-center">
-        {{ range $element := . }}
-        <div class="badge badge-primary gap-2 text-xl p-4 rounded-lg">Week: {{ $element.Week }} - Season: {{ $element.Season }}
+    <div class="dropdown">
+        <div tabindex="0" role="button" class="btn m-1">{{ .Current.Season }} - Week {{ .Current.Week }}</div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+            {{ range $index, $element := .Weeks }}
+            <li><a href="http://localhost:8089?season={{ $element.Season}}&week={{ $element.Week }}">{{ $element.Season }} - Week {{ $element.Week }}</a></li>
+            {{ end }}
+        </ul>
+    </div>
+    {{ range $index, $element := .Results }}
+    <div class="flex items-center card bg-base-100 w-96 shadow-lg">
+        <div class="flex flex-row items-center justify-between">
+            <figure>
+                <img src="{{$element.Game.Away.Logo}}" alt="Away" width="150" height="150"/>
+            </figure>
+            <figure>
+                <img src="{{$element.Game.Home.Logo}}" alt="Home" width="150" height="150"/>
+            </figure>
         </div>
-
-        {{ range $index, $element := $element.Results }}
-        <div class="flex items-center card bg-base-100 w-96 shadow-lg">
-            <div class="flex flex-row items-center justify-between">
-                <figure>
-                    <img src="{{$element.Game.Away.Logo}}" alt="Away" width="150" height="150"/>
-                </figure>
-                <figure>
-                    <img src="{{$element.Game.Home.Logo}}" alt="Home" width="150" height="150"/>
-                </figure>
+        <div class="card-body">
+            <h2 class="card-title text-sm">{{$element.Game.Away.Name}} @ {{$element.Game.Home.Name}} </h2>
+            <div class="stat place-items-center">
+                <div class="stat-title">Rating</div>
+                <div class="stat-value">{{$element.Rating.Score}}</div>
             </div>
-            <div class="card-body">
-                <h2 class="card-title text-sm">{{$element.Game.Away.Name}} @ {{$element.Game.Home.Name}} </h2>
-                <div class="stat place-items-center">
-                    <div class="stat-title">Rating</div>
-                    <div class="stat-value">{{$element.Rating.Score}}</div>
-                </div>
-                <div class="flex flex-row card-actions justify-end">
-                    <button class="btn" onclick="modalId('spoiler_{{ $element.Id }}')">ℹ️</button>
-                    <dialog id="spoiler_{{ $element.Id }}" class="modal">
-                        <div class="modal-box">
-                            <h3 class="text-lg font-bold">What happened?</h3>
-                            <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
-                            <div class="modal-action">
-                                <form method="dialog">
-                                    <button class="btn">❌</button>
-                                </form>
-                            </div>
+            <div class="flex flex-row card-actions justify-end">
+                <button class="btn" onclick="modalId('spoiler_{{ $element.Id }}')">ℹ️</button>
+                <dialog id="spoiler_{{ $element.Id }}" class="modal">
+                    <div class="modal-box">
+                        <h3 class="text-lg font-bold">What happened?</h3>
+                        <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
+                        <div class="modal-action">
+                            <form method="dialog">
+                                <button class="btn">❌</button>
+                            </form>
                         </div>
-                    </dialog>
-                    <button class="btn" onclick="modalId('explanation_{{ $element.Id }}')">⚠️</button>
-                    <dialog id="explanation_{{ $element.Id }}" class="modal">
-                        <div class="modal-box">
-                            <h3 class="text-lg font-bold">What happened?</h3>
-                            <p class="py-4">{{ $element.Rating.Explanation }}</p>
-                            <div class="modal-action">
-                                <form method="dialog">
-                                    <button class="btn">❌</button>
-                                </form>
-                            </div>
+                    </div>
+                </dialog>
+                <button class="btn" onclick="modalId('explanation_{{ $element.Id }}')">⚠️</button>
+                <dialog id="explanation_{{ $element.Id }}" class="modal">
+                    <div class="modal-box">
+                        <h3 class="text-lg font-bold">What happened?</h3>
+                        <p class="py-4">{{ $element.Rating.Explanation }}</p>
+                        <div class="modal-action">
+                            <form method="dialog">
+                                <button class="btn">❌</button>
+                            </form>
                         </div>
-                    </dialog>
-                </div>
+                    </div>
+                </dialog>
             </div>
         </div>
-        {{ end }}
     </div>
     {{ end }}
 </div>
