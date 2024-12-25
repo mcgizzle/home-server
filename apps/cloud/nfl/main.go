@@ -98,8 +98,9 @@ type EventResponse struct {
 }
 
 type Competitions struct {
-	Competitors []Competitors `json:"competitors"`
-	DetailsRefs DetailsRef    `json:"details"`
+	Competitors   []Competitors `json:"competitors"`
+	DetailsRefs   DetailsRef    `json:"details"`
+	LiveAvailable bool          `json:"liveAvailable"`
 }
 
 type Competitors struct {
@@ -357,9 +358,15 @@ func getDetailsPaged(ref string) []DetailsResponse {
 func getTeamAndScore(response EventResponse) *Game {
 	competitors := response.Competitions[0].Competitors
 
+	if response.Competitions[0].LiveAvailable {
+		log.Printf("Game is live, skipping")
+		return nil
+	}
+
 	var game Game
 
 	for _, competitor := range competitors {
+
 		team := getTeam(competitor.Team.Ref)
 		score := getScore(competitor.Score.Ref)
 
