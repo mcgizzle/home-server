@@ -6,12 +6,12 @@
     <link rel="stylesheet" href="main.css" type="text/css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="/static/assets/favicon.ico" sizes="32x32" type="image/x-icon">
-    <title>Ratings</title>
+    <title>Gameday Guru</title>
 </head>
 <body>
 <div class="flex flex-col items-center justify-center">
     <img src="/static/assets/logo.png" width="130" height="130" alt="My Logo">
-    <h1 class="text-5xl font-extrabold text-blue-600 mb-4">Gameday Guru</h1>
+    <h1 class="text-5xl font-extrabold text-purple-500 mb-4">Gameday Guru</h1>
 </div>
 <div style="height: 2rem;"></div>
 
@@ -43,7 +43,7 @@
             <div class="stat place-items-center">
                 <div class="stat-title">Rating</div>
                 {{ $score := .Rating.Score }}
-                <div class="stat-value text-primary text-6xl {{ if lt $score 30 }}text-red-500{{ else if and (ge $score 30) (lt $score 65) }}text-yellow-500{{ else if and (ge $score 65) (lt $score 80) }}text-green-500{{ else if and (ge $score 80) (le $score 100) }}text-green-600{{ end }}">
+                <div class="stat-value text-primary text-6xl {{ if lt $score 30 }}text-red-500{{ else if and (ge $score 30) (lt $score 65) }}text-yellow-500{{ else if and (ge $score 65) (lt $score 80) }}text-green-400{{ else if and (ge $score 80) (le $score 100) }}text-green-600{{ end }}">
                     {{ $score }}
                 </div>
             </div>
