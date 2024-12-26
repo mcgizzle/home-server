@@ -834,6 +834,8 @@ func main() {
 		w.Header().Set("Content-Type", "text/css")
 		http.ServeFile(w, r, "static/main.css")
 	})
+	// serve static files
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	log.Printf("Starting server on :8089")
 

@@ -3,16 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css" type="text/css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="main.css">
+    <link rel="icon" href="/static/assets/favicon.ico" sizes="32x32" type="image/x-icon">
     <title>Ratings</title>
 </head>
 <body>
+<div class="flex flex-col items-center justify-center">
+    <img src="/static/assets/logo.png" width="130" height="130" alt="My Logo">
+    <h1 class="text-5xl font-extrabold text-blue-600 mb-4">Gameday Guru</h1>
+</div>
+<div style="height: 2rem;"></div>
+
 <div class="flex flex-col gap-12 items-center justify-center">
-    <h1 class="text-3xl font-bold">NFL Ratings</h1>
-    <div class="dropdown">
-        <div tabindex="0" role="button" class="btn m-1">{{ .Current.Season }} - Week {{ .Current.Week }}</div>
-        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+    <div class="dropdown dropdown-hover">
+        <div tabindex="0" role="button"
+             class="btn m-1 rounded-md bg-blue-900 text-black">{{ .Current.Season }} -
+            Week {{ .Current.Week }}
+        </div>
+        <ul tabindex="0" class="dropdown-content menu p-2 shadow rounded-md bg-base-100 w-52 z-[1]">
             {{ range $index, $element := .Weeks }}
             <li><a href="?season={{ $element.Season}}&week={{ $element.Week }}">{{ $element.Season }} - Week {{
                 $element.Week }}</a></li>
@@ -29,14 +38,17 @@
                 <img src="{{$element.Game.Home.Logo}}" alt="Home" width="150" height="150"/>
             </figure>
         </div>
-        <div class="card-body">
+        <div class="card-body text-center">
             <h2 class="card-title text-sm">{{$element.Game.Away.Name}} @ {{$element.Game.Home.Name}} </h2>
             <div class="stat place-items-center">
                 <div class="stat-title">Rating</div>
-                <div class="stat-value">{{$element.Rating.Score}}</div>
+                {{ $score := .Rating.Score }}
+                <div class="stat-value text-primary text-6xl {{ if lt $score 30 }}text-red-500{{ else if and (ge $score 30) (lt $score 65) }}text-yellow-500{{ else if and (ge $score 65) (lt $score 80) }}text-green-500{{ else if and (ge $score 80) (le $score 100) }}text-green-600{{ end }}">
+                    {{ $score }}
+                </div>
             </div>
             <div class="flex flex-row card-actions justify-center">
-                <button class="btn" onclick="modalId('spoiler_{{ $element.Id }}')">
+                <button class="btn btn-info btn-xs rounded-md" onclick="modalId('spoiler_{{ $element.Id }}')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                          stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -54,7 +66,7 @@
                         </div>
                     </div>
                 </dialog>
-                <button class="btn" onclick="modalId('explanation_{{ $element.Id }}')">
+                <button class="btn btn-xs btn-warning rounded-md" onclick="modalId('explanation_{{ $element.Id }}')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                          stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"

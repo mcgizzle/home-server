@@ -1,1 +1,7 @@
 @import 'https://cdn.jsdelivr.net/npm/daisyui@3.5.1/dist/full.css';
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif !important;
+}
