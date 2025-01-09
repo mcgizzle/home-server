@@ -6,19 +6,26 @@
     <link rel="stylesheet" href="main.css" type="text/css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="/static/assets/favicon.ico" sizes="32x32" type="image/x-icon">
-    <title>Gameday Guru</title>
+    <title>NFL Game Ratings</title>
 </head>
 <body>
 <div class="flex flex-col items-center justify-center">
     <img src="/static/assets/logo.png" width="130" height="130" alt="My Logo">
-    <h1 class="text-5xl font-extrabold text-purple-500 mb-4">Gameday Guru</h1>
+    <h1 class="text-5xl font-extrabold mb-4 text-white">NFL Game Ratings</h1>
+    <button class="btn btn-ghost m-1" onclick="toggleAbout()">
+        <svg id="aboutButtonIcon" class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+    </button>
+    <div id="aboutSection" class="hidden p-2">
+        <p class="font-light text-gray-400">NFL Game Ratings, play-by-play data is analyzed to provide a spoiler free rating for each game, so you can decide if the game is worth watching.</p>
+    </div>
 </div>
+
 <div style="height: 2rem;"></div>
 
 <div class="flex flex-col gap-12 items-center justify-center">
     <div class="dropdown dropdown-hover">
         <div tabindex="0" role="button"
-             class="btn m-1 rounded-md bg-blue-900 text-black">{{ .Current.Season }} -
+             class="btn m-1 rounded-md bg-blue-500 text-white">{{ .Current.Season }} -
             Week {{ .Current.Week }}
         </div>
         <ul tabindex="0" class="dropdown-content menu p-2 shadow rounded-md bg-base-100 w-52 z-[1]">
@@ -94,6 +101,15 @@
 <script>
     function modalId(id) {
         document.getElementById(id).showModal();
+    }
+    function toggleAbout() {
+        const aboutSection = document.getElementById('aboutSection');
+
+        if (aboutSection.classList.contains('hidden')) {
+            aboutSection.classList.remove('hidden');
+        } else {
+            aboutSection.classList.add('hidden');
+        }
     }
 </script>
 </html>
