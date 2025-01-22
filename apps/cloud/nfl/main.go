@@ -19,6 +19,10 @@ import (
 var ApiKey string
 var DB_PATH = "data/results.db"
 
+const PreSeason = "1"
+const RegularSeason = "2"
+const PostSeason = "3"
+
 type EventRef struct {
 	Ref string `json:"$ref"`
 }
@@ -27,8 +31,9 @@ type LatestEvents struct {
 	Items []EventRef `json:"items"`
 	Meta  struct {
 		Parameters struct {
-			Week   []string `json:"week"`
-			Season []string `json:"season"`
+			Week        []string `json:"week"`
+			Season      []string `json:"season"`
+			SeasonTypes []string `json:"seasontypes"`
 		} `json:"parameters"`
 	} `json:"$meta"`
 }
@@ -67,10 +72,10 @@ type SpecificEvents struct {
 	Events []EventId `json:"events"`
 }
 
-func listSpecificEvents(season string, week string) SpecificEvents {
-	// https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=2&dates=2024
+func listSpecificEvents(season string, week string, seasonType string) SpecificEvents {
+	// https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=2&dates=2024&seasontype=3
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=%s&dates=%s", week, season), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=%s&dates=%s&seasontype=%s", week, season, seasonType), nil)
 
 	if err != nil {
 		panic(err)
@@ -498,12 +503,13 @@ func produceRating(game Game) Rating {
 }
 
 type Result struct {
-	Id      int    `json:"id"`
-	EventId string `json:"event_id"`
-	Season  string `json:"season"`
-	Week    string `json:"week"`
-	Rating  Rating `json:"rating"`
-	Game    Game   `json:"game"`
+	Id         int    `json:"id"`
+	EventId    string `json:"event_id"`
+	Season     string `json:"season"`
+	SeasonType string `json:"season_type"`
+	Week       string `json:"week"`
+	Rating     Rating `json:"rating"`
+	Game       Game   `json:"game"`
 }
 
 func initDb() *sql.DB {
@@ -512,7 +518,7 @@ func initDb() *sql.DB {
 		log.Fatal(err)
 	}
 	sqlStmt := `
-	create table if not exists results (id integer not null primary key, event_id integer, week integer, season integer, rating integer, explanation text, spoiler_free_explanation text, game text);
+	create table if not exists results (id integer not null primary key, event_id integer, week integer, season integer, season_type integer, rating integer, explanation text, spoiler_free_explanation text, game text);
 	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
@@ -524,11 +530,16 @@ func initDb() *sql.DB {
 
 func saveResults(db *sql.DB, results []Result) {
 
-	stmt, err := db.Prepare("insert into results(event_id, season, week, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("insert into results(event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer stmt.Close()
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(stmt)
 
 	for _, result := range results {
 
@@ -546,12 +557,17 @@ func saveResults(db *sql.DB, results []Result) {
 			log.Fatal(err)
 		}
 
+		seasonTypeAsInt, err := strconv.Atoi(result.SeasonType)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		eventIdAsInt, err := strconv.Atoi(result.EventId)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		_, err = stmt.Exec(eventIdAsInt, seasonAsInt, weekAsInt, result.Rating.Score, result.Rating.Explanation, result.Rating.SpoilerFree, string(gameJson))
+		_, err = stmt.Exec(eventIdAsInt, seasonAsInt, weekAsInt, seasonTypeAsInt, result.Rating.Score, result.Rating.Explanation, result.Rating.SpoilerFree, string(gameJson))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -559,14 +575,14 @@ func saveResults(db *sql.DB, results []Result) {
 	log.Printf("Saved %d results", len(results))
 }
 
-func loadResults(db *sql.DB, season string, week string) []Result {
-	if season == "" || week == "" {
-		log.Fatal("Season or week not provided")
+func loadResults(db *sql.DB, season string, week string, seasonType string) []Result {
+	if season == "" || week == "" || seasonType == "" {
+		log.Fatal("Season or week or season type not provided")
 	}
 
-	selectQuery := "select id, event_id, season, week, rating, explanation, spoiler_free_explanation, game from results where season = ? and week = ? order by season desc, week desc, rating desc"
+	selectQuery := "select id, event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game from results where season = ? and week = ? and season_type = ? order by season desc, season_type desc, week desc, rating desc"
 
-	rows, err := db.Query(selectQuery, season, week)
+	rows, err := db.Query(selectQuery, season, week, seasonType)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -582,7 +598,7 @@ func loadResults(db *sql.DB, season string, week string) []Result {
 	for rows.Next() {
 		var result Result
 		var gameJson string
-		err = rows.Scan(&result.Id, &result.EventId, &result.Season, &result.Week, &result.Rating.Score, &result.Rating.Explanation, &result.Rating.SpoilerFree, &gameJson)
+		err = rows.Scan(&result.Id, &result.EventId, &result.Season, &result.Week, &result.SeasonType, &result.Rating.Score, &result.Rating.Explanation, &result.Rating.SpoilerFree, &gameJson)
 
 		if err != nil {
 			log.Fatal(err)
@@ -599,8 +615,8 @@ func loadResults(db *sql.DB, season string, week string) []Result {
 	return results
 }
 
-func loadSeasonsAndWeeks(db *sql.DB) []Week {
-	selectQuery := "select distinct season, week from results order by season desc, week desc"
+func loadDates(db *sql.DB) []Date {
+	selectQuery := "select distinct season, week, season_type from results order by season_type desc, season desc, week desc"
 
 	rows, err := db.Query(selectQuery)
 	if err != nil {
@@ -613,24 +629,26 @@ func loadSeasonsAndWeeks(db *sql.DB) []Week {
 		}
 	}(rows)
 
-	var seasonsAndWeeks []Week
+	var dates []Date
 
 	for rows.Next() {
 		var season string
 		var week string
-		err = rows.Scan(&season, &week)
+		var seasonType string
+		err = rows.Scan(&season, &week, &seasonType)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		seasonsAndWeeks = append(seasonsAndWeeks, Week{
-			Season: season,
-			Week:   week,
+		dates = append(dates, Date{
+			Season:     season,
+			Week:       week,
+			SeasonType: seasonType,
 		})
 	}
 
-	return seasonsAndWeeks
+	return dates
 }
 
 func fetchResultsForThisWeek(existingResults []Result) []Result {
@@ -639,6 +657,7 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 
 	season := eventRefs.Meta.Parameters.Season[0]
 	week := eventRefs.Meta.Parameters.Week[0]
+	seasonType := eventRefs.Meta.Parameters.SeasonTypes[0]
 
 	// Filter out events that have already been processed
 	var filteredEventRefs []EventRef
@@ -659,7 +678,7 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 
 	var results []Result
 	for _, eventRef := range filteredEventRefs {
-		log.Printf("Processing event: %s - %s", season, week)
+		log.Printf("Processing event: Season %s - Week %s - Season Type %s", season, week, seasonType)
 		event := getEvent(eventRef.Ref)
 		maybeGame := getTeamAndScore(event)
 
@@ -673,11 +692,12 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 		rantScore := produceRating(game)
 
 		result := Result{
-			EventId: event.Id,
-			Season:  season,
-			Week:    week,
-			Rating:  rantScore,
-			Game:    game,
+			EventId:    event.Id,
+			Season:     season,
+			SeasonType: seasonType,
+			Week:       week,
+			Rating:     rantScore,
+			Game:       game,
 		}
 		results = append(results, result)
 
@@ -689,9 +709,9 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 
 }
 
-func fetchResults(season string, week string) []Result {
+func fetchResults(season string, week string, seasonType string) []Result {
 
-	specificEvents := listSpecificEvents(season, week)
+	specificEvents := listSpecificEvents(season, week, seasonType)
 
 	var results []Result
 	for _, eventId := range specificEvents.Events {
@@ -707,11 +727,12 @@ func fetchResults(season string, week string) []Result {
 		rantScore := produceRating(game)
 
 		result := Result{
-			EventId: eventId.Id,
-			Season:  season,
-			Week:    week,
-			Rating:  rantScore,
-			Game:    game,
+			EventId:    eventId.Id,
+			Season:     season,
+			SeasonType: seasonType,
+			Week:       week,
+			Rating:     rantScore,
+			Game:       game,
 		}
 		results = append(results, result)
 	}
@@ -730,7 +751,7 @@ func backgroundLatestEvents(db *sql.DB) {
 		case <-ticker.C:
 			log.Println("Checking for new events")
 			current := listLatestEvents().Meta.Parameters
-			results := loadResults(db, current.Season[0], current.Week[0])
+			results := loadResults(db, current.Season[0], current.Week[0], current.SeasonTypes[0])
 			newResults := fetchResultsForThisWeek(results)
 			saveResults(db, newResults)
 
@@ -738,15 +759,59 @@ func backgroundLatestEvents(db *sql.DB) {
 	}
 }
 
-type Week struct {
-	Season string
-	Week   string
+type Date struct {
+	Season     string
+	Week       string
+	SeasonType string
+}
+
+// Displayed in the UI, seasontype is a string
+type DateTemplate struct {
+	Season     string
+	Week       string
+	SeasonType string
+	// Printable version of season type
+	SeasonTypeShowable string
+}
+
+func (d Date) Template() DateTemplate {
+
+	var seasonType string
+	switch d.SeasonType {
+	case PreSeason:
+		seasonType = "Preseason"
+	case RegularSeason:
+		seasonType = "Regular Season"
+	case PostSeason:
+		seasonType = "Postseason"
+	}
+
+	return DateTemplate{
+		Season:             d.Season,
+		Week:               d.Week,
+		SeasonTypeShowable: seasonType,
+		SeasonType:         d.SeasonType,
+	}
+
+}
+
+func seasonTypeToNumber(seasonType string) string {
+	switch seasonType {
+	case PreSeason:
+		return "1"
+	case RegularSeason:
+		return "2"
+	case PostSeason:
+		return "3"
+	default:
+		return "0"
+	}
 }
 
 type TemplateData struct {
 	Results []Result
-	Weeks   []Week
-	Current Week
+	Dates   []DateTemplate
+	Current DateTemplate
 }
 
 func main() {
@@ -767,7 +832,7 @@ func main() {
 	http.Handle("/run", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		current := listLatestEvents().Meta.Parameters
-		results := loadResults(db, current.Season[0], current.Week[0])
+		results := loadResults(db, current.Season[0], current.Week[0], current.SeasonTypes[0])
 		newResults := fetchResultsForThisWeek(results)
 		saveResults(db, newResults)
 		w.WriteHeader(http.StatusOK)
@@ -776,13 +841,14 @@ func main() {
 	http.Handle("/backfill", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		week := r.URL.Query().Get("week")
 		season := r.URL.Query().Get("season")
+		seasonType := r.URL.Query().Get("seasontype")
 
-		if week == "" || season == "" {
+		if week == "" || season == "" || seasonType == "" {
 			http.Error(w, "Missing week or season", http.StatusBadRequest)
 			return
 		}
 
-		results := fetchResults(season, week)
+		results := fetchResults(season, week, seasonType)
 		saveResults(db, results)
 
 		w.WriteHeader(http.StatusOK)
@@ -791,37 +857,38 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		week := r.URL.Query().Get("week")
 		season := r.URL.Query().Get("season")
+		seasonType := r.URL.Query().Get("seasontype")
 
-		if week != "" && season == "" {
-			http.Error(w, "Missing season", http.StatusBadRequest)
-			return
-		}
-		if week == "" && season != "" {
-			http.Error(w, "Missing week", http.StatusBadRequest)
-			return
-		}
-
-		current := listLatestEvents().Meta.Parameters
-
-		if week == "" {
+		var results []Result
+		if week != "" && season != "" && seasonType != "" {
+			seasonTypeNumber := seasonTypeToNumber(seasonType)
+			results = loadResults(db, season, week, seasonTypeNumber)
+		} else {
+			current := listLatestEvents().Meta.Parameters
 			week = current.Week[0]
-		}
-		if season == "" {
 			season = current.Season[0]
+			seasonType = current.SeasonTypes[0]
+			results = loadResults(db, season, week, seasonType)
 		}
 
-		results := loadResults(db, season, week)
-		log.Printf("Loaded %d results for season [%s] and week [%s]", len(results), season, week)
-		seasonWeeks := loadSeasonsAndWeeks(db)
-		log.Printf("Loaded %d weeks", len(seasonWeeks))
+		log.Printf("Loaded %d results for season [%s] and week [%s] and season type [%s]", len(results), season, week, seasonType)
+		dates := loadDates(db)
+
+		log.Printf("Loaded %d weeks", len(dates))
+
+		dateTemplates := make([]DateTemplate, len(dates))
+		for i, date := range dates {
+			dateTemplates[i] = date.Template()
+		}
 
 		data := TemplateData{
 			Results: results,
-			Weeks:   seasonWeeks,
-			Current: Week{
-				Season: season,
-				Week:   week,
-			},
+			Dates:   dateTemplates,
+			Current: Date{
+				Season:     season,
+				Week:       week,
+				SeasonType: seasonType,
+			}.Template(),
 		}
 
 		err := tmpl.Execute(w, data)

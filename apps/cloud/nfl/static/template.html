@@ -26,12 +26,12 @@
     <div class="dropdown dropdown-hover">
         <div tabindex="0" role="button"
              class="btn m-1 rounded-md bg-blue-500 text-white">{{ .Current.Season }} -
-            Week {{ .Current.Week }}
+            Week {{ .Current.Week }} - {{ .Current.SeasonTypeShowable }}
         </div>
         <ul tabindex="0" class="dropdown-content menu p-2 shadow rounded-md bg-base-100 w-52 z-[1]">
-            {{ range $index, $element := .Weeks }}
-            <li><a href="?season={{ $element.Season}}&week={{ $element.Week }}">{{ $element.Season }} - Week {{
-                $element.Week }}</a></li>
+            {{ range $index, $element := .Dates }}
+            <li><a href="?season={{ $element.Season}}&week={{ $element.Week }}&seasontype={{ $element.SeasonType }}">{{ $element.Season }} - Week {{
+                $element.Week }} - {{ $element.SeasonTypeShowable }}</a></li>
             {{ end }}
         </ul>
     </div>
