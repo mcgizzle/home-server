@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="192.168.1.97" id="c47453df-1441-4e1d-b1b1-6cda4f5ef6a3" keyPath="$USER_HOME$/.ssh/id_ed25519" port="22" customName="network" nameFormat="CUSTOM" username="root" useOpenSSHConfig="true">
+        <option name="customName" value="network" />
+      </sshConfig>
+      <sshConfig host="192.168.1.99" id="c6e19c90-137f-4bf1-bd82-7a54feab05e7" keyPath="$USER_HOME$/.ssh/id_ed25519" port="22" customName="primary" nameFormat="CUSTOM" username="root" useOpenSSHConfig="true">
+        <option name="customName" value="primary" />
+      </sshConfig>
+    </configs>
+  </component>
+</project>
