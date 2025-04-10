@@ -39,3 +39,21 @@ const (
 	SeasonTypePreseason SeasonType = "preseason"
 	SeasonTypePlayoffs  SeasonType = "playoffs"
 )
+
+// Date represents a unique combination of season, week, and season type
+type Date struct {
+	Season     string
+	Week       string
+	SeasonType string
+}
+
+// Result represents a game result with its rating
+type Result struct {
+	ID         int
+	EventID    string
+	Season     string
+	SeasonType string
+	Week       string
+	Rating     Rating
+	Game       Game
+}

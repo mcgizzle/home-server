@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -613,38 +612,10 @@ func loadResults(repo *repository.SQLiteRepository, season string, week string, 
 	return results
 }
 
-func loadDates(repo *repository.SQLiteRepository) []Date {
-	// This functionality is not directly available in the repository interface
-	// We'll need to add it to the interface or implement it differently
-	// For now, we'll keep using the direct SQL query
-	db, err := sql.Open("sqlite3", DB_PATH)
+func loadDates(repo *repository.SQLiteRepository) []domain.Date {
+	dates, err := repo.ListDates(context.Background())
 	if err != nil {
 		log.Fatal(err)
-	}
-	defer db.Close()
-
-	selectQuery := "select distinct season, week, season_type from results order by season_type desc, season desc, week desc"
-
-	rows, err := db.Query(selectQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
-
-	var dates []Date
-	for rows.Next() {
-		var season string
-		var week string
-		var seasonType string
-		err = rows.Scan(&season, &week, &seasonType)
-		if err != nil {
-			log.Fatal(err)
-		}
-		dates = append(dates, Date{
-			Season:     season,
-			Week:       week,
-			SeasonType: seasonType,
-		})
 	}
 
 	return dates
@@ -757,31 +728,24 @@ func backgroundLatestEvents(repo *repository.SQLiteRepository) {
 	}
 }
 
-type Date struct {
-	Season     string
-	Week       string
-	SeasonType string
-}
-
-// Displayed in the UI, seasontype is a string
 type DateTemplate struct {
-	Season     string
-	Week       string
-	SeasonType string
-	// Printable version of season type
+	Season             string
+	Week               string
 	SeasonTypeShowable string
+	SeasonType         string
 }
 
-func (d Date) Template() DateTemplate {
-
+func dateToTemplate(d domain.Date) DateTemplate {
 	var seasonType string
 	switch d.SeasonType {
-	case PreSeason:
+	case "1":
 		seasonType = "Preseason"
-	case RegularSeason:
+	case "2":
 		seasonType = "Regular Season"
-	case PostSeason:
+	case "3":
 		seasonType = "Postseason"
+	default:
+		seasonType = d.SeasonType
 	}
 
 	return DateTemplate{
@@ -790,19 +754,18 @@ func (d Date) Template() DateTemplate {
 		SeasonTypeShowable: seasonType,
 		SeasonType:         d.SeasonType,
 	}
-
 }
 
-func seasonTypeToNumber(seasonType string) string {
-	switch seasonType {
-	case PreSeason:
-		return "1"
-	case RegularSeason:
-		return "2"
-	case PostSeason:
-		return "3"
+func seasonTypeToString(st domain.SeasonType) string {
+	switch st {
+	case domain.SeasonTypeRegular:
+		return "regular"
+	case domain.SeasonTypePreseason:
+		return "preseason"
+	case domain.SeasonTypePlayoffs:
+		return "playoffs"
 	default:
-		return "0"
+		return "unknown"
 	}
 }
 
@@ -857,7 +820,7 @@ func main() {
 
 		var results []Result
 		if week != "" && season != "" && seasonType != "" {
-			seasonTypeNumber := seasonTypeToNumber(seasonType)
+			seasonTypeNumber := seasonTypeToString(domain.SeasonType(seasonType))
 			results = loadResults(repo, season, week, seasonTypeNumber)
 		} else {
 			current := listLatestEvents().Meta.Parameters
@@ -874,17 +837,17 @@ func main() {
 
 		dateTemplates := make([]DateTemplate, len(dates))
 		for i, date := range dates {
-			dateTemplates[i] = date.Template()
+			dateTemplates[i] = dateToTemplate(date)
 		}
 
 		data := TemplateData{
 			Results: results,
 			Dates:   dateTemplates,
-			Current: Date{
+			Current: dateToTemplate(domain.Date{
 				Season:     season,
 				Week:       week,
 				SeasonType: seasonType,
-			}.Template(),
+			}),
 		}
 
 		err := tmpl.Execute(w, data)

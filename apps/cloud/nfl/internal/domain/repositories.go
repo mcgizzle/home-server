@@ -18,4 +18,7 @@ type GameRepository interface {
 
 	// GetRating retrieves a rating for a game
 	GetRating(ctx context.Context, gameID string) (*Rating, error)
+
+	// ListDates retrieves all unique season, week, and season type combinations
+	ListDates(ctx context.Context) ([]Date, error)
 }
