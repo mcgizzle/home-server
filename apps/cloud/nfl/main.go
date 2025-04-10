@@ -1,19 +1,22 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/go-resty/resty/v2"
-	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
+	"nfl/internal/domain"
+	"nfl/internal/infrastructure/repository"
 	"os"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-resty/resty/v2"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var ApiKey string
@@ -512,135 +515,131 @@ type Result struct {
 	Game       Game   `json:"game"`
 }
 
-func initDb() *sql.DB {
-	db, err := sql.Open("sqlite3", DB_PATH)
+func initDb() *repository.SQLiteRepository {
+	repo, err := repository.NewSQLiteRepository(DB_PATH)
 	if err != nil {
 		log.Fatal(err)
 	}
-	sqlStmt := `
-	create table if not exists results (id integer not null primary key, event_id integer, week integer, season integer, season_type integer, rating integer, explanation text, spoiler_free_explanation text, game text);
-	`
-	_, err = db.Exec(sqlStmt)
-	if err != nil {
-		log.Fatalf("%q: %s\n", err, sqlStmt)
-	}
-
-	return db
+	return repo
 }
 
-func saveResults(db *sql.DB, results []Result) {
-
-	stmt, err := db.Prepare("insert into results(event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?, ?, ?)")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(stmt)
-
+func saveResults(repo *repository.SQLiteRepository, results []Result) {
 	for _, result := range results {
+		// Convert Result to domain.Game
+		game := &domain.Game{
+			ID:         result.EventId,
+			Season:     result.Season,
+			Week:       result.Week,
+			SeasonType: domain.SeasonType(result.SeasonType),
+			HomeTeam: domain.Team{
+				Name: result.Game.Home.Name,
+				Logo: *result.Game.Home.Logo,
+			},
+			AwayTeam: domain.Team{
+				Name: result.Game.Away.Name,
+				Logo: *result.Game.Away.Logo,
+			},
+			Score: domain.Score{
+				Home: int(result.Game.Home.Score),
+				Away: int(result.Game.Away.Score),
+			},
+		}
 
-		gameJson, err := json.Marshal(result.Game)
-		if err != nil {
+		// Save game
+		if err := repo.SaveGame(context.Background(), game); err != nil {
 			log.Fatal(err)
 		}
 
-		weekAsInt, err := strconv.Atoi(result.Week)
-		if err != nil {
-			log.Fatal(err)
+		// Save rating
+		rating := &domain.Rating{
+			Score:       result.Rating.Score,
+			SpoilerFree: result.Rating.SpoilerFree,
+			Explanation: result.Rating.Explanation,
 		}
-		seasonAsInt, err := strconv.Atoi(result.Season)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		seasonTypeAsInt, err := strconv.Atoi(result.SeasonType)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		eventIdAsInt, err := strconv.Atoi(result.EventId)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = stmt.Exec(eventIdAsInt, seasonAsInt, weekAsInt, seasonTypeAsInt, result.Rating.Score, result.Rating.Explanation, result.Rating.SpoilerFree, string(gameJson))
-		if err != nil {
+		if err := repo.SaveRating(context.Background(), result.EventId, rating); err != nil {
 			log.Fatal(err)
 		}
 	}
 	log.Printf("Saved %d results", len(results))
 }
 
-func loadResults(db *sql.DB, season string, week string, seasonType string) []Result {
+func loadResults(repo *repository.SQLiteRepository, season string, week string, seasonType string) []Result {
 	if season == "" || week == "" || seasonType == "" {
 		log.Fatal("Season or week or season type not provided")
 	}
 
-	selectQuery := "select id, event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game from results where season = ? and week = ? and season_type = ? order by season desc, season_type desc, week desc, rating desc"
-
-	rows, err := db.Query(selectQuery, season, week, seasonType)
+	games, err := repo.ListGames(context.Background(), season, week, domain.SeasonType(seasonType))
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(rows)
 
 	var results []Result
-
-	for rows.Next() {
-		var result Result
-		var gameJson string
-		err = rows.Scan(&result.Id, &result.EventId, &result.Season, &result.Week, &result.SeasonType, &result.Rating.Score, &result.Rating.Explanation, &result.Rating.SpoilerFree, &gameJson)
-
+	for _, game := range games {
+		rating, err := repo.GetRating(context.Background(), game.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		err = json.Unmarshal([]byte(gameJson), &result.Game)
-		if err != nil {
-			log.Fatal(err)
+		// Convert domain.Game to Result
+		result := Result{
+			EventId:    game.ID,
+			Season:     game.Season,
+			Week:       game.Week,
+			SeasonType: string(game.SeasonType),
+			Rating: Rating{
+				Score:       rating.Score,
+				SpoilerFree: rating.SpoilerFree,
+				Explanation: rating.Explanation,
+			},
+			Game: Game{
+				Home: TeamResult{
+					Name:   game.HomeTeam.Name,
+					Logo:   &game.HomeTeam.Logo,
+					Score:  float64(game.Score.Home),
+					Record: "", // Not available in domain model
+				},
+				Away: TeamResult{
+					Name:   game.AwayTeam.Name,
+					Logo:   &game.AwayTeam.Logo,
+					Score:  float64(game.Score.Away),
+					Record: "", // Not available in domain model
+				},
+				Details: []DetailsItem{}, // Not available in domain model
+			},
 		}
-
 		results = append(results, result)
 	}
 
 	return results
 }
 
-func loadDates(db *sql.DB) []Date {
+func loadDates(repo *repository.SQLiteRepository) []Date {
+	// This functionality is not directly available in the repository interface
+	// We'll need to add it to the interface or implement it differently
+	// For now, we'll keep using the direct SQL query
+	db, err := sql.Open("sqlite3", DB_PATH)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
 	selectQuery := "select distinct season, week, season_type from results order by season_type desc, season desc, week desc"
 
 	rows, err := db.Query(selectQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(rows)
+	defer rows.Close()
 
 	var dates []Date
-
 	for rows.Next() {
 		var season string
 		var week string
 		var seasonType string
 		err = rows.Scan(&season, &week, &seasonType)
-
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		dates = append(dates, Date{
 			Season:     season,
 			Week:       week,
@@ -742,7 +741,7 @@ func fetchResults(season string, week string, seasonType string) []Result {
 	return results
 }
 
-func backgroundLatestEvents(db *sql.DB) {
+func backgroundLatestEvents(repo *repository.SQLiteRepository) {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
 
@@ -751,10 +750,9 @@ func backgroundLatestEvents(db *sql.DB) {
 		case <-ticker.C:
 			log.Println("Checking for new events")
 			current := listLatestEvents().Meta.Parameters
-			results := loadResults(db, current.Season[0], current.Week[0], current.SeasonTypes[0])
+			results := loadResults(repo, current.Season[0], current.Week[0], current.SeasonTypes[0])
 			newResults := fetchResultsForThisWeek(results)
-			saveResults(db, newResults)
-
+			saveResults(repo, newResults)
 		}
 	}
 }
@@ -815,7 +813,6 @@ type TemplateData struct {
 }
 
 func main() {
-
 	openAIKey := os.Getenv("OPENAI_API_KEY")
 	if openAIKey == "" {
 		log.Fatal("OPENAI_API_KEY not set")
@@ -823,18 +820,17 @@ func main() {
 
 	ApiKey = openAIKey
 
-	db := initDb()
+	repo := initDb()
 
-	go backgroundLatestEvents(db)
+	go backgroundLatestEvents(repo)
 
 	tmpl := template.Must(template.ParseFiles("static/template.html"))
 
 	http.Handle("/run", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		current := listLatestEvents().Meta.Parameters
-		results := loadResults(db, current.Season[0], current.Week[0], current.SeasonTypes[0])
+		results := loadResults(repo, current.Season[0], current.Week[0], current.SeasonTypes[0])
 		newResults := fetchResultsForThisWeek(results)
-		saveResults(db, newResults)
+		saveResults(repo, newResults)
 		w.WriteHeader(http.StatusOK)
 	}))
 
@@ -849,7 +845,7 @@ func main() {
 		}
 
 		results := fetchResults(season, week, seasonType)
-		saveResults(db, results)
+		saveResults(repo, results)
 
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -862,17 +858,17 @@ func main() {
 		var results []Result
 		if week != "" && season != "" && seasonType != "" {
 			seasonTypeNumber := seasonTypeToNumber(seasonType)
-			results = loadResults(db, season, week, seasonTypeNumber)
+			results = loadResults(repo, season, week, seasonTypeNumber)
 		} else {
 			current := listLatestEvents().Meta.Parameters
 			week = current.Week[0]
 			season = current.Season[0]
 			seasonType = current.SeasonTypes[0]
-			results = loadResults(db, season, week, seasonType)
+			results = loadResults(repo, season, week, seasonType)
 		}
 
 		log.Printf("Loaded %d results for season [%s] and week [%s] and season type [%s]", len(results), season, week, seasonType)
-		dates := loadDates(db)
+		dates := loadDates(repo)
 
 		log.Printf("Loaded %d weeks", len(dates))
 
@@ -892,16 +888,16 @@ func main() {
 		}
 
 		err := tmpl.Execute(w, data)
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	})
+
 	http.HandleFunc("/main.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
 		http.ServeFile(w, r, "static/main.css")
 	})
-	// serve static files
+
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	log.Printf("Starting server on :8089")
@@ -910,5 +906,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
