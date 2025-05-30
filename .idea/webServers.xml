@@ -10,9 +10,9 @@
         </fileTransfer>
       </webServer>
       <webServer id="fe4dc35a-d102-41d2-9355-1f0993d06290" name="primary">
-        <fileTransfer rootFolder="/root/code/home-server" accessType="SFTP" host="192.168.88.212" port="22" sshConfigId="c6e19c90-137f-4bf1-bd82-7a54feab05e7" sshConfig="primary" keyPair="true">
+        <fileTransfer rootFolder="/root" accessType="SFTP" host="192.168.88.212" port="22" sshConfigId="c6e19c90-137f-4bf1-bd82-7a54feab05e7" sshConfig="primary" keyPair="true">
           <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
         </fileTransfer>
       </webServer>
