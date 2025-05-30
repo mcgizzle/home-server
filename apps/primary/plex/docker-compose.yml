@@ -17,4 +17,9 @@ services:
       - "$MEDIA_MOUNT_PATH/movies4k:/movies4k"
       - "$MEDIA_MOUNT_PATH/tv-shows:/tv"
       - "$DOCKER_VOLUME_PATH/plex/transcode:/transcode"
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:32400/identity"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m

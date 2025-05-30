@@ -13,3 +13,9 @@ services:
       - "$MEDIA_MOUNT_PATH/movies:/movies"
       - "$MEDIA_MOUNT_PATH/tv-shows:/tv-shows"
     network_mode: container:gluetun # run on the vpn network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

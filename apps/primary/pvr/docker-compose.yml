@@ -7,6 +7,12 @@ services:
       - LOG_LEVEL=info
     networks:
       - internal-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8191/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -19,28 +25,41 @@ services:
     volumes:
       - "$DOCKER_VOLUME_PATH/radarr:/config"
       - "$MEDIA_MOUNT_PATH/movies:/movies"
-      - "$DOWNLOADS_MOUNT_PATH/complete/radarr:/downloads/complete/radarr"
+      - "$MEDIA_MOUNT_PATH/movies4k:/movies4k"
+      - "$DOWNLOADS_MOUNT_PATH:/downloads"
     ports:
       - 7878:7878
     networks:
       - internal-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7878/ping"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
-    restart: unless-stopped
     container_name: sonarr
     environment:
       - PUID=1001
       - PGID=1001
-      - TZ=Etc/UTC
+      - TZ=America/New_York
     volumes:
       - "$DOCKER_VOLUME_PATH/sonarr:/config"
       - "$MEDIA_MOUNT_PATH/tv-shows:/tv"
-      - "$DOWNLOADS_MOUNT_PATH/complete/tv-sonarr:/downloads/complete/tv-sonarr"
+      - "$DOWNLOADS_MOUNT_PATH:/downloads"
     ports:
       - 8989:8989
+    restart: unless-stopped
     networks:
       - internal-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8989/ping"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   prowlarr:
     container_name: prowlarr
@@ -56,6 +75,12 @@ services:
       - 9696:9696
     networks:
       - internal-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9696/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
@@ -73,8 +98,13 @@ services:
       - 1.1.1.1
     networks:
       - internal-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5055/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 networks:
   internal-net:
     external: true
-

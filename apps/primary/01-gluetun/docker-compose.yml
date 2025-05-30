@@ -23,7 +23,10 @@ services:
       - SERVER_HOSTNAMES=uk-lon.prod.surfshark.com
       - WIREGUARD_PRIVATE_KEY=uDymMz0D2jX5ZPTXNHoCRJVcDsXZgMXaNiEGXJ7Eknk=
       - WIREGUARD_ADDRESSES=10.14.0.2/16
-
+      # Enable control server for healthcheck (still useful for other purposes if needed)
+      - CONTROL_SERVER_ADDRESS=:8000
+      - CONTROL_SERVER_LOG=off
+    # Removed custom healthcheck to allow Docker to use the image's default
 
 networks:
   internal-net:

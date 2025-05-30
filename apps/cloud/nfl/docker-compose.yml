@@ -3,6 +3,12 @@ services:
     image: cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate run --token eyJhIjoiNTY3Y2Q1ZmVkYjExZDZlOTJhZmI0NTRlNmUwMjA2ZTgiLCJ0IjoiYjBkM2VkNTItYjdkOS00MWQ2LTkyMzgtYTljMzE0NzU4YmFmIiwicyI6Ik1EVmpaR0ZpTmpZdE1tTmxOQzAwWXpNMkxXRm1OVEF0Wm1VNE1EVTROekZsTVdZNSJ9
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "cloudflared", "healthcheck", "--url", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   app:
     image: nfl-ratings
@@ -17,3 +23,9 @@ services:
       - ./data:/app/data
     container_name: nfl-ratings
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8089/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m

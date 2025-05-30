@@ -19,6 +19,12 @@ services:
     links:
       - cadvisor:cadvisor
       - node-exporter:node-exporter
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   grafana:
     image: grafana/grafana
@@ -36,6 +42,12 @@ services:
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
       - "$DOCKER_VOLUME_PATH/grafana:/var/lib/grafana"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.1

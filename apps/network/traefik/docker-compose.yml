@@ -25,9 +25,15 @@ services:
     volumes:
       - "./traefik.yml:/etc/traefik/traefik.yml"
       - ./entrypoint.sh:/entrypoint.sh
-      - ./routes.yml:/routes.yml.template
+      - ./routes.yml:/routes.yml.template # Note: Original had .template, but entrypoint creates routes.yml
     networks:
       - internal-net
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 
 networks:
