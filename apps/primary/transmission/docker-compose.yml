@@ -1,0 +1,23 @@
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=Europe/London
+      - TRANSMISSION_WEB_UI=combustion  # Optional: better UI
+    volumes:
+      - "$DOCKER_VOLUME_PATH/transmission:/config"
+      - "$DOWNLOADS_MOUNT_PATH/complete:/downloads/completed"
+      - "$DOWNLOADS_MOUNT_PATH/incomplete:/downloads/incomplete"
+      - "$DOWNLOADS_MOUNT_PATH/watch:/watch"
+      - "$MEDIA_MOUNT_PATH/movies:/movies"
+      - "$MEDIA_MOUNT_PATH/tv-shows:/tv-shows"
+    restart: unless-stopped
+    network_mode: container:gluetun
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091"]
+      interval: 1m
+      timeout: 10s
+      retries: 3

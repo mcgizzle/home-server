@@ -1,6 +1,6 @@
 services:
   flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:v3.3.13
+    image: ghcr.io/flaresolverr/flaresolverr:latest
     restart: unless-stopped
     container_name: flaresolverr
     environment:
@@ -18,8 +18,8 @@ services:
       - TZ=Etc/UTC
     volumes:
       - "$DOCKER_VOLUME_PATH/radarr:/config"
-      - "$MEDIA_MOUNT_PATH/movies:/movies" 
-      - "$DOWNLOADS_MOUNT_PATH:/downloads" 
+      - "$MEDIA_MOUNT_PATH/movies:/movies"
+      - "$DOWNLOADS_MOUNT_PATH/complete/radarr:/downloads/complete/radarr"
     ports:
       - 7878:7878
     networks:
@@ -35,8 +35,8 @@ services:
       - TZ=Etc/UTC
     volumes:
       - "$DOCKER_VOLUME_PATH/sonarr:/config"
-      - "$MEDIA_MOUNT_PATH/tv-shows:/tv" 
-      - "$DOWNLOADS_MOUNT_PATH:/downloads" 
+      - "$MEDIA_MOUNT_PATH/tv-shows:/tv"
+      - "$DOWNLOADS_MOUNT_PATH/complete/tv-sonarr:/downloads/complete/tv-sonarr"
     ports:
       - 8989:8989
     networks:

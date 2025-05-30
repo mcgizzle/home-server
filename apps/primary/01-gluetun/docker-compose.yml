@@ -11,6 +11,7 @@ services:
       - /dev/net/tun
     ports:
       - "8081:8081"     # qBittorrent
+      - "9091:9091"     # transmission
       - "8888:8888/tcp" # HTTP proxy
     volumes:
       - "$DOCKER_VOLUME_PATH/gluetun:/gluetun"
