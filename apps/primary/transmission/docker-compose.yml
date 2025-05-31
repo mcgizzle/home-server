@@ -9,7 +9,7 @@ services:
       - TRANSMISSION_WEB_UI=combustion  # Optional: better UI
     volumes:
       - "$DOCKER_VOLUME_PATH/transmission:/config"
-      - "$DOWNLOADS_MOUNT_PATH/complete:/downloads/completed"
+      - "$DOWNLOADS_MOUNT_PATH/complete:/downloads/complete"
       - "$DOWNLOADS_MOUNT_PATH/incomplete:/downloads/incomplete"
       - "$DOWNLOADS_MOUNT_PATH/watch:/watch"
       - "$MEDIA_MOUNT_PATH/movies:/movies"
