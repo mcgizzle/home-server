@@ -10,10 +10,8 @@ This document outlines potential improvements and new features for the home serv
         - `apps/primary/01-gluetun/docker-compose.yml`: The `WIREGUARD_PRIVATE_KEY` for Gluetun VPN is hardcoded. Move this key to `env.sh` (e.g., `export WIREGUARD_PRIVATE_KEY="your_actual_key"`) and update the `docker-compose.yml` to use `environment: - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}`.
         - `apps/primary/cloudflared/docker-compose.yml`: The Cloudflare tunnel token is hardcoded in the `command` for the `cloudflared` service. Move this token to `env.sh` (e.g., `export CLOUDFLARE_TOKEN_PRIMARY="your_token_here"`) and update the `command` in `docker-compose.yml` to use this environment variable (e.g., `tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN_PRIMARY}`).
         - `apps/cloud/nfl/docker-compose.yml`: A different Cloudflare tunnel token is hardcoded in the `command` for its `cloudflared` service. Move this token to `env.sh` (e.g., `export CLOUDFLARE_TOKEN_NFL="your_other_token_here"`) and update its `command` similarly.
-        - `apps/primary/monitoring/docker-compose.yml`: The Grafana admin password is set to a default (`grafana`) via `GF_SECURITY_ADMIN_PASSWORD`. Change this to a strong, unique password in `env.sh` (e.g., `export GRAFANA_ADMIN_PASSWORD="your_strong_password"`) and update the `docker-compose.yml` to use `environment: - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}`.
         - `apps/primary/plex/docker-compose.yml`: The `PLEX_CLAIM` token is hardcoded. This token is typically for initial server claiming. Remove it from the `docker-compose.yml`. If needed for a fresh setup, it can be temporarily set via an environment variable or during Plex's web UI setup.
         - `apps/network/dns/docker-compose.yml`: The Pi-hole `WEBPASSWORD` is hardcoded. Move this to `env.sh` (e.g., `export PIHOLE_WEBPASSWORD="your_strong_pihole_password"`) and update the `docker-compose.yml` to use `environment: - WEBPASSWORD=${PIHOLE_WEBPASSWORD}`.
-    - **General Action**: Ensure `env.sh` is listed in your `.gitignore` file to prevent accidental commitment of secrets.
 
 - [ ] **Secure Traefik Reverse Proxy**
     - **Issue 1**: Traefik dashboard and API are insecure (`api.insecure=true`).
@@ -92,6 +90,14 @@ This document outlines potential improvements and new features for the home serv
           #   - "$DOCKER_VOLUME_PATH/pihole/dnsmasq.d:/etc/dnsmasq.d"
           ```
         - Before restarting, move existing content from `$HOME/etc-pihole` to `$DOCKER_VOLUME_PATH/pihole/config` and from `./etc-dnsmasq.d` (relative to the compose file) to `$DOCKER_VOLUME_PATH/pihole/dnsmasq.d` on the host.
+
+- [ ] **Remove qBittorrent Service**
+    - **Reason**: Switched to using Transmission as the primary download client, making qBittorrent redundant.
+    - **Action Details**:
+        - Locate the `docker-compose.yml` file that defines the `qbittorrent` service (likely in a path such as `apps/primary/downloads/docker-compose.yml` or similar).
+        - Remove the entire service definition for `qbittorrent` from that file.
+        - Delete any associated qBittorrent configuration volumes on the host system (e.g., `$DOCKER_VOLUME_PATH/qbittorrent` or similar) after ensuring no critical data remains.
+        - If qBittorrent's port (e.g., 8081) was specifically mapped in Gluetun's `docker-compose.yml` for direct access and is no longer needed by any other service, remove that port mapping from Gluetun's configuration.
 
 - [x] **Add Healthchecks to More Services**
     - **Issue**: Previously, only `transmission` had a healthcheck. Many other services lacked them or had suboptimal configurations.
