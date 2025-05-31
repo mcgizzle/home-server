@@ -17,6 +17,7 @@ services:
       - "--api.insecure=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.traefik.address=:8080"
       - --serversTransport.insecureSkipVerify=true
     ports:
       - "80:80"

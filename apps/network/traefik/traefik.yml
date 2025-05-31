@@ -14,9 +14,8 @@ log:
 api:
   dashboard: true
   insecure: true # Only for development, use proper authentication for production
+ping: {}
 
 providers:
   file:
     filename: ./routes.yml
-
-
