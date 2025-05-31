@@ -1,8 +1,10 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token eyJhIjoiNTY3Y2Q1ZmVkYjExZDZlOTJhZmI0NTRlNmUwMjA2ZTgiLCJ0IjoiYjBkM2VkNTItYjdkOS00MWQ2LTkyMzgtYTljMzE0NzU4YmFmIiwicyI6Ik1EVmpaR0ZpTmpZdE1tTmxOQzAwWXpNMkxXRm1OVEF0Wm1VNE1EVTROekZsTVdZNSJ9
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
     restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TOKEN_NFL}
     healthcheck:
       test: ["CMD", "cloudflared", "healthcheck", "--url", "http://localhost:8080"]
       interval: 30s

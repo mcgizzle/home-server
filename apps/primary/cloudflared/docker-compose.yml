@@ -4,7 +4,7 @@ services:
     command: tunnel --no-autoupdate run
     restart: unless-stopped
     environment:
-      - TUNNEL_TOKEN=eyJhIjoiNTY3Y2Q1ZmVkYjExZDZlOTJhZmI0NTRlNmUwMjA2ZTgiLCJ0IjoiYjQ2MTYwOTgtNmE5OS00MzZjLTk1NjEtODI3Y2RjZTM4NDlkIiwicyI6Ik1ESTRaR05rTXpZdFpUYzNZaTAwWldNeUxXRTJaVEl0T1dFMk9ERmpZamRrTVdNNSJ9
+      - TUNNEL_TOKEN=${CLOUDFLARE_TOKEN_PRIMARY}
       - TUNNEL_METRICS=0.0.0.0:60123
     networks:
       - internal-net

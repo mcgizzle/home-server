@@ -21,7 +21,7 @@ services:
       - VPN_TYPE=wireguard
       # Wireguard:
       - SERVER_HOSTNAMES=uk-lon.prod.surfshark.com
-      - WIREGUARD_PRIVATE_KEY=uDymMz0D2jX5ZPTXNHoCRJVcDsXZgMXaNiEGXJ7Eknk=
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
       - WIREGUARD_ADDRESSES=10.14.0.2/16
       # Enable control server for healthcheck (still useful for other purposes if needed)
       - CONTROL_SERVER_ADDRESS=:8000

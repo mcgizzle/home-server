@@ -4,7 +4,7 @@ This document outlines potential improvements and new features for the home serv
 
 ## I. Critical Security Improvements
 
-- [ ] **Externalize Hardcoded Secrets**
+- [x] **Externalize Hardcoded Secrets**
     - **Issue**: Sensitive information (API keys, passwords, tokens) is hardcoded in Docker Compose files.
     - **Affected Files & Action Details**:
         - `apps/primary/01-gluetun/docker-compose.yml`: The `WIREGUARD_PRIVATE_KEY` for Gluetun VPN is hardcoded. Move this key to `env.sh` (e.g., `export WIREGUARD_PRIVATE_KEY="your_actual_key"`) and update the `docker-compose.yml` to use `environment: - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}`.

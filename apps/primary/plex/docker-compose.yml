@@ -7,7 +7,6 @@ services:
     devices:
       - /dev/dri/:/dev/dri/
     environment:
-      - PLEX_CLAIM=claim-_iTNsgq24TywaTzPFhBp
       - PUID=0
       - PGID=0
       - VERSION=docker
