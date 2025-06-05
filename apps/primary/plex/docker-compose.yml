@@ -15,6 +15,7 @@ services:
       - "$MEDIA_MOUNT_PATH/movies:/movies"
       - "$MEDIA_MOUNT_PATH/movies4k:/movies4k"
       - "$MEDIA_MOUNT_PATH/tv-shows:/tv"
+      - "$MEDIA_MOUNT_PATH/books:/books"
       - "$DOCKER_VOLUME_PATH/plex/transcode:/transcode"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:32400/identity"]
