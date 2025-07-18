@@ -32,13 +32,7 @@ func initDb() *sql.DB {
 	return db
 }
 
-func backgroundLatestEvents(
-	espnClient external.ESPNClient,
-	resultRepo repository.ResultRepository,
-	ratingSvc application.RatingService,
-	fetchLatestUseCase application.FetchLatestResultsUseCase,
-	saveUseCase application.SaveResultsUseCase,
-) {
+func backgroundLatestEvents(espnClient external.ESPNClient, ratingSvc application.RatingService, fetchLatestUseCase application.FetchLatestResultsUseCase, saveUseCase application.SaveResultsUseCase) {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
 
@@ -76,7 +70,9 @@ func main() {
 	saveUseCase := application.NewSaveResultsUseCase(resultRepo)
 	getTemplateDataUseCase := application.NewGetTemplateDataUseCase(resultRepo)
 
-	go backgroundLatestEvents(espnClient, resultRepo, ratingSvc, fetchLatestUseCase, saveUseCase)
+	go func() {
+		backgroundLatestEvents(espnClient, ratingSvc, fetchLatestUseCase, saveUseCase)
+	}()
 
 	tmpl := template.Must(template.ParseFiles("static/template.html"))
 
