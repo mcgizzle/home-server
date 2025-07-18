@@ -1,0 +1,16 @@
+# Test artifacts
+*.test
+test_*.db
+*_test.db
+
+# Test coverage
+coverage.out
+coverage.html
+
+# Temporary files
+.tmp/
+tmp/
+
+# Keep testdata/template_data_golden.json (needed for regression tests)
+testdata/*
+!testdata/template_data_golden.json 

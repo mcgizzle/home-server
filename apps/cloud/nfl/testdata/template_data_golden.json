@@ -1,0 +1,3210 @@
+{
+  "Results": [
+    {
+      "id": 1,
+      "event_id": "401671810",
+      "season": "2024",
+      "season_type": "2",
+      "week": "10",
+      "rating": {
+        "score": 75,
+        "explanation": "Mock rating for deterministic testing",
+        "spoiler_free_explanation": "Mock spoiler-free rating for testing"
+      },
+      "game": {
+        "home": {
+          "name": "Baltimore Ravens",
+          "score": 35,
+          "record": "7-3",
+          "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"
+        },
+        "away": {
+          "name": "Cincinnati Bengals",
+          "score": 34,
+          "record": "4-6",
+          "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/cin.png"
+        },
+        "details": [
+          {
+            "shortText": "BLT Win Toss, Elect to Defers east",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Justin Tucker 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 7 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 6 Yds to Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:23"
+            }
+          },
+          {
+            "shortText": "Chase Brown 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:42"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Jermaine Burton",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:01"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 26 Yds to Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:58"
+            }
+          },
+          {
+            "shortText": "Chase Brown 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:18"
+            }
+          },
+          {
+            "shortText": "Chase Brown 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:41"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 19 Yds to Andrei Iosivas",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:02"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass for 3 Yds, Mike Gesicki Pass From Joe Burrow for 3 Yds, Play Reviewed, Upheld",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:20"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:45"
+            }
+          },
+          {
+            "shortText": "Timeout #2 BLT",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:40"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:40"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Chase Brown, Brandon Stephens 1 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:34"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:23"
+            }
+          },
+          {
+            "shortText": "Chase Brown 1 Yd Run (Evan McPherson Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:23"
+            }
+          },
+          {
+            "shortText": "Evan McPherson 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:23"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Incomplete Pass, Intended For Rashod Bateman",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:23"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 6 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:17"
+            }
+          },
+          {
+            "shortText": "Justice Hill Rush For No Gain",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:42"
+            }
+          },
+          {
+            "shortText": "Jordan Stout 54 Yd Punt to CIN 10",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:01"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:54"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Mike Gesicki",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:50"
+            }
+          },
+          {
+            "shortText": "Timeout #1 CIN",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:44"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Ja'Marr Chase, Nate Wiggins 13 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:44"
+            }
+          },
+          {
+            "shortText": "Chase Brown 7 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:39"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 7 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:01"
+            }
+          },
+          {
+            "shortText": "Chase Brown 7 Yd Rush , Ted Karras -10 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:20"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 9 Yds to Mike Gesicki",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:57"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 9 Yds to Tanner Hudson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:16"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 7 Yds to Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:33"
+            }
+          },
+          {
+            "shortText": "Chase Brown 7 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:53"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Andrei Iosivas",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:12"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Mike Gesicki",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:07"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Jermaine Burton",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:01"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:56"
+            }
+          },
+          {
+            "shortText": "Daniel Faalele -5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:56"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:56"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 17 Yds to Mark Andrews",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:23"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Incomplete Pass, Intended For Zay Flowers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:44"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson 9 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:40"
+            }
+          },
+          {
+            "shortText": "Keaton Mitchell Rush For No Gain , CIN 5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:06"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 11 Yds to Zay Flowers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:45"
+            }
+          },
+          {
+            "shortText": "End Quarter 1",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 7 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Derrick Henry Rush, Loss of 1 Yd",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:28"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 6 Yds to Justice Hill",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:46"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:04"
+            }
+          },
+          {
+            "shortText": "Nelson Agholor 6 Yd pass from Lamar Jackson (Justin Tucker Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:04"
+            }
+          },
+          {
+            "shortText": "Justin Tucker 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:04"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Aborted Snap, Joe Burrow Fumble, Khalil Herbert 0 Yd Fumble Recovery",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:04"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:25"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 9 Yds to Tanner Hudson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:18"
+            }
+          },
+          {
+            "shortText": "Ryan Rehkow 46 Yd Punt, Fair Catch by Tylan Wallace at BLT 16",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:35"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:28"
+            }
+          },
+          {
+            "shortText": "Ronnie Stanley -5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:28"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for Loss of 5 Yds to Zay Flowers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:27"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 5 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:45"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 9 Yds to Zay Flowers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:01"
+            }
+          },
+          {
+            "shortText": "Jordan Stout 46 Yd Punt to CIN 34, Trenton Irwin -4 Yd Return to 30",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:25"
+            }
+          },
+          {
+            "shortText": "Chase Brown 3 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:14"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:35"
+            }
+          },
+          {
+            "shortText": "Joe Burrow 6 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:31"
+            }
+          },
+          {
+            "shortText": "Tanner Hudson 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:47"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for Loss of 5 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:08"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Tanner Hudson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:23"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Sacked by Nnamdi Madubuike For 1 Yd Loss to CIN 34, Joe Burrow Fumble",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:19"
+            }
+          },
+          {
+            "shortText": "Ryan Rehkow 46 Yd Punt, Fair Catch by Tylan Wallace at BLT 20",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:40"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:32"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:32"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 4 Yds to Charlie Kolar",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:52"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Incomplete Pass, Intended For Zay Flowers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:15"
+            }
+          },
+          {
+            "shortText": "Jordan Stout 48 Yd Punt to CIN 27",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:08"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:02"
+            }
+          },
+          {
+            "shortText": "Chase Brown Rush For No Gain",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:02"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 13 Yds to Mike Gesicki",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:29"
+            }
+          },
+          {
+            "shortText": "Chase Brown 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:49"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 7 Yds to Tanner Hudson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:08"
+            }
+          },
+          {
+            "shortText": "Two-Minute Warning",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:00"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 13 Yds to Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:00"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 17 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:16"
+            }
+          },
+          {
+            "shortText": "Timeout #3 BLT",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:09"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Mike Gesicki, Odafe Oweh 5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:09"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Mike GesickiPlay Reviewed, Reversed",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:05"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Sacked by Nnamdi Madubuike For 0 Yd Loss to BLT 14",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:01"
+            }
+          },
+          {
+            "shortText": "Timeout #2 CIN",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:44"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 11 Yds to Jermaine Burton",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:44"
+            }
+          },
+          {
+            "shortText": "Timeout #3 CIN",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:36"
+            }
+          },
+          {
+            "shortText": "Tanner Hudson 3 Yd pass from Joe Burrow (Evan McPherson Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:30"
+            }
+          },
+          {
+            "shortText": "Evan McPherson 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:30"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 3 Yds to Mark Andrews",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:30"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Incomplete Pass, Intended For Nelson Agholor",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:26"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass for 14 Yds, Mark Andrews Pass From Lamar Jackson for 14 Yds, Germaine Pratt Penal",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:21"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 6 Yds to Diontae Johnson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:12"
+            }
+          },
+          {
+            "shortText": "End Quarter 2",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          },
+          {
+            "shortText": "Evan McPherson 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson 5 Yd Rush , Daniel Faalele -10 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:40"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Incomplete Pass, Intended For Diontae Johnson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:50"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass for 11 Yds, Tylan Wallace Pass From Lamar Jackson for 11 Yds, Roger Rosengarten P",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:43"
+            }
+          },
+          {
+            "shortText": "Jordan Stout 35 Yd Punt, Fair Catch by Trenton Irwin at CIN 33",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:28"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:09"
+            }
+          },
+          {
+            "shortText": "Ja'Marr Chase 67 Yd pass from Joe Burrow (Evan McPherson Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:09"
+            }
+          },
+          {
+            "shortText": "Evan McPherson 67 Yd Kickoff, Keaton Mitchell 30 Yd Return",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:09"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:04"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:24"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 9 Yds to Rashod Bateman",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:47"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass for 5 Yds, Zay Flowers Pass From Lamar Jackson for 5 Yds, Patrick Mekari 5 Yd Pnl",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:07"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Incomplete Pass, Intended For",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:41"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:36"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for Loss of 6 Yds to Justice Hill",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:51"
+            }
+          },
+          {
+            "shortText": "Jordan Stout 48 Yd Punt, Trenton Irwin Punt Return, No Gain, Josh Newton 8 Yd Pnlty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:08"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:58"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 4 Yds to Tanner Hudson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:58"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:22"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 10 Yds to Tanner Hudson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:16"
+            }
+          },
+          {
+            "shortText": "Chase Brown 5 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:42"
+            }
+          },
+          {
+            "shortText": "Chase Brown 3 Yd Rush, Chase Brown Fumble, Roquan Smith 0 Yd Fumble Recovery",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:05"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 8 Yds to Rashod Bateman",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:58"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 11 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:21"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:51"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson 10 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:10"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:12"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 1 Yd Run (Justin Tucker Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:12"
+            }
+          },
+          {
+            "shortText": "Justin Tucker 63 Yd Kickoff, Jermaine Burton 17 Yd Return",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:12"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 7 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:06"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 15 Yds to Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:26"
+            }
+          },
+          {
+            "shortText": "Chase Brown 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:45"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 7 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:07"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 17 Yds to Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:21"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Sacked by Nnamdi Madubuike For 6 Yd Loss to BLT 40",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:39"
+            }
+          },
+          {
+            "shortText": "End Quarter 3",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:54"
+            }
+          },
+          {
+            "shortText": "Ryan Rehkow 32 Yd Punt, Fair Catch by Tylan Wallace at BLT 8",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:50"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 5 Yds to Rashod Bateman",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:44"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 3 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:08"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:30"
+            }
+          },
+          {
+            "shortText": "Tylan Wallace 84 Yd pass from Lamar Jackson (Justin Tucker PAT failed)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:30"
+            }
+          },
+          {
+            "shortText": "Justin Tucker 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:30"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 17 Yds to Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:30"
+            }
+          },
+          {
+            "shortText": "Chase Brown 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:56"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for No Gain to Cam Grandy",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:18"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 7 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:30"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 5 Yds to Mike Gesicki",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:54"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 3 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:20"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:33"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Jermaine Burton",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:29"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:24"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 20 Yds to Tylan Wallace",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:24"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 11 Yds to Mark Andrews",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:49"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 9 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:15"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson 6 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:45"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 3 Yds to Derrick Henry",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:17"
+            }
+          },
+          {
+            "shortText": "Justice Hill Rush, Loss of 2 Yds",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:37"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:50"
+            }
+          },
+          {
+            "shortText": "Mark Andrews 18 Yd pass from Lamar Jackson (Lamar Jackson Run for Two-Point Conversion)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:50"
+            }
+          },
+          {
+            "shortText": "Justin Tucker 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:50"
+            }
+          },
+          {
+            "shortText": "Ja'Marr Chase 70 Yd pass from Joe Burrow (Evan McPherson Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:37"
+            }
+          },
+          {
+            "shortText": "Evan McPherson 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:37"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Incomplete Pass, Intended For Mark AndrewsPlay Reviewed, Reversed",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:37"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:26"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 12 Yds to Rashod Bateman",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:47"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 19 Yds to Zay Flowers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:04"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 8 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:55"
+            }
+          },
+          {
+            "shortText": "Derrick Henry 3 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:15"
+            }
+          },
+          {
+            "shortText": "Timeout #1 BLT",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:29"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass for 8 Yds, Zay Flowers Pass From Lamar Jackson for 8 Yds, Tyler Linderbaum 5 Yd P",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:29"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 5 Yds to Mark Andrews",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:22"
+            }
+          },
+          {
+            "shortText": "Timeout #1 CIN",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:16"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Pass Complete for 15 Yds to Rashod Bateman",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:16"
+            }
+          },
+          {
+            "shortText": "Timeout #2 CIN",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:09"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:06"
+            }
+          },
+          {
+            "shortText": "Two-Minute Warning",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:00"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Incomplete Pass, Intended For Rashod Bateman",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:00"
+            }
+          },
+          {
+            "shortText": "Rashod Bateman 5 Yd pass from Lamar Jackson (Justin Tucker Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:49"
+            }
+          },
+          {
+            "shortText": "Justin Tucker 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:49"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Mike Gesicki",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:49"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Ja'Marr Chase",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:44"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Andrei Iosivas",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:40"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass for 10 Yds, Andrei Iosivas Pass From Joe Burrow for 10 Yds, Play Reviewed, Upheld",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:36"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Mike Gesicki",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:15"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Ja'Marr Chase, Marlon Humphrey 15 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:11"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass for 21 Yds, Ja'Marr Chase Pass From Joe Burrow for 21 Yds, Broderick Washington 12 Y",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:06"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Incomplete Pass, Intended For Jermaine Burton",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:59"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass for 7 Yds, Ja'Marr Chase Pass From Joe Burrow for 7 Yds, Kyle Van Noy 5 Yd Pnlty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:54"
+            }
+          },
+          {
+            "shortText": "Joe Burrow Pass Complete for 2 Yds to Chase Brown",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:50"
+            }
+          },
+          {
+            "shortText": "Timeout #3 CIN",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:38"
+            }
+          },
+          {
+            "shortText": "Timeout #2 BLT",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:38"
+            }
+          },
+          {
+            "shortText": "Ja'Marr Chase 5 Yd pass from Joe Burrow (Two-Point Pass Conversion Failed)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:38"
+            }
+          },
+          {
+            "shortText": "Evan McPherson  Onside Kick,",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:38"
+            }
+          },
+          {
+            "shortText": "Lamar Jackson Rush, Loss of 1 Yd",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:37"
+            }
+          },
+          {
+            "shortText": "End Quarter 4",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "event_id": "401671803",
+      "season": "2024",
+      "season_type": "2",
+      "week": "10",
+      "rating": {
+        "score": 75,
+        "explanation": "Mock rating for deterministic testing",
+        "spoiler_free_explanation": "Mock spoiler-free rating for testing"
+      },
+      "game": {
+        "home": {
+          "name": "Carolina Panthers",
+          "score": 20,
+          "record": "3-7",
+          "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/car.png"
+        },
+        "away": {
+          "name": "New York Giants",
+          "score": 17,
+          "record": "2-8",
+          "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png"
+        },
+        "details": [
+          {
+            "shortText": "NYG Win Toss, Elect to Defers north",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Graham Gano 65 Yd Kickoff, Raheem Blackshear 28 Yd Return",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 5 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:55"
+            }
+          },
+          {
+            "shortText": "Bryce Young Sacked by Brian Burns For 8 Yd Loss to CAR 25",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:23"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 9 Yds to Jalen Coker",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:47"
+            }
+          },
+          {
+            "shortText": "Johnny Hekker 49 Yd Punt to NYG 17, Ihmir Smith-Marsette Return, No Gain",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:03"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Jalin Hyatt, Jadeveon Clowney Penalty Declined, Michael J",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:54"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:54"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:40"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:00"
+            }
+          },
+          {
+            "shortText": "NYG -5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:00"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:48"
+            }
+          },
+          {
+            "shortText": "Jamie Gillan 33 Yd Punt, Fair Catch by David Moore at CAR 10",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:48"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 23 Yds to Xavier Legette",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:48"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 26 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:10"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 3 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:24"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 6 Yds to Xavier Legette",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:51"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 26 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:14"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:42"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For Jalen Coker",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:58"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:48"
+            }
+          },
+          {
+            "shortText": "Ja'Tavion Sanders 5 Yd pass from Bryce Young (Eddy Pineiro Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:48"
+            }
+          },
+          {
+            "shortText": "Eddy Pineiro 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:48"
+            }
+          },
+          {
+            "shortText": "Devin Singletary 9 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:48"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 3 Yds to Wan'Dale Robinson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:12"
+            }
+          },
+          {
+            "shortText": "Devin Singletary 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:36"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:56"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Wan'Dale Robinson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:52"
+            }
+          },
+          {
+            "shortText": "DJ Johnson 5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:48"
+            }
+          },
+          {
+            "shortText": "Jamie Gillan 42 Yd Punt, Raheem Blackshear Muffed kick, Deonte Banks 0 Yd Fumble Recovery, Raheem Bl",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:48"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:39"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:36"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 24 Yds to Jalen Coker",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:01"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 15 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:20"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 8 Yds to Jalen Coker",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:41"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:03"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:21"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 3 Yds to Ian Thomas",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:42"
+            }
+          },
+          {
+            "shortText": "Miles Sanders 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:03"
+            }
+          },
+          {
+            "shortText": "Cade Mays -5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:22"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For Jalen Coker",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:03"
+            }
+          },
+          {
+            "shortText": "End Quarter 1",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          },
+          {
+            "shortText": "Eddy Pineiro 53 Yd Field Goal  ",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:55"
+            }
+          },
+          {
+            "shortText": "Eddy Pineiro 43 Yd Kickoff, Eddy Pineiro 0 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:55"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:55"
+            }
+          },
+          {
+            "shortText": "Daniel Jones 10 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:47"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 19 Yds to Jalin Hyatt",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:02"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:19"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. Rush, Loss of 2 Yds",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:13"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 8 Yds to Wan'Dale Robinson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:29"
+            }
+          },
+          {
+            "shortText": "Graham Gano Missed 43 Yd FG Wide Right",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:48"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:44"
+            }
+          },
+          {
+            "shortText": "Miles Sanders 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:44"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:31"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard Rush, Loss of 1 Yd",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:16"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For David Moore",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:37"
+            }
+          },
+          {
+            "shortText": "Johnny Hekker 0 Yd Punt, Fair Catch by Ihmir Smith-Marsette, Feleipe Franks  Yd Pnlty, Ihmir Smith-M",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:33"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:26"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 5 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:26"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 11 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:47"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 5 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:09"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 4 Yds to Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:31"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Sacked by D.J. Wonnum For 8 Yd Loss to NYG 41",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:51"
+            }
+          },
+          {
+            "shortText": "Jamie Gillan 46 Yd Punt, David Moore 6 Yd Punt Return, Sam Franklin Jr. 9 Yd Pnlty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:11"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:00"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 1 Yd to Chuba Hubbard",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:00"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 5 Yds to David Moore",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:21"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For Jalen Coker",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:41"
+            }
+          },
+          {
+            "shortText": "Johnny Hekker 55 Yd Punt to NYG 29, Ihmir Smith-Marsette 7 Yd Return to 36",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:36"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:25"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 8 Yds to Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:25"
+            }
+          },
+          {
+            "shortText": "Devin Singletary 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:34"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:00"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 3 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:54"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 12 Yds to Wan'Dale Robinson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:14"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 19 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:41"
+            }
+          },
+          {
+            "shortText": "Two-Minute Warning",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:00"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. Rush, Loss of 3 Yds",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:00"
+            }
+          },
+          {
+            "shortText": "Timeout #1 CAR",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:54"
+            }
+          },
+          {
+            "shortText": "Pass Intercepted by Xavier Woods, 4 Yd Return",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:54"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 7 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:48"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:23"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 10 Yds to Chuba Hubbard",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:03"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For David Moore",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:43"
+            }
+          },
+          {
+            "shortText": "Bryce Young 6 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:40"
+            }
+          },
+          {
+            "shortText": "Timeout #2 CAR",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:30"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For Chuba Hubbard",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:30"
+            }
+          },
+          {
+            "shortText": "Timeout #1 NYG",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:27"
+            }
+          },
+          {
+            "shortText": "CAR -5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:27"
+            }
+          },
+          {
+            "shortText": "Johnny Hekker 0 Yd Punt, Downed at NYG 9",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:27"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Rush, Loss of 1 Yd",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:18"
+            }
+          },
+          {
+            "shortText": "End Quarter 2",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          },
+          {
+            "shortText": "Eddy Pineiro 64 Yd Kickoff, Eric Gray 26 Yd KO Return, Lonnie Johnson Jr.  Yd Pnlty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Eddy Pineiro 60 Yd Kickoff, Eric Gray 30 Yd Return",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:55"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 8 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:49"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. Rush For No Gain",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:10"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:42"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 7 Yds to Isaiah Hodgins",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:02"
+            }
+          },
+          {
+            "shortText": "Devin Singletary 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:18"
+            }
+          },
+          {
+            "shortText": "Daniel Jones 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:46"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 5 Yds to Devin Singletary",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:06"
+            }
+          },
+          {
+            "shortText": "Devin Singletary 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:21"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 5 Yds to Wan'Dale Robinson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:48"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:54"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 32 Yd Run (Graham Gano Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:54"
+            }
+          },
+          {
+            "shortText": "Graham Gano 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:54"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 4 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:54"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 5 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:22"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 25 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:38"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:20"
+            }
+          },
+          {
+            "shortText": "Bryce Young 24 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:58"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 1 Yd Rush , D.J. Davidson 5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:14"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 9 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:59"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass for 7 Yds, David Moore Pass From Bryce Young for 7 Yds, CAR 5 Yd Pnlty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:16"
+            }
+          },
+          {
+            "shortText": "Robert Hunt -5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:11"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 13 Yds to David Moore",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:11"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 3 Yds to Ja'Tavion Sanders",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:45"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard Rush For No Gain",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:21"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:33"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 1 Yd Run (Eddy Pineiro Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:33"
+            }
+          },
+          {
+            "shortText": "Eddy Pineiro 65 Yd Kickoff, Eric Gray 26 Yd Return",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:33"
+            }
+          },
+          {
+            "shortText": "Devin Singletary 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:28"
+            }
+          },
+          {
+            "shortText": "Daniel Jones 3 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:43"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:32"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Sacked by A'Shawn Robinson For 7 Yd Loss to NYG 24",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:16"
+            }
+          },
+          {
+            "shortText": "Jamie Gillan 42 Yd Punt to CAR 34, Raheem Blackshear 13 Yd Return to 47",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:39"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For Jalen Coker",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:32"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For Xavier Legette",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:27"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 3 Yds to Chuba Hubbard",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:24"
+            }
+          },
+          {
+            "shortText": "Johnny Hekker 0 Yd Punt, Downed at NYG 4",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:43"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:31"
+            }
+          },
+          {
+            "shortText": "End Quarter 3",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Wan'Dale Robinson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "15:00"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 10 Yds to Theo Johnson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:55"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "14:17"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 23 Yds to Wan'Dale Robinson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "13:40"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 19 Yds to Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:56"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:45"
+            }
+          },
+          {
+            "shortText": "Devin Singletary 14 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "12:32"
+            }
+          },
+          {
+            "shortText": "Devin Singletary 6 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:59"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass for 1 Yd, Tyrone Tracy Jr. Pass From Daniel Jones for 1 Yd, Tyrone Tracy Jr. Fumbl",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "11:22"
+            }
+          },
+          {
+            "shortText": "Daniel Jones 8 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:50"
+            }
+          },
+          {
+            "shortText": "Daniel Jones 3 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:07"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 8 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:23"
+            }
+          },
+          {
+            "shortText": "Timeout",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:33"
+            }
+          },
+          {
+            "shortText": "Daniel Jones 2 Yd Run (Graham Gano Kick)",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:33"
+            }
+          },
+          {
+            "shortText": "Graham Gano 65 Yd Kickoff, Touchback",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:33"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 4 Yd Rush , Jalen Coker -10 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:33"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass for 2 Yds, Chuba Hubbard Pass From Bryce Young for 2 Yds, Chuba Hubbard Fumble, D.J",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:08"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 11 Yds to Theo Johnson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:01"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 5 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:19"
+            }
+          },
+          {
+            "shortText": "Malik Nabers Rush, Loss of 2 Yds",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:42"
+            }
+          },
+          {
+            "shortText": "Pass Intercepted by Josey Jewell,  Returned, No Gain",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "6:02"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 6 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:56"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "5:22"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For Jalen Coker",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:45"
+            }
+          },
+          {
+            "shortText": "Johnny Hekker 54 Yd Punt to NYG 29, Ihmir Smith-Marsette 10 Yd Return to 39",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:40"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 6 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "4:29"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. 2 Yd Rush , Wan'Dale Robinson -5 Yd Penalty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:54"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Wan'Dale Robinson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:44"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Theo Johnson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:40"
+            }
+          },
+          {
+            "shortText": "Jamie Gillan 41 Yd Punt, Fair Catch by David Moore at CAR 19",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:34"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 3 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "3:27"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard Rush, Loss of 1 Yd",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:49"
+            }
+          },
+          {
+            "shortText": "Timeout #1 NYG",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:44"
+            }
+          },
+          {
+            "shortText": "Bryce Young Pass Complete for 11 Yds to Xavier Legette",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:44"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard Rush, Loss of 2 Yds",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:44"
+            }
+          },
+          {
+            "shortText": "Timeout #2 NYG",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:37"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:37"
+            }
+          },
+          {
+            "shortText": "Timeout #3 NYG",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:34"
+            }
+          },
+          {
+            "shortText": "Bryce Young Incomplete Pass, Intended For Chuba Hubbard",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:34"
+            }
+          },
+          {
+            "shortText": "Johnny Hekker 47 Yd Punt, Fair Catch by Ihmir Smith-Marsette at NYG 21",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:29"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 4 Yds to Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:23"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 10 Yds to Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "2:04"
+            }
+          },
+          {
+            "shortText": "Two-Minute Warning",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:59"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For Malik NabersPlay Reviewed, Reversed",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:59"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 6 Yds to Jalin Hyatt",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:52"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 5 Yds to Jalin Hyatt",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:34"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 13 Yds to Theo Johnson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "1:16"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 9 Yds to Jalin Hyatt",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:46"
+            }
+          },
+          {
+            "shortText": "Timeout #1 CAR",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:17"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 5 Yds to Malik Nabers",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:17"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Spikes Ball to Stop Clock",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:17"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Pass Complete for 3 Yds to Theo Johnson",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:17"
+            }
+          },
+          {
+            "shortText": "Timeout #2 CAR",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:13"
+            }
+          },
+          {
+            "shortText": "Daniel Jones Incomplete Pass, Intended For",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:13"
+            }
+          },
+          {
+            "shortText": "Timeout #3 CAR",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:10"
+            }
+          },
+          {
+            "shortText": "Graham Gano 42 Yd Field Goal  ",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:05"
+            }
+          },
+          {
+            "shortText": "Graham Gano 62 Yd Kickoff, Raheem Blackshear 23 Yd KO Return, Feleipe Franks 0 Yd Pnlty",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:05"
+            }
+          },
+          {
+            "shortText": "End Quarter 4",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          },
+          {
+            "shortText": "Eddy Pineiro 60 Yd Kickoff, Eric Gray 21 Yd Return",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "10:00"
+            }
+          },
+          {
+            "shortText": "Tyrone Tracy Jr. Rush, Loss of 2, Tyrone Tracy Jr. Fumble, Josey Jewell 0 Yd Fumble Recovery",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:55"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 1 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:49"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "9:08"
+            }
+          },
+          {
+            "shortText": "Chuba Hubbard 2 Yd Rush",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "8:25"
+            }
+          },
+          {
+            "shortText": "Timeout #1 NYG",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:56"
+            }
+          },
+          {
+            "shortText": "Eddy Pineiro 36 Yd Field Goal  ",
+            "scoringPlay": true,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "7:53"
+            }
+          },
+          {
+            "shortText": "End Quarter 5",
+            "scoringPlay": false,
+            "scoringValue": 0,
+            "Clock": {
+              "displayValue": "0:00"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "Dates": [
+    {
+      "Season": "2024",
+      "Week": "10",
+      "SeasonType": "2",
+      "SeasonTypeShowable": "Regular Season"
+    }
+  ],
+  "Current": {
+    "Season": "2024",
+    "Week": "10",
+    "SeasonType": "2",
+    "SeasonTypeShowable": "Regular Season"
+  }
+}

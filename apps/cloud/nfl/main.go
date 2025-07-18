@@ -15,14 +15,11 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 )
 
 var ApiKey string
 var DB_PATH = "data/results.db"
-
-const PreSeason = "1"
-const RegularSeason = "2"
-const PostSeason = "3"
 
 type EventRef struct {
 	Ref string `json:"$ref"`
@@ -282,19 +279,6 @@ func getRecord(ref string) RecordResponse {
 	return res
 }
 
-type TeamResult struct {
-	Name   string  `json:"name"`
-	Score  float64 `json:"score"`
-	Record string  `json:"record"`
-	Logo   *string `json:"logo"`
-}
-
-type Game struct {
-	Home    TeamResult    `json:"home"`
-	Away    TeamResult    `json:"away"`
-	Details []DetailsItem `json:"details"`
-}
-
 type StatsRef struct {
 	Ref string `json:"$ref"`
 }
@@ -304,18 +288,9 @@ type DetailsRef struct {
 }
 
 type DetailsResponse struct {
-	PageIndex int           `json:"pageIndex"`
-	PageCount int           `json:"pageCount"`
-	Items     []DetailsItem `json:"items"`
-}
-
-type DetailsItem struct {
-	ShortText    string  `json:"shortText"`
-	ScoringPlay  bool    `json:"scoringPlay"`
-	ScoringValue float64 `json:"scoringValue"`
-	Clock        struct {
-		DisplayValue string `json:"displayValue"`
-	}
+	PageIndex int                  `json:"pageIndex"`
+	PageCount int                  `json:"pageCount"`
+	Items     []domain.DetailsItem `json:"items"`
 }
 
 func getDetails(ref string, page int) DetailsResponse {
@@ -361,7 +336,7 @@ func getDetailsPaged(ref string) []DetailsResponse {
 	return details
 }
 
-func getTeamAndScore(response EventResponse) *Game {
+func getTeamAndScore(response EventResponse) *domain.Game {
 	competitors := response.Competitions[0].Competitors
 
 	if response.Competitions[0].LiveAvailable {
@@ -369,7 +344,7 @@ func getTeamAndScore(response EventResponse) *Game {
 		return nil
 	}
 
-	var game Game
+	var game domain.Game
 
 	for _, competitor := range competitors {
 
@@ -378,7 +353,7 @@ func getTeamAndScore(response EventResponse) *Game {
 
 		record := getRecord(competitor.Record.Ref)
 
-		teamResult := TeamResult{
+		teamResult := domain.Team{
 			Name:   team.DisplayName,
 			Logo:   &team.Logos[0].Href,
 			Score:  score.Value,
@@ -399,7 +374,7 @@ func getTeamAndScore(response EventResponse) *Game {
 
 	details := response.Competitions[0].DetailsRefs
 
-	var detailsItems []DetailsItem
+	var detailsItems []domain.DetailsItem
 	for _, detail := range getDetailsPaged(details.Ref) {
 		detailsItems = append(detailsItems, detail.Items...)
 	}
@@ -426,13 +401,7 @@ const prompt = "Analyze the provided NFL game play-by-play data and generate a '
 	"Consider the overall 'wow' factor of the game. Were there memorable moments or plays that would be discussed for years to come? Be a tough critic - only truly exceptional games should score above 90!" +
 	"IMPORTANT: Return as JSON with shape : { 'score' : 0, 'explanation' : 'Your explanation here, may include game spoilers.', 'spoiler_free_explanation' : 'Your spoiler-free explanation here, do not include any details about the outcome of the game' }"
 
-type Rating struct {
-	Score       int    `json:"score"`
-	Explanation string `json:"explanation"`
-	SpoilerFree string `json:"spoiler_free_explanation"`
-}
-
-func produceRating(game Game) Rating {
+func produceRating(game domain.Game) domain.Rating {
 	client := resty.New()
 
 	type Body struct {
@@ -462,7 +431,7 @@ func produceRating(game Game) Rating {
 
 	post, err := client.R().SetAuthToken(ApiKey).SetBody(body).Post("https://api.openai.com/v1/chat/completions")
 	if err != nil {
-		return Rating{}
+		return domain.Rating{}
 	}
 
 	type OuterResponse struct {
@@ -487,7 +456,7 @@ func produceRating(game Game) Rating {
 	jsonString = strings.ReplaceAll(jsonString, "\\n", "")
 	jsonString = strings.ReplaceAll(jsonString, "\\\"", "\"")
 
-	var response Rating
+	var response domain.Rating
 
 	err = json.Unmarshal([]byte(jsonString), &response)
 	if err != nil {
@@ -501,16 +470,6 @@ func produceRating(game Game) Rating {
 
 	return response
 
-}
-
-type Result struct {
-	Id         int    `json:"id"`
-	EventId    string `json:"event_id"`
-	Season     string `json:"season"`
-	SeasonType string `json:"season_type"`
-	Week       string `json:"week"`
-	Rating     Rating `json:"rating"`
-	Game       Game   `json:"game"`
 }
 
 func initDb() *sql.DB {
@@ -529,7 +488,7 @@ func initDb() *sql.DB {
 	return db
 }
 
-func saveResults(db *sql.DB, results []Result) {
+func saveResults(db *sql.DB, results []domain.Result) {
 
 	stmt, err := db.Prepare("insert into results(event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
@@ -576,7 +535,7 @@ func saveResults(db *sql.DB, results []Result) {
 	log.Printf("Saved %d results", len(results))
 }
 
-func loadResults(db *sql.DB, season string, week string, seasonType string) []Result {
+func loadResults(db *sql.DB, season string, week string, seasonType string) []domain.Result {
 	if season == "" || week == "" || seasonType == "" {
 		log.Fatal("Season or week or season type not provided")
 	}
@@ -594,10 +553,10 @@ func loadResults(db *sql.DB, season string, week string, seasonType string) []Re
 		}
 	}(rows)
 
-	var results []Result
+	var results []domain.Result
 
 	for rows.Next() {
-		var result Result
+		var result domain.Result
 		var gameJson string
 		err = rows.Scan(&result.Id, &result.EventId, &result.Season, &result.Week, &result.SeasonType, &result.Rating.Score, &result.Rating.Explanation, &result.Rating.SpoilerFree, &gameJson)
 
@@ -616,7 +575,7 @@ func loadResults(db *sql.DB, season string, week string, seasonType string) []Re
 	return results
 }
 
-func loadDates(db *sql.DB) []Date {
+func loadDates(db *sql.DB) []domain.Date {
 	selectQuery := "select distinct season, week, season_type from results order by season_type desc, season desc, week desc"
 
 	rows, err := db.Query(selectQuery)
@@ -630,7 +589,7 @@ func loadDates(db *sql.DB) []Date {
 		}
 	}(rows)
 
-	var dates []Date
+	var dates []domain.Date
 
 	for rows.Next() {
 		var season string
@@ -642,7 +601,7 @@ func loadDates(db *sql.DB) []Date {
 			log.Fatal(err)
 		}
 
-		dates = append(dates, Date{
+		dates = append(dates, domain.Date{
 			Season:     season,
 			Week:       week,
 			SeasonType: seasonType,
@@ -652,7 +611,7 @@ func loadDates(db *sql.DB) []Date {
 	return dates
 }
 
-func fetchResultsForThisWeek(existingResults []Result) []Result {
+func fetchResultsForThisWeek(existingResults []domain.Result) []domain.Result {
 
 	eventRefs := listLatestEvents()
 
@@ -677,7 +636,7 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 		}
 	}
 
-	var results []Result
+	var results []domain.Result
 	for _, eventRef := range filteredEventRefs {
 		log.Printf("Processing event: Season %s - Week %s - Season Type %s", season, week, seasonType)
 		event := getEvent(eventRef.Ref)
@@ -692,7 +651,7 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 
 		rantScore := produceRating(game)
 
-		result := Result{
+		result := domain.Result{
 			EventId:    event.Id,
 			Season:     season,
 			SeasonType: seasonType,
@@ -710,11 +669,11 @@ func fetchResultsForThisWeek(existingResults []Result) []Result {
 
 }
 
-func fetchResults(season string, week string, seasonType string) []Result {
+func fetchResults(season string, week string, seasonType string) []domain.Result {
 
 	specificEvents := listSpecificEvents(season, week, seasonType)
 
-	var results []Result
+	var results []domain.Result
 	for _, eventId := range specificEvents.Events {
 		log.Printf("Processing event: %s - %s", season, week)
 		event := getEventById(eventId.Id)
@@ -727,7 +686,7 @@ func fetchResults(season string, week string, seasonType string) []Result {
 
 		rantScore := produceRating(game)
 
-		result := Result{
+		result := domain.Result{
 			EventId:    eventId.Id,
 			Season:     season,
 			SeasonType: seasonType,
@@ -754,61 +713,6 @@ func backgroundLatestEvents(db *sql.DB) {
 		newResults := fetchResultsForThisWeek(results)
 		saveResults(db, newResults)
 	}
-}
-
-type Date struct {
-	Season     string
-	Week       string
-	SeasonType string
-}
-
-// Displayed in the UI, seasontype is a string
-type DateTemplate struct {
-	Season     string
-	Week       string
-	SeasonType string
-	// Printable version of season type
-	SeasonTypeShowable string
-}
-
-func (d Date) Template() DateTemplate {
-
-	var seasonType string
-	switch d.SeasonType {
-	case PreSeason:
-		seasonType = "Preseason"
-	case RegularSeason:
-		seasonType = "Regular Season"
-	case PostSeason:
-		seasonType = "Postseason"
-	}
-
-	return DateTemplate{
-		Season:             d.Season,
-		Week:               d.Week,
-		SeasonTypeShowable: seasonType,
-		SeasonType:         d.SeasonType,
-	}
-
-}
-
-func seasonTypeToNumber(seasonType string) string {
-	switch seasonType {
-	case PreSeason:
-		return "1"
-	case RegularSeason:
-		return "2"
-	case PostSeason:
-		return "3"
-	default:
-		return "0"
-	}
-}
-
-type TemplateData struct {
-	Results []Result
-	Dates   []DateTemplate
-	Current DateTemplate
 }
 
 func main() {
@@ -856,9 +760,9 @@ func main() {
 		season := r.URL.Query().Get("season")
 		seasonType := r.URL.Query().Get("seasontype")
 
-		var results []Result
+		var results []domain.Result
 		if week != "" && season != "" && seasonType != "" {
-			seasonTypeNumber := seasonTypeToNumber(seasonType)
+			seasonTypeNumber := domain.SeasonTypeToNumber(seasonType)
 			results = loadResults(db, season, week, seasonTypeNumber)
 		} else {
 			// Instead of using current week from ESPN API, use the most recent week with results
@@ -873,10 +777,10 @@ func main() {
 				// Database is empty - show empty state
 				log.Println("Database is empty, showing empty state")
 
-				data := TemplateData{
-					Results: []Result{},
-					Dates:   []DateTemplate{},
-					Current: DateTemplate{
+				data := domain.TemplateData{
+					Results: []domain.Result{},
+					Dates:   []domain.DateTemplate{},
+					Current: domain.DateTemplate{
 						Season:             "No data",
 						Week:               "available",
 						SeasonTypeShowable: "yet",
@@ -897,15 +801,15 @@ func main() {
 
 		log.Printf("Loaded %d weeks", len(dates))
 
-		dateTemplates := make([]DateTemplate, len(dates))
+		dateTemplates := make([]domain.DateTemplate, len(dates))
 		for i, date := range dates {
 			dateTemplates[i] = date.Template()
 		}
 
-		data := TemplateData{
+		data := domain.TemplateData{
 			Results: results,
 			Dates:   dateTemplates,
-			Current: Date{
+			Current: domain.Date{
 				Season:     season,
 				Week:       week,
 				SeasonType: seasonType,
