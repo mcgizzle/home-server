@@ -747,16 +747,12 @@ func backgroundLatestEvents(db *sql.DB) {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ticker.C:
-			log.Println("Checking for new events")
-			current := listLatestEvents().Meta.Parameters
-			results := loadResults(db, current.Season[0], current.Week[0], current.SeasonTypes[0])
-			newResults := fetchResultsForThisWeek(results)
-			saveResults(db, newResults)
-
-		}
+	for range ticker.C {
+		log.Println("Checking for new events")
+		current := listLatestEvents().Meta.Parameters
+		results := loadResults(db, current.Season[0], current.Week[0], current.SeasonTypes[0])
+		newResults := fetchResultsForThisWeek(results)
+		saveResults(db, newResults)
 	}
 }
 
