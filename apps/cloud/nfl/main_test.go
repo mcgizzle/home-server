@@ -228,4 +228,39 @@ func TestRealESPNEndToEnd(t *testing.T) {
 
 	t.Logf("Successfully retrieved template data with %d results", len(templateData.Results))
 	t.Logf("Available dates: %d", len(templateData.Dates))
+
+	// Test week display functionality
+	if len(templateData.Dates) > 0 {
+		for _, date := range templateData.Dates {
+			t.Logf("Date display: %s - %s - %s", date.Season, date.WeekDisplay, date.SeasonTypeShowable)
+
+			// Verify that post-season weeks are properly converted to round names
+			if date.SeasonType == "3" { // Post-Season
+				switch date.Week {
+				case "1":
+					if date.WeekDisplay != "Wild Card" {
+						t.Errorf("Expected 'Wild Card' for post-season week 1, got '%s'", date.WeekDisplay)
+					}
+				case "2":
+					if date.WeekDisplay != "Divisional" {
+						t.Errorf("Expected 'Divisional' for post-season week 2, got '%s'", date.WeekDisplay)
+					}
+				case "3":
+					if date.WeekDisplay != "Conference Championship" {
+						t.Errorf("Expected 'Conference Championship' for post-season week 3, got '%s'", date.WeekDisplay)
+					}
+				case "4":
+					if date.WeekDisplay != "Super Bowl" {
+						t.Errorf("Expected 'Super Bowl' for post-season week 4, got '%s'", date.WeekDisplay)
+					}
+				}
+			} else {
+				// Verify that regular season weeks show "Week X"
+				expected := "Week " + date.Week
+				if date.WeekDisplay != expected {
+					t.Errorf("Expected '%s' for season type %s week %s, got '%s'", expected, date.SeasonType, date.Week, date.WeekDisplay)
+				}
+			}
+		}
+	}
 }
