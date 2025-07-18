@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="primary" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" serverName="home-server" autoUploadExternalChanges="true">
     <serverData>
       <paths name="network">
         <serverdata>
           <mappings>
-            <mapping deploy="code/home-server" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/code/home-server" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
       <paths name="primary">
         <serverdata>
           <mappings>
-            <mapping deploy="code/home-server" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/code/home-server" local="$PROJECT_DIR$" web="/" />
           </mappings>
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/data" />
@@ -20,6 +20,6 @@
         </serverdata>
       </paths>
     </serverData>
-    <option name="myAutoUpload" value="ON_EXPLICIT_SAVE" />
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>

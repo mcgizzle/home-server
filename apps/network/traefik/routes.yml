@@ -87,7 +87,7 @@ http:
     torrent:
       loadBalancer:
         servers:
-          - url: http://${PRIMARY_IP}:8081
+          - url: http://${PRIMARY_IP}:9091
         passHostHeader: false
     grafana:
       loadBalancer:
