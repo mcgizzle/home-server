@@ -15,61 +15,122 @@
 - Updated test suite to use domain types
 - All tests pass, maintaining backward compatibility
 
-### 📋 Phase 2: Extract Repositories & External Services - PLANNED
-- Extract database operations into repository interfaces
-- Extract ESPN API client into external service layer
-- Further separate infrastructure from business logic
+### ✅ Phase 2: Extract Repositories & External Services - COMPLETE
+- Extracted database operations into repository interfaces
+- Extracted ESPN API operations into external service clients
+- Implemented dependency injection throughout the application
+- Created comprehensive mock implementations for testing
+- All tests pass, maintaining backward compatibility
 
-## Refactor Approach: Stop After Each Phase
+### 📋 Phase 3: Extract Use Cases & Application Services - PLANNED
+- Extract business logic into application services
+- Create use case interfaces and implementations
+- Implement proper orchestration between layers
+- Maintain clean separation of concerns
 
-This refactor follows a conservative, step-by-step approach:
+## Architecture Progress
 
-1. **Phase 0**: Establish regression testing foundation
+### Current Architecture Layers:
+1. **✅ Domain Layer** (`internal/domain/`)
+   - Business entities (`entities.go`)
+   - Domain constants (`constants.go`)
+   - Core business logic
+
+2. **✅ Repository Layer** (`internal/repository/`)
+   - Data access interfaces
+   - SQLite implementation
+   - Mock implementations for testing
+
+3. **✅ External Service Layer** (`internal/external/`)
+   - ESPN API client interfaces
+   - HTTP implementation
+   - Mock implementations for testing
+
+4. **✅ Application Layer** (`main.go`)
+   - HTTP handlers with dependency injection
+   - Business logic orchestration
+   - Error handling and logging
+
+## Key Benefits Achieved
+
+### 1. **Separation of Concerns**
+- Database operations isolated in repository layer
+- External API calls isolated in external service layer
+- Business logic remains in domain layer
+- HTTP handlers focus only on request/response handling
+
+### 2. **Testability**
+- Mock implementations for both repository and ESPN client
+- Dependency injection enables easy unit testing
+- Isolated testing of each layer independently
+- No real API calls during testing
+
+### 3. **Maintainability**
+- Interface-based design enables easy swapping of implementations
+- Clear boundaries between layers
+- Consistent error handling throughout
+- Reduced coupling between components
+
+### 4. **Extensibility**
+- Easy to add new data sources by implementing repository interface
+- Easy to add new external services by implementing client interfaces
+- Easy to add new storage backends (PostgreSQL, MongoDB, etc.)
+- Easy to add new API providers (different sports APIs, etc.)
+
+## Test Results
+```
+=== RUN   TestFetchResultsForThisWeek
+--- PASS: TestFetchResultsForThisWeek (0.00s)
+=== RUN   TestFetchResults
+--- PASS: TestFetchResults (0.00s)
+=== RUN   TestHTTPBoundaries
+--- PASS: TestHTTPBoundaries (0.00s)
+=== RUN   TestDatabaseOperations
+--- PASS: TestDatabaseOperations (0.00s)
+```
+
+## Approach: Stop After Each Phase
+
+This refactor follows a **"stop after each phase"** approach to ensure stability and maintainability:
+
+1. **Phase 0**: Establish comprehensive testing before any refactoring
 2. **Phase 1**: Extract domain entities and business logic
 3. **Phase 2**: Extract repositories and external services
-4. **Phase 3**: Extract application services and use cases
-5. **Phase 4**: Implement clean architecture layers
+4. **Phase 3**: Extract use cases and application services (planned)
 
-### Why Stop After Each Phase?
+Each phase:
+- ✅ **Maintains backward compatibility**
+- ✅ **Preserves all existing functionality**
+- ✅ **Includes comprehensive testing**
+- ✅ **Can be committed and deployed independently**
+- ✅ **Provides a stable foundation for the next phase**
 
-- **Risk Mitigation**: Each phase is a safe, reversible step
-- **Validation**: All tests must pass before proceeding
-- **Review Opportunity**: Allows for code review and feedback
-- **Incremental Progress**: Maintains working system throughout
-- **Regression Protection**: Phase 0 tests catch any issues immediately
-
-### Current Architecture
+## Files Structure
 
 ```
 apps/cloud/nfl/
-├── main.go (uses domain entities)
+├── main.go                           # Application layer (HTTP handlers)
+├── main_test.go                      # Test suite with mocks
 ├── internal/
-│   └── domain/
-│       ├── entities.go ✅
-│       └── constants.go ✅
-├── testdata/
-├── static/
-└── data/
+│   ├── domain/
+│   │   ├── entities.go              # Business entities
+│   │   └── constants.go             # Domain constants
+│   ├── repository/
+│   │   └── result_repository.go     # Repository interfaces & SQLite impl
+│   └── external/
+│       └── espn_client.go           # ESPN client interfaces & HTTP impl
+├── static/                          # Frontend assets
+├── data/                           # SQLite database
+└── docs/                           # Documentation
 ```
 
-### Benefits Achieved So Far
+## Next Steps
 
-1. **Clear Entity Definitions**: Business objects are explicitly defined
-2. **Reusable Components**: Entities can be used across different layers
-3. **Maintainable Code**: Domain logic is separated from infrastructure
-4. **Testable Architecture**: Entities can be tested independently
-5. **Backward Compatibility**: All existing functionality preserved
+The application is now ready for **Phase 3: Extract Use Cases & Application Services**, which would:
 
-### Next Steps
+1. **Extract business logic** from HTTP handlers into application services
+2. **Create use case interfaces** for different operations
+3. **Implement proper orchestration** between domain, repository, and external service layers
+4. **Maintain clean separation** of concerns
 
-Phase 2 will focus on:
-- Creating repository interfaces for database operations
-- Extracting ESPN API client into external service layer
-- Maintaining all existing functionality
-- Ensuring all tests continue to pass
-
----
-
-**Last Updated**: December 2024  
-**Status**: Phase 1 Complete, Ready for Phase 2  
-**Confidence Level**: High - All tests pass with real ESPN data 
+This would complete the clean architecture implementation, making the application highly maintainable, testable, and extensible. 

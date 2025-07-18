@@ -5,384 +5,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/external"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
 
 var ApiKey string
 var DB_PATH = "data/results.db"
-
-type EventRef struct {
-	Ref string `json:"$ref"`
-}
-
-type LatestEvents struct {
-	Items []EventRef `json:"items"`
-	Meta  struct {
-		Parameters struct {
-			Week        []string `json:"week"`
-			Season      []string `json:"season"`
-			SeasonTypes []string `json:"seasontypes"`
-		} `json:"parameters"`
-	} `json:"$meta"`
-}
-
-// Fetches data for the current week's games
-func listLatestEvents() LatestEvents {
-	// make GET request to https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events
-
-	req, err := http.NewRequest("GET", "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events", nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer response.Body.Close()
-
-	var res LatestEvents
-	decoder := json.NewDecoder(response.Body)
-	err = decoder.Decode(&res)
-	if err != nil {
-		panic(err)
-	}
-
-	return res
-}
-
-type EventId struct {
-	Id string `json:"id"`
-}
-
-type SpecificEvents struct {
-	Events []EventId `json:"events"`
-}
-
-func listSpecificEvents(season string, week string, seasonType string) SpecificEvents {
-	// https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=2&dates=2024&seasontype=3
-
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=%s&dates=%s&seasontype=%s", week, season, seasonType), nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer response.Body.Close()
-
-	var res SpecificEvents
-	decoder := json.NewDecoder(response.Body)
-	err = decoder.Decode(&res)
-	if err != nil {
-		panic(err)
-	}
-
-	return res
-}
-
-type EventResponse struct {
-	Id           string         `json:"id"`
-	Competitions []Competitions `json:"competitions"`
-}
-
-type Competitions struct {
-	Competitors   []Competitors `json:"competitors"`
-	DetailsRefs   DetailsRef    `json:"details"`
-	LiveAvailable bool          `json:"liveAvailable"`
-}
-
-type Competitors struct {
-	Id       string    `json:"id"`
-	Team     TeamRef   `json:"team"`
-	Score    ScoreRef  `json:"score"`
-	HomeAway string    `json:"homeAway"`
-	Record   RecordRef `json:"record"`
-	Stats    StatsRef  `json:"statistics"`
-}
-
-type TeamRef struct {
-	Ref string `json:"$ref"`
-}
-
-type ScoreRef struct {
-	Ref string `json:"$ref"`
-}
-
-type RecordRef struct {
-	Ref string `json:"$ref"`
-}
-
-func getEvent(ref string) EventResponse {
-
-	req, err := http.NewRequest("GET", ref, nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Fatalf("Error closing response body: %s", err)
-		}
-	}(response.Body)
-
-	var res EventResponse
-	decoder := json.NewDecoder(response.Body)
-
-	err = decoder.Decode(&res)
-	if err != nil {
-		panic(err)
-	}
-
-	return res
-}
-
-func getEventById(id string) EventResponse {
-
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/%s", id), nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer response.Body.Close()
-
-	var res EventResponse
-	decoder := json.NewDecoder(response.Body)
-
-	err = decoder.Decode(&res)
-	if err != nil {
-		panic(err)
-	}
-
-	return res
-}
-
-type ScoreResponse struct {
-	Value float64 `json:"value"`
-}
-
-func getScore(ref string) ScoreResponse {
-
-	req, err := http.NewRequest("GET", ref, nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(response.Body)
-
-	var res ScoreResponse
-	decoder := json.NewDecoder(response.Body)
-	err = decoder.Decode(&res)
-	if err != nil {
-		panic(err)
-	}
-
-	return res
-}
-
-type TeamResponse struct {
-	DisplayName string `json:"displayName"`
-	Logos       []struct {
-		Href string `json:"href"`
-	} `json:"logos"`
-}
-
-func getTeam(ref string) TeamResponse {
-
-	req, err := http.NewRequest("GET", ref, nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer response.Body.Close()
-
-	var res TeamResponse
-
-	decoder := json.NewDecoder(response.Body)
-	err = decoder.Decode(&res)
-	if err != nil {
-		panic(err)
-	}
-
-	return res
-}
-
-type RecordResponse struct {
-	Items []RecordItem `json:"items"`
-}
-type RecordItem struct {
-	DisplayValue string `json:"displayValue"`
-}
-
-func getRecord(ref string) RecordResponse {
-
-	req, err := http.NewRequest("GET", ref, nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer response.Body.Close()
-
-	var res RecordResponse
-
-	decoder := json.NewDecoder(response.Body)
-	err = decoder.Decode(&res)
-	if err != nil {
-		panic(err)
-	}
-
-	return res
-}
-
-type StatsRef struct {
-	Ref string `json:"$ref"`
-}
-
-type DetailsRef struct {
-	Ref string `json:"$ref"`
-}
-
-type DetailsResponse struct {
-	PageIndex int                  `json:"pageIndex"`
-	PageCount int                  `json:"pageCount"`
-	Items     []domain.DetailsItem `json:"items"`
-}
-
-func getDetails(ref string, page int) DetailsResponse {
-
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s&page=%d", ref, page), nil)
-
-	if err != nil {
-		panic(err)
-	}
-
-	response, err := http.DefaultClient.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer response.Body.Close()
-
-	var res DetailsResponse
-
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	err = json.Unmarshal(body, &res)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return res
-}
-func getDetailsPaged(ref string) []DetailsResponse {
-
-	var details []DetailsResponse
-
-	var res DetailsResponse
-	res = getDetails(ref, 1)
-	details = append(details, res)
-	for i := 2; i <= res.PageCount; i++ {
-		res := getDetails(ref, i)
-		details = append(details, res)
-	}
-	return details
-}
-
-func getTeamAndScore(response EventResponse) *domain.Game {
-	competitors := response.Competitions[0].Competitors
-
-	if response.Competitions[0].LiveAvailable {
-		log.Printf("Game is live, skipping")
-		return nil
-	}
-
-	var game domain.Game
-
-	for _, competitor := range competitors {
-
-		team := getTeam(competitor.Team.Ref)
-		score := getScore(competitor.Score.Ref)
-
-		record := getRecord(competitor.Record.Ref)
-
-		teamResult := domain.Team{
-			Name:   team.DisplayName,
-			Logo:   &team.Logos[0].Href,
-			Score:  score.Value,
-			Record: record.Items[0].DisplayValue,
-		}
-
-		if competitor.HomeAway == "home" {
-			game.Home = teamResult
-		} else {
-			game.Away = teamResult
-		}
-
-	}
-	// If game is not played yet, skip
-	if game.Home.Score == 0 {
-		return nil
-	}
-
-	details := response.Competitions[0].DetailsRefs
-
-	var detailsItems []domain.DetailsItem
-	for _, detail := range getDetailsPaged(details.Ref) {
-		detailsItems = append(detailsItems, detail.Items...)
-	}
-
-	game.Details = detailsItems
-
-	return &game
-}
 
 const prompt = "Analyze the provided NFL game play-by-play data and generate a 'rant score' between 0 and 100, acting as a HARSH judge of the game's excitement and intensity. Consider these factors:" +
 	"Close score: Games decided by one score (8 points or less) are preferred." +
@@ -429,7 +66,13 @@ func produceRating(game domain.Game) domain.Rating {
 		},
 	}
 
-	post, err := client.R().SetAuthToken(ApiKey).SetBody(body).Post("https://api.openai.com/v1/chat/completions")
+	// Use environment variable for API URL in tests
+	apiURL := os.Getenv("OPENAI_API_URL")
+	if apiURL == "" {
+		apiURL = "https://api.openai.com/v1/chat/completions"
+	}
+
+	post, err := client.R().SetAuthToken(ApiKey).SetBody(body).Post(apiURL)
 	if err != nil {
 		return domain.Rating{}
 	}
@@ -488,141 +131,26 @@ func initDb() *sql.DB {
 	return db
 }
 
-func saveResults(db *sql.DB, results []domain.Result) {
+func fetchResultsForThisWeek(espnClient external.ESPNClient, resultRepo repository.ResultRepository, existingResults []domain.Result) []domain.Result {
 
-	stmt, err := db.Prepare("insert into results(event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?, ?, ?)")
+	eventRefs, err := espnClient.ListLatestEvents()
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error listing latest events: %v", err)
+		return []domain.Result{}
 	}
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(stmt)
-
-	for _, result := range results {
-
-		gameJson, err := json.Marshal(result.Game)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		weekAsInt, err := strconv.Atoi(result.Week)
-		if err != nil {
-			log.Fatal(err)
-		}
-		seasonAsInt, err := strconv.Atoi(result.Season)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		seasonTypeAsInt, err := strconv.Atoi(result.SeasonType)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		eventIdAsInt, err := strconv.Atoi(result.EventId)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = stmt.Exec(eventIdAsInt, seasonAsInt, weekAsInt, seasonTypeAsInt, result.Rating.Score, result.Rating.Explanation, result.Rating.SpoilerFree, string(gameJson))
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	log.Printf("Saved %d results", len(results))
-}
-
-func loadResults(db *sql.DB, season string, week string, seasonType string) []domain.Result {
-	if season == "" || week == "" || seasonType == "" {
-		log.Fatal("Season or week or season type not provided")
-	}
-
-	selectQuery := "select id, event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game from results where season = ? and week = ? and season_type = ? order by season desc, season_type desc, week desc, rating desc"
-
-	rows, err := db.Query(selectQuery, season, week, seasonType)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(rows)
-
-	var results []domain.Result
-
-	for rows.Next() {
-		var result domain.Result
-		var gameJson string
-		err = rows.Scan(&result.Id, &result.EventId, &result.Season, &result.Week, &result.SeasonType, &result.Rating.Score, &result.Rating.Explanation, &result.Rating.SpoilerFree, &gameJson)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = json.Unmarshal([]byte(gameJson), &result.Game)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		results = append(results, result)
-	}
-
-	return results
-}
-
-func loadDates(db *sql.DB) []domain.Date {
-	selectQuery := "select distinct season, week, season_type from results order by season_type desc, season desc, week desc"
-
-	rows, err := db.Query(selectQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(rows)
-
-	var dates []domain.Date
-
-	for rows.Next() {
-		var season string
-		var week string
-		var seasonType string
-		err = rows.Scan(&season, &week, &seasonType)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		dates = append(dates, domain.Date{
-			Season:     season,
-			Week:       week,
-			SeasonType: seasonType,
-		})
-	}
-
-	return dates
-}
-
-func fetchResultsForThisWeek(existingResults []domain.Result) []domain.Result {
-
-	eventRefs := listLatestEvents()
 
 	season := eventRefs.Meta.Parameters.Season[0]
 	week := eventRefs.Meta.Parameters.Week[0]
 	seasonType := eventRefs.Meta.Parameters.SeasonTypes[0]
 
 	// Filter out events that have already been processed
-	var filteredEventRefs []EventRef
+	var filteredEventRefs []external.EventRef
 	for _, eventRef := range eventRefs.Items {
-		event := getEvent(eventRef.Ref)
+		event, err := espnClient.GetEvent(eventRef.Ref)
+		if err != nil {
+			log.Printf("Error getting event: %v", err)
+			continue
+		}
 		shouldInclude := true
 		for _, result := range existingResults {
 			if result.EventId == event.Id {
@@ -639,8 +167,12 @@ func fetchResultsForThisWeek(existingResults []domain.Result) []domain.Result {
 	var results []domain.Result
 	for _, eventRef := range filteredEventRefs {
 		log.Printf("Processing event: Season %s - Week %s - Season Type %s", season, week, seasonType)
-		event := getEvent(eventRef.Ref)
-		maybeGame := getTeamAndScore(event)
+		event, err := espnClient.GetEvent(eventRef.Ref)
+		if err != nil {
+			log.Printf("Error getting event: %v", err)
+			continue
+		}
+		maybeGame := espnClient.GetTeamAndScore(event)
 
 		// Game has not been played yet
 		if maybeGame == nil {
@@ -669,15 +201,23 @@ func fetchResultsForThisWeek(existingResults []domain.Result) []domain.Result {
 
 }
 
-func fetchResults(season string, week string, seasonType string) []domain.Result {
+func fetchResults(espnClient external.ESPNClient, season string, week string, seasonType string) []domain.Result {
 
-	specificEvents := listSpecificEvents(season, week, seasonType)
+	specificEvents, err := espnClient.ListSpecificEvents(season, week, seasonType)
+	if err != nil {
+		log.Printf("Error listing specific events: %v", err)
+		return []domain.Result{}
+	}
 
 	var results []domain.Result
 	for _, eventId := range specificEvents.Events {
 		log.Printf("Processing event: %s - %s", season, week)
-		event := getEventById(eventId.Id)
-		maybeGame := getTeamAndScore(event)
+		event, err := espnClient.GetEventById(eventId.Id)
+		if err != nil {
+			log.Printf("Error getting event by ID: %v", err)
+			continue
+		}
+		maybeGame := espnClient.GetTeamAndScore(event)
 		if maybeGame == nil {
 			log.Printf("Game has not been played yet, skipping")
 			continue
@@ -702,16 +242,28 @@ func fetchResults(season string, week string, seasonType string) []domain.Result
 	return results
 }
 
-func backgroundLatestEvents(db *sql.DB) {
+func backgroundLatestEvents(db *sql.DB, espnClient external.ESPNClient, resultRepo repository.ResultRepository) {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
 
 	for range ticker.C {
 		log.Println("Checking for new events")
-		current := listLatestEvents().Meta.Parameters
-		results := loadResults(db, current.Season[0], current.Week[0], current.SeasonTypes[0])
-		newResults := fetchResultsForThisWeek(results)
-		saveResults(db, newResults)
+		current, err := espnClient.ListLatestEvents()
+		if err != nil {
+			log.Printf("Error listing latest events: %v", err)
+			continue
+		}
+		results, err := resultRepo.LoadResults(current.Meta.Parameters.Season[0], current.Meta.Parameters.Week[0], current.Meta.Parameters.SeasonTypes[0])
+		if err != nil {
+			log.Printf("Error loading results: %v", err)
+			continue
+		}
+		newResults := fetchResultsForThisWeek(espnClient, resultRepo, results)
+		err = resultRepo.SaveResults(newResults)
+		if err != nil {
+			log.Printf("Error saving results: %v", err)
+			continue
+		}
 	}
 }
 
@@ -726,16 +278,35 @@ func main() {
 
 	db := initDb()
 
-	go backgroundLatestEvents(db)
+	// Create dependencies
+	resultRepo := repository.NewSQLiteResultRepository(db)
+	espnClient := external.NewHTTPESPNClient()
+
+	go backgroundLatestEvents(db, espnClient, resultRepo)
 
 	tmpl := template.Must(template.ParseFiles("static/template.html"))
 
 	http.Handle("/run", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		current := listLatestEvents().Meta.Parameters
-		results := loadResults(db, current.Season[0], current.Week[0], current.SeasonTypes[0])
-		newResults := fetchResultsForThisWeek(results)
-		saveResults(db, newResults)
+		current, err := espnClient.ListLatestEvents()
+		if err != nil {
+			log.Printf("Error listing latest events: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		results, err := resultRepo.LoadResults(current.Meta.Parameters.Season[0], current.Meta.Parameters.Week[0], current.Meta.Parameters.SeasonTypes[0])
+		if err != nil {
+			log.Printf("Error loading results: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		newResults := fetchResultsForThisWeek(espnClient, resultRepo, results)
+		err = resultRepo.SaveResults(newResults)
+		if err != nil {
+			log.Printf("Error saving results: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 	}))
 
@@ -749,8 +320,13 @@ func main() {
 			return
 		}
 
-		results := fetchResults(season, week, seasonType)
-		saveResults(db, results)
+		results := fetchResults(espnClient, season, week, seasonType)
+		err := resultRepo.SaveResults(results)
+		if err != nil {
+			log.Printf("Error saving results: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
 
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -761,18 +337,34 @@ func main() {
 		seasonType := r.URL.Query().Get("seasontype")
 
 		var results []domain.Result
+		var err error
 		if week != "" && season != "" && seasonType != "" {
 			seasonTypeNumber := domain.SeasonTypeToNumber(seasonType)
-			results = loadResults(db, season, week, seasonTypeNumber)
+			results, err = resultRepo.LoadResults(season, week, seasonTypeNumber)
+			if err != nil {
+				log.Printf("Error loading results: %v", err)
+				http.Error(w, "Internal server error", http.StatusInternalServerError)
+				return
+			}
 		} else {
 			// Instead of using current week from ESPN API, use the most recent week with results
-			dates := loadDates(db)
+			dates, err := resultRepo.LoadDates()
+			if err != nil {
+				log.Printf("Error loading dates: %v", err)
+				http.Error(w, "Internal server error", http.StatusInternalServerError)
+				return
+			}
 			if len(dates) > 0 {
 				mostRecentDate := dates[0]
 				week = mostRecentDate.Week
 				season = mostRecentDate.Season
 				seasonType = mostRecentDate.SeasonType
-				results = loadResults(db, season, week, seasonType)
+				results, err = resultRepo.LoadResults(season, week, seasonType)
+				if err != nil {
+					log.Printf("Error loading results: %v", err)
+					http.Error(w, "Internal server error", http.StatusInternalServerError)
+					return
+				}
 			} else {
 				// Database is empty - show empty state
 				log.Println("Database is empty, showing empty state")
@@ -797,7 +389,12 @@ func main() {
 		}
 
 		log.Printf("Loaded %d results for season [%s] and week [%s] and season type [%s]", len(results), season, week, seasonType)
-		dates := loadDates(db)
+		dates, err := resultRepo.LoadDates()
+		if err != nil {
+			log.Printf("Error loading dates: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
 
 		log.Printf("Loaded %d weeks", len(dates))
 
@@ -816,7 +413,7 @@ func main() {
 			}.Template(),
 		}
 
-		err := tmpl.Execute(w, data)
+		err = tmpl.Execute(w, data)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
