@@ -10,13 +10,13 @@ const (
 // SeasonTypeToNumber converts a season type string to its numeric representation
 func SeasonTypeToNumber(seasonType string) string {
 	switch seasonType {
-	case PreSeason:
+	case "Pre-Season":
 		return "1"
-	case RegularSeason:
+	case "Regular Season":
 		return "2"
-	case PostSeason:
+	case "Post-Season":
 		return "3"
 	default:
-		return "0"
+		return seasonType
 	}
 }
