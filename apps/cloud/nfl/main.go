@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/go-resty/resty/v2"
-	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"io"
 	"log"
@@ -14,6 +12,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-resty/resty/v2"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var ApiKey string
@@ -864,11 +865,35 @@ func main() {
 			seasonTypeNumber := seasonTypeToNumber(seasonType)
 			results = loadResults(db, season, week, seasonTypeNumber)
 		} else {
-			current := listLatestEvents().Meta.Parameters
-			week = current.Week[0]
-			season = current.Season[0]
-			seasonType = current.SeasonTypes[0]
-			results = loadResults(db, season, week, seasonType)
+			// Instead of using current week from ESPN API, use the most recent week with results
+			dates := loadDates(db)
+			if len(dates) > 0 {
+				mostRecentDate := dates[0]
+				week = mostRecentDate.Week
+				season = mostRecentDate.Season
+				seasonType = mostRecentDate.SeasonType
+				results = loadResults(db, season, week, seasonType)
+			} else {
+				// Database is empty - show empty state
+				log.Println("Database is empty, showing empty state")
+
+				data := TemplateData{
+					Results: []Result{},
+					Dates:   []DateTemplate{},
+					Current: DateTemplate{
+						Season:             "No data",
+						Week:               "available",
+						SeasonTypeShowable: "yet",
+						SeasonType:         "",
+					},
+				}
+
+				err := tmpl.Execute(w, data)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+				return
+			}
 		}
 
 		log.Printf("Loaded %d results for season [%s] and week [%s] and season type [%s]", len(results), season, week, seasonType)
