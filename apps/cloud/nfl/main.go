@@ -10,6 +10,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/application"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/application/use_cases"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/external"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
@@ -32,7 +33,7 @@ func initDb() *sql.DB {
 	return db
 }
 
-func backgroundLatestEvents(espnClient external.ESPNClient, ratingSvc application.RatingService, fetchLatestUseCase application.FetchLatestResultsUseCase, saveUseCase application.SaveResultsUseCase) {
+func backgroundLatestEvents(ratingSvc application.RatingService, fetchLatestUseCase use_cases.FetchLatestResultsUseCase, saveUseCase use_cases.SaveResultsUseCase) {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
 
@@ -65,13 +66,13 @@ func main() {
 	ratingSvc := application.NewOpenAIRatingService(openAIKey)
 
 	// Create use cases
-	fetchLatestUseCase := application.NewFetchLatestResultsUseCase(espnClient, resultRepo, ratingSvc)
-	fetchSpecificUseCase := application.NewFetchSpecificResultsUseCase(espnClient, resultRepo, ratingSvc)
-	saveUseCase := application.NewSaveResultsUseCase(resultRepo)
-	getTemplateDataUseCase := application.NewGetTemplateDataUseCase(resultRepo)
+	fetchLatestUseCase := use_cases.NewFetchLatestResultsUseCase(espnClient, resultRepo, ratingSvc)
+	fetchSpecificUseCase := use_cases.NewFetchSpecificResultsUseCase(espnClient, resultRepo, ratingSvc)
+	saveUseCase := use_cases.NewSaveResultsUseCase(resultRepo)
+	getTemplateDataUseCase := use_cases.NewGetTemplateDataUseCase(resultRepo)
 
 	go func() {
-		backgroundLatestEvents(espnClient, ratingSvc, fetchLatestUseCase, saveUseCase)
+		backgroundLatestEvents(ratingSvc, fetchLatestUseCase, saveUseCase)
 	}()
 
 	tmpl := template.Must(template.ParseFiles("static/template.html"))

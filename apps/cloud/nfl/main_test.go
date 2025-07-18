@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/mcgizzle/home-server/apps/cloud/internal/application"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/application/use_cases"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/external"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
@@ -136,9 +137,9 @@ func TestRealESPNWithUseCases(t *testing.T) {
 	ratingSvc := application.NewOpenAIRatingService("test-key")
 
 	// Create use cases
-	fetchLatestUseCase := application.NewFetchLatestResultsUseCase(espnClient, resultRepo, ratingSvc)
-	saveUseCase := application.NewSaveResultsUseCase(resultRepo)
-	getTemplateDataUseCase := application.NewGetTemplateDataUseCase(resultRepo)
+	fetchLatestUseCase := use_cases.NewFetchLatestResultsUseCase(espnClient, resultRepo, ratingSvc)
+	saveUseCase := use_cases.NewSaveResultsUseCase(resultRepo)
+	getTemplateDataUseCase := use_cases.NewGetTemplateDataUseCase(resultRepo)
 
 	// Test fetching latest results
 	results, err := fetchLatestUseCase.Execute()
@@ -199,9 +200,9 @@ func TestRealESPNEndToEnd(t *testing.T) {
 	ratingSvc := application.NewOpenAIRatingService("test-key")
 
 	// Create use cases
-	fetchSpecificUseCase := application.NewFetchSpecificResultsUseCase(espnClient, resultRepo, ratingSvc)
-	saveUseCase := application.NewSaveResultsUseCase(resultRepo)
-	getTemplateDataUseCase := application.NewGetTemplateDataUseCase(resultRepo)
+	fetchSpecificUseCase := use_cases.NewFetchSpecificResultsUseCase(espnClient, resultRepo, ratingSvc)
+	saveUseCase := use_cases.NewSaveResultsUseCase(resultRepo)
+	getTemplateDataUseCase := use_cases.NewGetTemplateDataUseCase(resultRepo)
 
 	// Test fetching specific results (2024 season, week 1, regular season)
 	results, err := fetchSpecificUseCase.Execute("2024", "1", "2")
