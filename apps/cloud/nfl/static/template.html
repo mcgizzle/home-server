@@ -112,9 +112,73 @@
     <!-- Browse Tab Content -->
     <div id="browse-content" class="tab-content hidden">
         <div class="flex flex-col items-center justify-center">
-            <div class="text-center p-8">
-                <h2 class="text-3xl font-bold text-white mb-4">Browse Games</h2>
-                <p class="text-gray-400">Coming soon...</p>
+            <div class="card bg-base-100 w-full max-w-4xl shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-center mb-8">Browse Games</h2>
+
+                <!-- Year and Season Type Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- Year Selection -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text text-lg font-semibold">Year</span>
+                        </label>
+                        <select class="select select-bordered select-lg w-full" id="yearSelect">
+                            <option value="2024" selected>2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                        </select>
+                    </div>
+
+                    <!-- Season Type Selection -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text text-lg font-semibold">Season Type</span>
+                        </label>
+                        <div class="flex flex-col gap-2">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="radio" name="seasonType" value="2" class="radio radio-primary" checked />
+                                <span class="label-text">Regular Season</span>
+                            </label>
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="radio" name="seasonType" value="3" class="radio radio-primary" />
+                                <span class="label-text">Playoffs</span>
+                            </label>
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="radio" name="seasonType" value="1" class="radio radio-primary" />
+                                <span class="label-text">Preseason</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Week Selection -->
+                <div class="form-control mb-8">
+                    <label class="label">
+                        <span class="label-text text-lg font-semibold">Week</span>
+                    </label>
+                    <div class="grid grid-cols-6 md:grid-cols-9 gap-2" id="weekGrid">
+                        <!-- Weeks will be populated by JavaScript based on season type -->
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div class="flex justify-center">
+                    <button class="btn btn-primary btn-lg px-8" onclick="searchGames()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                        Search Games
+                    </button>
+                </div>
+
+                <!-- Results will appear here -->
+                <div id="browseResults" class="mt-8 hidden">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
             </div>
         </div>
     </div>
@@ -134,6 +198,8 @@
             aboutSection.classList.add('hidden');
         }
     }
+
+    let selectedWeek = null;
 
     function switchTab(tabName, element) {
         // Hide all tab contents
@@ -161,7 +227,129 @@
             activeBadge.classList.remove('badge-secondary', 'opacity-60');
             activeBadge.classList.add('bg-green-500', 'text-white', 'badge-primary');
         }
+
+        // Initialize week grid if switching to browse tab
+        if (tabName === 'browse') {
+            populateWeekGrid();
+        }
     }
+
+    function populateWeekGrid() {
+        const seasonType = document.querySelector('input[name="seasonType"]:checked').value;
+        const weekGrid = document.getElementById('weekGrid');
+        weekGrid.innerHTML = '';
+
+        let maxWeeks;
+        switch (seasonType) {
+            case '1': // Preseason
+                maxWeeks = 4;
+                break;
+            case '2': // Regular Season
+                maxWeeks = 18;
+                break;
+            case '3': // Playoffs
+                maxWeeks = 5;
+                break;
+            default:
+                maxWeeks = 18;
+        }
+
+        for (let week = 1; week <= maxWeeks; week++) {
+            const button = document.createElement('button');
+            button.className = 'btn btn-outline btn-sm';
+            button.textContent = week;
+            button.onclick = () => selectWeek(week, button);
+            weekGrid.appendChild(button);
+        }
+    }
+
+    function selectWeek(week, buttonElement) {
+        // Remove selection from all week buttons
+        const weekButtons = document.querySelectorAll('#weekGrid button');
+        weekButtons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-outline');
+        });
+
+        // Highlight selected week
+        buttonElement.classList.remove('btn-outline');
+        buttonElement.classList.add('btn-primary');
+        selectedWeek = week;
+    }
+
+    function searchGames() {
+        const year = document.getElementById('yearSelect').value;
+        const seasonType = document.querySelector('input[name="seasonType"]:checked').value;
+
+        if (!selectedWeek) {
+            alert('Please select a week');
+            return;
+        }
+
+        // Show loading
+        const resultsDiv = document.getElementById('browseResults');
+        resultsDiv.classList.remove('hidden');
+        resultsDiv.innerHTML = `
+            <div class="text-center">
+                <span class="loading loading-spinner loading-lg"></span>
+                <p class="mt-4">Loading games...</p>
+            </div>
+        `;
+
+        // Build URL and fetch data
+        const url = `?season=${year}&week=${selectedWeek}&seasontype=${seasonType}`;
+
+        // Fetch the page and extract the results
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                // Create a temporary element to parse the HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Extract the game results from the fetched page
+                const gameCards = doc.querySelectorAll('.card.bg-base-100.w-96.shadow-lg');
+
+                if (gameCards.length === 0) {
+                    resultsDiv.innerHTML = `
+                        <div class="text-center p-8">
+                            <h3 class="text-xl font-bold mb-4">No games found</h3>
+                            <p class="text-gray-400">No results for ${year} Season, Week ${selectedWeek}</p>
+                        </div>
+                    `;
+                } else {
+                    // Display the results in a grid
+                    resultsDiv.innerHTML = `
+                        <div class="text-center mb-6">
+                            <h3 class="text-2xl font-bold">${year} - Week ${selectedWeek} Results</h3>
+                        </div>
+                        <div class="flex flex-col gap-12 items-center justify-center">
+                            ${Array.from(gameCards).map(card => card.outerHTML).join('')}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching games:', error);
+                resultsDiv.innerHTML = `
+                    <div class="text-center p-8">
+                        <h3 class="text-xl font-bold mb-4 text-error">Error loading games</h3>
+                        <p class="text-gray-400">Please try again later</p>
+                    </div>
+                `;
+            });
+    }
+
+    // Add event listeners for season type changes
+    document.addEventListener('DOMContentLoaded', function () {
+        const seasonTypeRadios = document.querySelectorAll('input[name="seasonType"]');
+        seasonTypeRadios.forEach(radio => {
+            radio.addEventListener('change', populateWeekGrid);
+        });
+
+        // Initialize week grid
+        populateWeekGrid();
+    });
 </script>
 
 </html>
