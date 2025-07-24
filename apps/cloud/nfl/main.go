@@ -162,9 +162,11 @@ func main() {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
+		log.Println(data.Seasons)
 
 		err = tmpl.Execute(w, data)
 		if err != nil {
+			log.Printf("Error executing template: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	})

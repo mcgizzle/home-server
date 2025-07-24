@@ -123,11 +123,9 @@
                             <span class="label-text text-lg font-semibold">Year</span>
                         </label>
                         <select class="select select-bordered select-lg w-full" id="yearSelect">
-                            <option value="2024" selected>2024</option>
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
-                            <option value="2021">2021</option>
-                            <option value="2020">2020</option>
+                            {{ range $element := .Seasons }}
+                            <option value="{{ $element }}">{{ $element }}</option>
+                            {{ end }}
                         </select>
                     </div>
 
@@ -165,19 +163,14 @@
 
                 <!-- Search Button -->
                 <div class="flex justify-center">
-                    <button class="btn btn-primary btn-lg px-8" onclick="searchGames()">
+                    <button class="btn btn-primary btn-lg px-8" onclick="redirectToResults()">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                         </svg>
-                        Search Games
+                        View Games
                     </button>
-                </div>
-
-                <!-- Results will appear here -->
-                <div id="browseResults" class="mt-8 hidden">
-                    <!-- Results will be populated by JavaScript -->
                 </div>
             </div>
         </div>
@@ -200,6 +193,36 @@
     }
 
     let selectedWeek = null;
+
+    function setCurrentValuesFromURL() {
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSeason = urlParams.get('season');
+        const currentSeasonType = urlParams.get('seasontype');
+        const currentWeek = urlParams.get('week');
+
+        // Set year dropdown
+        const yearSelect = document.getElementById('yearSelect');
+        if (currentSeason && yearSelect) {
+            yearSelect.value = currentSeason;
+        }
+
+        // Set season type radio button
+        if (currentSeasonType) {
+            const seasonTypeRadio = document.querySelector(`input[name="seasonType"][value="${currentSeasonType}"]`);
+            if (seasonTypeRadio) {
+                // Uncheck all first
+                document.querySelectorAll('input[name="seasonType"]').forEach(radio => radio.checked = false);
+                // Check the current one
+                seasonTypeRadio.checked = true;
+            }
+        }
+
+        // Store current week to select it after week grid is populated
+        if (currentWeek) {
+            selectedWeek = parseInt(currentWeek);
+        }
+    }
 
     function switchTab(tabName, element) {
         // Hide all tab contents
@@ -228,14 +251,18 @@
             activeBadge.classList.add('bg-green-500', 'text-white', 'badge-primary');
         }
 
-        // Initialize week grid if switching to browse tab
+        // Initialize browse section if switching to browse tab
         if (tabName === 'browse') {
+            setCurrentValuesFromURL();
             populateWeekGrid();
         }
     }
 
     function populateWeekGrid() {
-        const seasonType = document.querySelector('input[name="seasonType"]:checked').value;
+        const seasonTypeElement = document.querySelector('input[name="seasonType"]:checked');
+        if (!seasonTypeElement) return; // Exit if no season type is selected
+
+        const seasonType = seasonTypeElement.value;
         const weekGrid = document.getElementById('weekGrid');
         weekGrid.innerHTML = '';
 
@@ -260,6 +287,11 @@
             button.textContent = week;
             button.onclick = () => selectWeek(week, button);
             weekGrid.appendChild(button);
+
+            // Auto-select the current week if it matches
+            if (selectedWeek && week === selectedWeek) {
+                selectWeek(week, button);
+            }
         }
     }
 
@@ -277,67 +309,25 @@
         selectedWeek = week;
     }
 
-    function searchGames() {
+    function redirectToResults() {
         const year = document.getElementById('yearSelect').value;
-        const seasonType = document.querySelector('input[name="seasonType"]:checked').value;
+        const seasonTypeElement = document.querySelector('input[name="seasonType"]:checked');
+
+        if (!seasonTypeElement) {
+            alert('Please select a season type');
+            return;
+        }
+
+        const seasonType = seasonTypeElement.value;
 
         if (!selectedWeek) {
             alert('Please select a week');
             return;
         }
 
-        // Show loading
-        const resultsDiv = document.getElementById('browseResults');
-        resultsDiv.classList.remove('hidden');
-        resultsDiv.innerHTML = `
-            <div class="text-center">
-                <span class="loading loading-spinner loading-lg"></span>
-                <p class="mt-4">Loading games...</p>
-            </div>
-        `;
-
-        // Build URL and fetch data
+        // Build URL and redirect to show results in main flow
         const url = `?season=${year}&week=${selectedWeek}&seasontype=${seasonType}`;
-
-        // Fetch the page and extract the results
-        fetch(url)
-            .then(response => response.text())
-            .then(html => {
-                // Create a temporary element to parse the HTML
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-
-                // Extract the game results from the fetched page
-                const gameCards = doc.querySelectorAll('.card.bg-base-100.w-96.shadow-lg');
-
-                if (gameCards.length === 0) {
-                    resultsDiv.innerHTML = `
-                        <div class="text-center p-8">
-                            <h3 class="text-xl font-bold mb-4">No games found</h3>
-                            <p class="text-gray-400">No results for ${year} Season, Week ${selectedWeek}</p>
-                        </div>
-                    `;
-                } else {
-                    // Display the results in a grid
-                    resultsDiv.innerHTML = `
-                        <div class="text-center mb-6">
-                            <h3 class="text-2xl font-bold">${year} - Week ${selectedWeek} Results</h3>
-                        </div>
-                        <div class="flex flex-col gap-12 items-center justify-center">
-                            ${Array.from(gameCards).map(card => card.outerHTML).join('')}
-                        </div>
-                    `;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching games:', error);
-                resultsDiv.innerHTML = `
-                    <div class="text-center p-8">
-                        <h3 class="text-xl font-bold mb-4 text-error">Error loading games</h3>
-                        <p class="text-gray-400">Please try again later</p>
-                    </div>
-                `;
-            });
+        window.location.href = url;
     }
 
     // Add event listeners for season type changes
@@ -347,7 +337,8 @@
             radio.addEventListener('change', populateWeekGrid);
         });
 
-        // Initialize week grid
+        // Initialize browse settings from URL and week grid
+        setCurrentValuesFromURL();
         populateWeekGrid();
     });
 </script>

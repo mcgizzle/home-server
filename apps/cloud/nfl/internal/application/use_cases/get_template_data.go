@@ -2,6 +2,7 @@ package use_cases
 
 import (
 	"log"
+	"slices"
 
 	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
@@ -53,9 +54,17 @@ func (uc *getTemplateDataUseCase) Execute(season, week, seasonType string) (doma
 		SeasonType: seasonType,
 	}
 
+	seasons := []string{}
+	for _, date := range dates {
+		if !slices.Contains(seasons, date.Season) {
+			seasons = append(seasons, date.Season)
+		}
+	}
+
 	templateData := domain.TemplateData{
 		Results: results,
 		Dates:   templateDates,
+		Seasons: seasons,
 		Current: currentDate.Template(),
 	}
 
