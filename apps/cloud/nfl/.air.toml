@@ -1,8 +1,44 @@
-# Include specific files or directories
-include = [
-    "*.go",
-    "static/*"
-]
+riroot = "."
+testdata_dir = "testdata"
+tmp_dir = "tmp"
 
-# Adjust the reload delay (in milliseconds)
-delay = 1000
+[build]
+  args_bin = []
+  bin = "./tmp/main"
+  cmd = "go build -o ./tmp/main ."
+  delay = 1000
+  exclude_dir = ["assets", "tmp", "vendor", "testdata", "data"]
+  exclude_file = []
+  exclude_regex = ["_test.go"]
+  exclude_unchanged = false
+  follow_symlink = false
+  full_bin = ""
+  include_dir = []
+  include_ext = ["go", "tpl", "tmpl", "html", "css"]
+  include_file = []
+  kill_delay = "0s"
+  log = "build-errors.log"
+  poll = false
+  poll_interval = 0
+  rerun = true
+  rerun_delay = 500
+  send_interrupt = false
+  stop_on_root = false
+
+[color]
+  app = ""
+  build = "yellow"
+  main = "magenta"
+  runner = "green"
+  watcher = "cyan"
+
+[log]
+  main_only = false
+  time = false
+
+[misc]
+  clean_on_exit = false
+
+[screen]
+  clear_on_rebuild = false
+  keep_scroll = true
