@@ -1,12 +1,12 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    command: tunnel --protocol http2 run
     restart: unless-stopped
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TOKEN_NFL}
     healthcheck:
-      test: ["CMD", "cloudflared", "healthcheck", "--url", "http://localhost:8080"]
+      test: [ "CMD", "cloudflared", "healthcheck" ]
       interval: 30s
       timeout: 10s
       retries: 3
