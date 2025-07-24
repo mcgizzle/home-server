@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-theme="dim">
+<html data-theme="business">
 
 <head>
     <meta charset="UTF-8">
@@ -11,8 +11,7 @@
 </head>
 
 <body>
-    <div class="flex flex-col items-center justify-center">
-        <img src="/static/assets/logo.png" width="130" height="130" alt="My Logo">
+    <div class="flex flex-col items-center justify-center mt-8">
         <h1 class="text-5xl font-extrabold mb-4 text-white">NFL Game Ratings</h1>
         <button class="btn btn-ghost m-1" onclick="toggleAbout()">
             <svg id="aboutButtonIcon" class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +32,7 @@
         <div class="tabs tabs-lifted tabs-lg gap-0 -space-x-2">
             <a class="tab tab-active text-lg font-semibold px-2 py-4" onclick="switchTab('latest', this)">
                 <span
-                    class="badge bg-green-500 text-white badge-primary badge-lg rounded-full px-10 py-5 text-xl">Latest</span>
+                    class="badge bg-green-500 text-white badge-primary badge-lg rounded-full px-10 py-5 text-xl">Results</span>
             </a>
             <a class="tab text-lg font-semibold px-2 py-4" onclick="switchTab('browse', this)">
                 <span class="badge badge-secondary opacity-60 badge-lg rounded-full px-10 py-5 text-xl">Browse</span>
@@ -42,7 +41,33 @@
     </div>
 
     <!-- Latest Tab Content -->
-    <div id="latest-content" class="tab-content">
+    <div id="latest-content" class="tab-content pt-6">
+        <!-- Results Info Header -->
+        <div class="flex justify-center mb-6">
+            <div class="card bg-base-200 shadow-md">
+                <div class="card-body py-4 px-8">
+                    <div class="flex items-center gap-8 text-base">
+                        <div class="flex items-center gap-3">
+                            <span class="font-medium text-base-content/70">Season:</span>
+                            <span class="font-semibold">{{ .Current.Season }}</span>
+                        </div>
+                        <div class="divider divider-horizontal"></div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-medium text-base-content/70">Type:</span>
+                            <span class="font-semibold">{{ if eq .Current.SeasonType "1" }}Preseason{{ else if eq
+                                .Current.SeasonType "2" }}Regular Season{{ else if eq .Current.SeasonType "3"
+                                }}Playoffs{{ else }}{{ .Current.SeasonType }}{{ end }}</span>
+                        </div>
+                        <div class="divider divider-horizontal"></div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-medium text-base-content/70">Week:</span>
+                            <span class="font-semibold">{{ .Current.WeekDisplay }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="flex flex-col gap-12 items-center justify-center">
             {{ range $index, $element := .Results }}
             <div class="flex items-center card bg-base-100 w-96 shadow-lg">
