@@ -57,6 +57,7 @@ type DateTemplate struct {
 type TemplateData struct {
 	Results []Result       `json:"results"`
 	Dates   []DateTemplate `json:"dates"`
+	Seasons []string       `json:"seasons"`
 	Current DateTemplate   `json:"current"`
 }
 

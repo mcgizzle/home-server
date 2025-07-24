@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-theme="black">
+<html data-theme="cupcake">
 
 <head>
     <meta charset="UTF-8">
@@ -11,106 +11,241 @@
 </head>
 
 <body>
-    <div class="flex flex-col items-center justify-center">
-        <img src="/static/assets/logo.png" width="130" height="130" alt="My Logo">
-        <h1 class="text-5xl font-extrabold mb-4 text-white">NFL Game Ratings</h1>
+    <div class="flex flex-col items-center justify-center mt-4 md:mt-8 px-4">
+        <div class="flex flex-col md:flex-row items-center gap-3 md:gap-6 mb-4">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-primary text-center">NFL Game Ratings</h1>
+            <button class="btn btn-primary btn-xs md:btn-sm rounded-md" onclick="goToLatest()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                </svg>
+                Latest
+            </button>
+        </div>
         <button class="btn btn-ghost m-1" onclick="toggleAbout()">
             <svg id="aboutButtonIcon" class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20">
                 <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
             </svg>
         </button>
-        <div id="aboutSection" class="hidden p-2">
-            <p class="font-light text-gray-400">NFL Game Ratings, play-by-play data is analyzed to provide a spoiler
+        <div id="aboutSection" class="hidden p-2 max-w-lg mx-auto">
+            <p class="font-light text-gray-400 text-sm md:text-base text-center">NFL Game Ratings, play-by-play data is
+                analyzed to provide a spoiler
                 free rating for each game, so you can decide if the game is worth watching.</p>
         </div>
     </div>
 
     <div style="height: 2rem;"></div>
 
-    <div class="flex flex-col gap-12 items-center justify-center">
-        <div class="dropdown dropdown-hover">
-            <div tabindex="0" role="button" class="btn m-1 rounded-md bg-blue-500 text-white">{{ .Current.Season }} -
-                {{ .Current.WeekDisplay }} - {{ .Current.SeasonTypeShowable }}
-            </div>
-            <ul tabindex="0" class="dropdown-content menu p-2 shadow rounded-md bg-base-100 w-52 z-[1]">
-                {{ range $index, $element := .Dates }}
-                <li><a
-                        href="?season={{ $element.Season}}&week={{ $element.Week }}&seasontype={{ $element.SeasonType }}">{{
-                        $element.Season }} - {{
-                        $element.WeekDisplay }} - {{ $element.SeasonTypeShowable }}</a></li>
-                {{ end }}
-            </ul>
+    <!-- Tabs Navigation -->
+    <div class="flex justify-center mb-6 md:mb-8 px-4">
+        <div class="tabs tabs-lifted tabs-lg md:tabs-xl gap-0 -space-x-1 md:-space-x-2">
+            <a class="tab tab-active text-lg md:text-xl font-semibold px-2 md:px-3 py-3 md:py-5"
+                onclick="switchTab('latest', this)">
+                <span
+                    class="badge badge-primary badge-lg md:badge-xl rounded-md px-6 md:px-12 py-3 md:py-6 text-lg md:text-2xl">Results</span>
+            </a>
+            <a class="tab text-lg md:text-xl font-semibold px-2 md:px-3 py-3 md:py-5"
+                onclick="switchTab('browse', this)">
+                <span
+                    class="badge badge-secondary opacity-60 badge-lg md:badge-xl rounded-md px-6 md:px-12 py-3 md:py-6 text-lg md:text-2xl">Browse</span>
+            </a>
         </div>
-        {{ range $index, $element := .Results }}
-        <div class="flex items-center card bg-base-100 w-96 shadow-lg">
-            <div class="flex flex-row items-center justify-between">
-                <figure>
-                    <img src="{{$element.Game.Away.Logo}}" alt="Away" width="150" height="150" />
-                </figure>
-                <figure>
-                    <img src="{{$element.Game.Home.Logo}}" alt="Home" width="150" height="150" />
-                </figure>
-            </div>
-            <div class="card-body text-center">
-                <h2 class="card-title text-sm">{{$element.Game.Away.Name}} @ {{$element.Game.Home.Name}} </h2>
-                <div class="stat place-items-center">
-                    <div class="stat-title">Rating</div>
-                    {{ $score := .Rating.Score }}
-                    <div
-                        class="stat-value text-primary text-6xl {{ if lt $score 30 }}text-red-500{{ else if and (ge $score 30) (lt $score 65) }}text-yellow-500{{ else if and (ge $score 65) (lt $score 80) }}text-green-400{{ else if and (ge $score 80) (le $score 100) }}text-green-600{{ end }}">
-                        {{ $score }}
+    </div>
+
+    <!-- Latest Tab Content -->
+    <div id="latest-content" class="tab-content pt-6">
+        <!-- Results Info Header -->
+        <div class="flex justify-center mb-6 px-4">
+            <div class="card bg-base-200 shadow-md w-full max-w-2xl">
+                <div class="card-body py-3 md:py-4 px-4 md:px-8">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-sm md:text-base">
+                        <div class="flex items-center justify-between md:justify-start gap-2 md:gap-3">
+                            <span class="font-medium text-base-content/70">Season:</span>
+                            <span class="font-semibold">{{ .Current.Season }}</span>
+                        </div>
+                        <div class="divider divider-horizontal hidden md:block"></div>
+                        <div class="flex items-center justify-between md:justify-start gap-2 md:gap-3">
+                            <span class="font-medium text-base-content/70">Type:</span>
+                            <span class="font-semibold">{{ if eq .Current.SeasonType "1" }}Preseason{{ else if eq
+                                .Current.SeasonType "2" }}Regular Season{{ else if eq .Current.SeasonType "3"
+                                }}Playoffs{{ else }}{{ .Current.SeasonType }}{{ end }}</span>
+                        </div>
+                        <div class="divider divider-horizontal hidden md:block"></div>
+                        <div class="flex items-center justify-between md:justify-start gap-2 md:gap-3">
+                            <span class="font-medium text-base-content/70">Week:</span>
+                            <span class="font-semibold">{{ .Current.WeekDisplay }}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="flex flex-row card-actions justify-center">
-                    <button class="btn btn-info btn-xs rounded-md" onclick="modalId('spoiler_{{ $element.Id }}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                        </svg>
-                    </button>
-                    <dialog id="spoiler_{{ $element.Id }}" class="modal">
-                        <div class="modal-box">
-                            <h3 class="text-lg font-bold">What happened?</h3>
-                            <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
-                            <div class="modal-action">
-                                <form method="dialog">
-                                    <button class="btn">❌</button>
-                                </form>
-                            </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-8 md:gap-12 items-center justify-center px-4">
+            {{ range $index, $element := .Results }}
+            <div class="flex items-center card bg-base-100 w-full max-w-md md:max-w-lg shadow-lg">
+                <div class="flex flex-row items-center justify-between">
+                    <figure>
+                        <img src="{{$element.Game.Away.Logo}}" alt="Away" width="150" height="150" />
+                    </figure>
+                    <figure>
+                        <img src="{{$element.Game.Home.Logo}}" alt="Home" width="150" height="150" />
+                    </figure>
+                </div>
+                <div class="card-body text-center">
+                    <h2 class="card-title text-sm">{{$element.Game.Away.Name}} @ {{$element.Game.Home.Name}} </h2>
+                    <div class="stat place-items-center">
+                        <div class="stat-title">Rating</div>
+                        {{ $score := .Rating.Score }}
+                        <div
+                            class="stat-value text-primary text-6xl {{ if lt $score 30 }}text-red-500{{ else if and (ge $score 30) (lt $score 65) }}text-yellow-500{{ else if and (ge $score 65) (lt $score 80) }}text-green-400{{ else if and (ge $score 80) (le $score 100) }}text-green-600{{ end }}">
+                            {{ $score }}
                         </div>
-                    </dialog>
-                    <button class="btn btn-xs btn-warning rounded-md"
-                        onclick="modalId('explanation_{{ $element.Id }}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                        </svg>
-                    </button>
-                    <dialog id="explanation_{{ $element.Id }}" class="modal">
-                        <div class="modal-box">
-                            <h3 class="text-lg font-bold">What happened?</h3>
-                            <p class="py-4">{{ $element.Rating.Explanation }}</p>
-                            <div class="modal-action">
-                                <form method="dialog">
-                                    <button class="btn">❌</button>
-                                </form>
+                    </div>
+                    <div class="flex flex-row card-actions justify-center">
+                        <button class="btn btn-primary btn-sm btn-square"
+                            onclick="modalId('spoiler_{{ $element.Id }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </button>
+                        <dialog id="spoiler_{{ $element.Id }}" class="modal">
+                            <div class="modal-box">
+                                <h3 class="text-lg font-bold">What happened?</h3>
+                                <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
+                                <div class="modal-action">
+                                    <form method="dialog">
+                                        <button class="btn btn-ghost btn-sm btn-square">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18 18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
+                        </dialog>
+                        <button class="btn btn-secondary btn-sm btn-square"
+                            onclick="modalId('explanation_{{ $element.Id }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                            </svg>
+                        </button>
+                        <dialog id="explanation_{{ $element.Id }}" class="modal">
+                            <div class="modal-box">
+                                <h3 class="text-lg font-bold">What happened?</h3>
+                                <p class="py-4">{{ $element.Rating.Explanation }}</p>
+                                <div class="modal-action">
+                                    <form method="dialog">
+                                        <button class="btn btn-ghost btn-sm btn-square">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18 18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </dialog>
+                    </div>
+                </div>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+
+    <!-- Browse Tab Content -->
+    <div id="browse-content" class="tab-content hidden pt-6">
+        <div class="flex flex-col items-center justify-center px-4">
+            <div class="card bg-base-100 w-full max-w-4xl shadow-lg p-4 md:p-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">Browse Games</h2>
+
+                <!-- Year and Season Type Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- Year Selection -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text text-lg font-semibold">Year</span>
+                        </label>
+                        <select class="select select-bordered select-lg w-full" id="yearSelect">
+                            {{ range $element := .Seasons }}
+                            <option value="{{ $element }}">{{ $element }}</option>
+                            {{ end }}
+                        </select>
+                    </div>
+
+                    <!-- Season Type Selection -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text text-lg font-semibold">Season Type</span>
+                        </label>
+                        <div class="flex flex-col gap-2">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="radio" name="seasonType" value="2" class="radio radio-primary" checked />
+                                <span class="label-text">Regular Season</span>
+                            </label>
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="radio" name="seasonType" value="3" class="radio radio-primary" />
+                                <span class="label-text">Playoffs</span>
+                            </label>
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input type="radio" name="seasonType" value="1" class="radio radio-primary" />
+                                <span class="label-text">Preseason</span>
+                            </label>
                         </div>
-                    </dialog>
+                    </div>
+                </div>
+
+                <!-- Week Selection -->
+                <div class="form-control mb-8">
+                    <label class="label">
+                        <span class="label-text text-lg font-semibold">Week</span>
+                    </label>
+                    <div class="flex flex-wrap gap-2 justify-center" id="weekGrid">
+                        <!-- Weeks will be populated by JavaScript based on season type -->
+                    </div>
+                    <!-- Hidden data for available weeks -->
+                    <!-- TODO: Simplify this - could generate week buttons directly in template or use simple JSON instead of hidden div with data attributes -->
+                    <div id="weekData" style="display: none;">
+                        {{ range $element := .Dates }}
+                        <span data-season="{{ $element.Season }}" data-week="{{ $element.Week }}"
+                            data-week-display="{{ $element.WeekDisplay }}"
+                            data-season-type="{{ $element.SeasonType }}"></span>
+                        {{ end }}
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div class="flex justify-center">
+                    <button class="btn btn-primary btn-lg px-8 font-semibold" onclick="redirectToResults()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                        View Games
+                    </button>
                 </div>
             </div>
         </div>
-        {{ end }}
     </div>
 
 </body>
+
 <script>
     function modalId(id) {
         document.getElementById(id).showModal();
     }
+
     function toggleAbout() {
         const aboutSection = document.getElementById('aboutSection');
 
@@ -120,6 +255,178 @@
             aboutSection.classList.add('hidden');
         }
     }
+
+    let selectedWeek = null;
+
+    function setCurrentValuesFromURL() {
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSeason = urlParams.get('season');
+        const currentSeasonType = urlParams.get('seasontype');
+        const currentWeek = urlParams.get('week');
+
+        // Set year dropdown
+        const yearSelect = document.getElementById('yearSelect');
+        if (currentSeason && yearSelect) {
+            yearSelect.value = currentSeason;
+        }
+
+        // Set season type radio button
+        if (currentSeasonType) {
+            const seasonTypeRadio = document.querySelector(`input[name="seasonType"][value="${currentSeasonType}"]`);
+            if (seasonTypeRadio) {
+                // Uncheck all first
+                document.querySelectorAll('input[name="seasonType"]').forEach(radio => radio.checked = false);
+                // Check the current one
+                seasonTypeRadio.checked = true;
+            }
+        }
+
+        // Store current week to select it after week grid is populated
+        if (currentWeek) {
+            selectedWeek = parseInt(currentWeek);
+        }
+    }
+
+    function switchTab(tabName, element) {
+        // Hide all tab contents
+        const allContents = document.querySelectorAll('.tab-content');
+        allContents.forEach(content => content.classList.add('hidden'));
+
+        // Remove active class from all tabs and reset badge styles
+        const allTabs = document.querySelectorAll('.tab');
+        allTabs.forEach(tab => {
+            tab.classList.remove('tab-active');
+            const badge = tab.querySelector('.badge');
+            if (badge) {
+                badge.classList.remove('badge-primary');
+                badge.classList.add('badge-secondary', 'opacity-60');
+            }
+        });
+
+        // Show selected tab content
+        document.getElementById(tabName + '-content').classList.remove('hidden');
+
+        // Add active class to clicked tab and highlight its badge
+        element.classList.add('tab-active');
+        const activeBadge = element.querySelector('.badge');
+        if (activeBadge) {
+            activeBadge.classList.remove('badge-secondary', 'opacity-60');
+            activeBadge.classList.add('badge-primary');
+        }
+
+        // Initialize browse section if switching to browse tab
+        if (tabName === 'browse') {
+            setCurrentValuesFromURL();
+            populateWeekGrid();
+        }
+    }
+
+    function populateWeekGrid() {
+        const seasonTypeElement = document.querySelector('input[name="seasonType"]:checked');
+        if (!seasonTypeElement) return; // Exit if no season type is selected
+
+        const seasonType = seasonTypeElement.value;
+        const selectedYear = document.getElementById('yearSelect').value;
+        const weekGrid = document.getElementById('weekGrid');
+        weekGrid.innerHTML = '';
+
+        // Get available weeks from template data
+        const weekDataElements = document.querySelectorAll('#weekData span');
+        const availableWeeks = [];
+
+        weekDataElements.forEach(element => {
+            const season = element.getAttribute('data-season');
+            const week = parseInt(element.getAttribute('data-week'));
+            const weekDisplay = element.getAttribute('data-week-display');
+            const weekSeasonType = element.getAttribute('data-season-type');
+
+            // Filter by selected year and season type
+            if (season === selectedYear && weekSeasonType === seasonType) {
+                availableWeeks.push({
+                    week: week,
+                    display: weekDisplay
+                });
+            }
+        });
+
+        // Remove duplicates and sort by week number
+        const uniqueWeeks = [];
+        const seen = new Set();
+        availableWeeks.forEach(weekData => {
+            if (!seen.has(weekData.week)) {
+                seen.add(weekData.week);
+                uniqueWeeks.push(weekData);
+            }
+        });
+        uniqueWeeks.sort((a, b) => a.week - b.week);
+
+        // Create week buttons using actual available data
+        uniqueWeeks.forEach(weekData => {
+            const button = document.createElement('button');
+            button.className = 'btn btn-outline btn-sm whitespace-nowrap px-4 py-2 text-xs font-medium';
+            button.textContent = weekData.display; // Use display name (e.g., "Wild Card" instead of "1")
+            button.onclick = () => selectWeek(weekData.week, button);
+            weekGrid.appendChild(button);
+
+            // Auto-select the current week if it matches
+            if (selectedWeek && weekData.week === selectedWeek) {
+                selectWeek(weekData.week, button);
+            }
+        });
+    }
+
+    function selectWeek(week, buttonElement) {
+        // Remove selection from all week buttons
+        const weekButtons = document.querySelectorAll('#weekGrid button');
+        weekButtons.forEach(btn => {
+            btn.classList.remove('btn-primary', 'btn-active');
+            btn.classList.add('btn-outline');
+        });
+
+        // Highlight selected week
+        buttonElement.classList.remove('btn-outline');
+        buttonElement.classList.add('btn-primary', 'btn-active');
+        selectedWeek = week;
+    }
+
+    function redirectToResults() {
+        const year = document.getElementById('yearSelect').value;
+        const seasonTypeElement = document.querySelector('input[name="seasonType"]:checked');
+
+        if (!seasonTypeElement) {
+            alert('Please select a season type');
+            return;
+        }
+
+        const seasonType = seasonTypeElement.value;
+
+        if (!selectedWeek) {
+            alert('Please select a week');
+            return;
+        }
+
+        // Build URL and redirect to show results in main flow
+        const url = `?season=${year}&week=${selectedWeek}&seasontype=${seasonType}`;
+        window.location.href = url;
+    }
+
+    function goToLatest() {
+        // Redirect to root path (latest results without any parameters)
+        window.location.href = '/';
+    }
+
+    // Add event listeners for season type changes
+    document.addEventListener('DOMContentLoaded', function () {
+        const seasonTypeRadios = document.querySelectorAll('input[name="seasonType"]');
+        seasonTypeRadios.forEach(radio => {
+            radio.addEventListener('change', populateWeekGrid);
+        });
+
+        // Initialize browse settings from URL and week grid
+        setCurrentValuesFromURL();
+        populateWeekGrid();
+    });
 </script>
 
 </html>
