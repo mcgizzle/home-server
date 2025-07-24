@@ -44,7 +44,7 @@
             <a class="tab tab-active text-lg md:text-xl font-semibold px-2 md:px-3 py-3 md:py-5"
                 onclick="switchTab('latest', this)">
                 <span
-                    class="badge bg-green-500 text-white badge-primary badge-lg md:badge-xl rounded-md px-6 md:px-12 py-3 md:py-6 text-lg md:text-2xl">Results</span>
+                    class="badge badge-primary badge-lg md:badge-xl rounded-md px-6 md:px-12 py-3 md:py-6 text-lg md:text-2xl">Results</span>
             </a>
             <a class="tab text-lg md:text-xl font-semibold px-2 md:px-3 py-3 md:py-5"
                 onclick="switchTab('browse', this)">
@@ -299,7 +299,7 @@
             tab.classList.remove('tab-active');
             const badge = tab.querySelector('.badge');
             if (badge) {
-                badge.classList.remove('badge-primary', 'badge-accent', 'badge-warning', 'bg-green-500', 'text-white');
+                badge.classList.remove('badge-primary');
                 badge.classList.add('badge-secondary', 'opacity-60');
             }
         });
@@ -312,7 +312,7 @@
         const activeBadge = element.querySelector('.badge');
         if (activeBadge) {
             activeBadge.classList.remove('badge-secondary', 'opacity-60');
-            activeBadge.classList.add('bg-green-500', 'text-white', 'badge-primary');
+            activeBadge.classList.add('badge-primary');
         }
 
         // Initialize browse section if switching to browse tab
