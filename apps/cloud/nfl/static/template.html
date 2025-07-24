@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-theme="black">
+<html data-theme="dim">
 
 <head>
     <meta charset="UTF-8">
@@ -65,11 +65,14 @@
                         </div>
                     </div>
                     <div class="flex flex-row card-actions justify-center">
-                        <button class="btn btn-info btn-xs rounded-md" onclick="modalId('spoiler_{{ $element.Id }}')">
+                        <button class="btn btn-primary btn-sm btn-square"
+                            onclick="modalId('spoiler_{{ $element.Id }}')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-6">
+                                stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
                         </button>
                         <dialog id="spoiler_{{ $element.Id }}" class="modal">
@@ -78,17 +81,23 @@
                                 <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
                                 <div class="modal-action">
                                     <form method="dialog">
-                                        <button class="btn">❌</button>
+                                        <button class="btn btn-ghost btn-sm btn-square">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18 18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
                                     </form>
                                 </div>
                             </div>
                         </dialog>
-                        <button class="btn btn-xs btn-warning rounded-md"
+                        <button class="btn btn-secondary btn-sm btn-square"
                             onclick="modalId('explanation_{{ $element.Id }}')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-6">
+                                stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                    d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
                             </svg>
                         </button>
                         <dialog id="explanation_{{ $element.Id }}" class="modal">
@@ -97,7 +106,13 @@
                                 <p class="py-4">{{ $element.Rating.Explanation }}</p>
                                 <div class="modal-action">
                                     <form method="dialog">
-                                        <button class="btn">❌</button>
+                                        <button class="btn btn-ghost btn-sm btn-square">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18 18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
                                     </form>
                                 </div>
                             </div>
@@ -156,14 +171,23 @@
                     <label class="label">
                         <span class="label-text text-lg font-semibold">Week</span>
                     </label>
-                    <div class="grid grid-cols-6 md:grid-cols-9 gap-2" id="weekGrid">
+                    <div class="flex flex-wrap gap-2 justify-center" id="weekGrid">
                         <!-- Weeks will be populated by JavaScript based on season type -->
+                    </div>
+                    <!-- Hidden data for available weeks -->
+                    <!-- TODO: Simplify this - could generate week buttons directly in template or use simple JSON instead of hidden div with data attributes -->
+                    <div id="weekData" style="display: none;">
+                        {{ range $element := .Dates }}
+                        <span data-season="{{ $element.Season }}" data-week="{{ $element.Week }}"
+                            data-week-display="{{ $element.WeekDisplay }}"
+                            data-season-type="{{ $element.SeasonType }}"></span>
+                        {{ end }}
                     </div>
                 </div>
 
                 <!-- Search Button -->
                 <div class="flex justify-center">
-                    <button class="btn btn-primary btn-lg px-8" onclick="redirectToResults()">
+                    <button class="btn btn-primary btn-lg px-8 font-semibold" onclick="redirectToResults()">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -177,6 +201,7 @@
     </div>
 
 </body>
+
 <script>
     function modalId(id) {
         document.getElementById(id).showModal();
@@ -263,49 +288,66 @@
         if (!seasonTypeElement) return; // Exit if no season type is selected
 
         const seasonType = seasonTypeElement.value;
+        const selectedYear = document.getElementById('yearSelect').value;
         const weekGrid = document.getElementById('weekGrid');
         weekGrid.innerHTML = '';
 
-        let maxWeeks;
-        switch (seasonType) {
-            case '1': // Preseason
-                maxWeeks = 4;
-                break;
-            case '2': // Regular Season
-                maxWeeks = 18;
-                break;
-            case '3': // Playoffs
-                maxWeeks = 5;
-                break;
-            default:
-                maxWeeks = 18;
-        }
+        // Get available weeks from template data
+        const weekDataElements = document.querySelectorAll('#weekData span');
+        const availableWeeks = [];
 
-        for (let week = 1; week <= maxWeeks; week++) {
+        weekDataElements.forEach(element => {
+            const season = element.getAttribute('data-season');
+            const week = parseInt(element.getAttribute('data-week'));
+            const weekDisplay = element.getAttribute('data-week-display');
+            const weekSeasonType = element.getAttribute('data-season-type');
+
+            // Filter by selected year and season type
+            if (season === selectedYear && weekSeasonType === seasonType) {
+                availableWeeks.push({
+                    week: week,
+                    display: weekDisplay
+                });
+            }
+        });
+
+        // Remove duplicates and sort by week number
+        const uniqueWeeks = [];
+        const seen = new Set();
+        availableWeeks.forEach(weekData => {
+            if (!seen.has(weekData.week)) {
+                seen.add(weekData.week);
+                uniqueWeeks.push(weekData);
+            }
+        });
+        uniqueWeeks.sort((a, b) => a.week - b.week);
+
+        // Create week buttons using actual available data
+        uniqueWeeks.forEach(weekData => {
             const button = document.createElement('button');
-            button.className = 'btn btn-outline btn-sm';
-            button.textContent = week;
-            button.onclick = () => selectWeek(week, button);
+            button.className = 'btn btn-outline btn-sm whitespace-nowrap px-4 py-2 text-xs font-medium';
+            button.textContent = weekData.display; // Use display name (e.g., "Wild Card" instead of "1")
+            button.onclick = () => selectWeek(weekData.week, button);
             weekGrid.appendChild(button);
 
             // Auto-select the current week if it matches
-            if (selectedWeek && week === selectedWeek) {
-                selectWeek(week, button);
+            if (selectedWeek && weekData.week === selectedWeek) {
+                selectWeek(weekData.week, button);
             }
-        }
+        });
     }
 
     function selectWeek(week, buttonElement) {
         // Remove selection from all week buttons
         const weekButtons = document.querySelectorAll('#weekGrid button');
         weekButtons.forEach(btn => {
-            btn.classList.remove('btn-primary');
+            btn.classList.remove('btn-primary', 'btn-active');
             btn.classList.add('btn-outline');
         });
 
         // Highlight selected week
         buttonElement.classList.remove('btn-outline');
-        buttonElement.classList.add('btn-primary');
+        buttonElement.classList.add('btn-primary', 'btn-active');
         selectedWeek = week;
     }
 
