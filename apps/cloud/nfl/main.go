@@ -124,6 +124,38 @@ func main() {
 		season := r.URL.Query().Get("season")
 		seasonType := r.URL.Query().Get("seasontype")
 
+		// If any parameters are missing, find the best defaults
+		if week == "" || season == "" || seasonType == "" {
+			log.Printf("Missing query parameters, checking for existing data")
+
+			// Check if any data exists at all
+			dates, err := resultRepo.LoadDates()
+			if err != nil {
+				log.Printf("Error loading dates: %v", err)
+				http.Error(w, "Internal server error", http.StatusInternalServerError)
+				return
+			}
+
+			if len(dates) == 0 {
+				log.Printf("No game data exists in database")
+				http.Error(w, "No game data available. Please run /run to fetch the latest games or use /backfill to load specific weeks.", http.StatusNotFound)
+				return
+			}
+
+			// Use the latest week with actual data
+			latestDate := dates[0]
+			if season == "" {
+				season = latestDate.Season
+			}
+			if week == "" {
+				week = latestDate.Week
+			}
+			if seasonType == "" {
+				seasonType = latestDate.SeasonType
+			}
+			log.Printf("Using latest week with data: Season %s, Week %s, SeasonType %s", season, week, seasonType)
+		}
+
 		data, err := getTemplateDataUseCase.Execute(season, week, seasonType)
 		if err != nil {
 			log.Printf("Error getting template data: %v", err)
