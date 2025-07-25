@@ -23,7 +23,7 @@ func initDb() *sql.DB {
 		log.Fatal(err)
 	}
 	sqlStmt := `
-	create table if not exists results (id integer not null primary key, event_id integer, week integer, season integer, season_type integer, rating integer, explanation text, spoiler_free_explanation text, game text);
+	create table if not exists results (id integer not null primary key, event_id integer unique, week integer, season integer, season_type integer, rating integer, explanation text, spoiler_free_explanation text, game text);
 	`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {

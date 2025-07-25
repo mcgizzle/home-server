@@ -29,7 +29,7 @@ func NewSQLiteResultRepository(db *sql.DB) *SQLiteResultRepository {
 
 // SaveResults saves multiple results to the database
 func (r *SQLiteResultRepository) SaveResults(results []domain.Result) error {
-	stmt, err := r.db.Prepare("insert into results(event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := r.db.Prepare("insert or replace into results(event_id, season, week, season_type, rating, explanation, spoiler_free_explanation, game) values(?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
