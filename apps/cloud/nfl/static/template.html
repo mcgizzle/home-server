@@ -84,19 +84,26 @@
 
         <div class="flex flex-col gap-8 md:gap-12 items-center justify-center px-4">
             {{ range $index, $element := .Results }}
+            {{/* Define variables for comparison to avoid formatter issues */}}
+            {{ $categoryKey := $element.Rating.Category.Key }}
+            {{ $isLegendary := eq $categoryKey "legendary" }}
+            {{ $isMustWatch := eq $categoryKey "must_watch" }}
+            {{ $isEntertaining := eq $categoryKey "entertaining" }}
+            {{ $isDecent := eq $categoryKey "decent" }}
+            {{ $isMediocre := eq $categoryKey "mediocre" }}
+            {{ $isSkippable := eq $categoryKey "skippable" }}
+
             <div class="flex items-center card bg-base-100 w-full max-w-md md:max-w-lg shadow-lg relative">
                 <!-- Rating Category Badge - Top Right -->
-                <div class="absolute top-2 right-2 z-10">
-                    <div class="badge badge-sm font-medium px-2 py-1 {{ if eq $element.Rating.Category.Key "legendary"
-                        }}badge-success{{ else if eq $element.Rating.Category.Key "must_watch" }}badge-secondary{{ else
-                        if eq $element.Rating.Category.Key "entertaining" }}badge-info{{ else if eq
-                        $element.Rating.Category.Key "decent" }}badge-warning{{ else if eq
-                        $element.Rating.Category.Key "mediocre" }}badge-neutral{{ else if eq
-                        $element.Rating.Category.Key "skippable" }}badge-error{{ else }}badge-error{{ end }}">
-                        {{ $element.Rating.Category.Name }}
+                <div class="absolute top-2 right-2">
+                    <div
+                        class="badge  {{ if $isLegendary }}badge-success{{ else if $isMustWatch }}badge-accent{{ else if $isEntertaining }}badge-info{{ else if $isDecent }}badge-warning{{ else if $isMediocre }}badge-neutral{{ else if $isSkippable }}badge-error{{ else }}badge-ghost{{ end }}">
+                        {{ if $isLegendary }}🏆{{ else if $isMustWatch }}🔥{{ else if $isEntertaining }}👍{{ else if
+                        $isDecent }}👌{{ else if $isMediocre }}😐{{ else if $isSkippable }}👎{{ else }}🤢{{ end }} {{
+                        $element.Rating.Category.Name }}
                     </div>
                 </div>
-                <div class="flex flex-row items-center justify-between">
+                <div class="flex flex-row items-center justify-between mt-8 mb-4 px-4">
                     <figure>
                         <img src="{{$element.Game.Away.Logo}}" alt="Away" width="150" height="150" />
                     </figure>
