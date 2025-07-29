@@ -86,11 +86,11 @@ CREATE TABLE competition_teams (
     PRIMARY KEY(competition_id, team_id)
 );
 
--- Multi-type ratings
+-- Ratings (extensible for future rating types)
 CREATE TABLE ratings (
     id INTEGER PRIMARY KEY,
     competition_id TEXT REFERENCES competitions(id),
-    type TEXT NOT NULL,            -- ai_excitement, sentiment, quality
+    type TEXT NOT NULL,            -- excitement (extensible for future types)
     score INTEGER NOT NULL,
     explanation TEXT,
     spoiler_free TEXT,
@@ -129,16 +129,13 @@ type Competition struct {
     StartTime  time.Time           `json:"start_time"`
     Status     string              `json:"status"`
     Teams      []CompetitionTeam   `json:"teams"`
-    Ratings    map[RatingType]Rating `json:"ratings"`
+    Rating     *Rating             `json:"rating,omitempty"`
 }
 
 type RatingType string
 
 const (
-    RatingTypeAI        RatingType = "ai_excitement"
-    RatingTypeSentiment RatingType = "sentiment"
-    RatingTypeQuality   RatingType = "game_quality"
-    RatingTypeUpset     RatingType = "upset_factor"
+    RatingTypeAI        RatingType = "excitement"
 )
 
 type Rating struct {
@@ -169,20 +166,18 @@ type DataSource interface {
     GetCompetition(id string) (Competition, error)
 }
 
-// Multi-rating service
+// Rating service
 type RatingService interface {
-    GetSupportedTypes() []RatingType
-    ProduceRating(comp Competition, ratingType RatingType) (Rating, error)
-    ProduceAllRatings(comp Competition) map[RatingType]Rating
+    ProduceRating(comp Competition) (Rating, error)
 }
 
 // Universal repository
 type CompetitionRepository interface {
     SaveCompetition(comp Competition) error
-    SaveRatings(compID string, ratings map[RatingType]Rating) error
+    SaveRating(compID string, rating Rating) error
     LoadCompetition(id string) (Competition, error)
     FindByTeam(teamName string, sport Sport) ([]Competition, error)
-    FindByRating(ratingType RatingType, minScore int) ([]Competition, error)
+    FindByRating(minScore int) ([]Competition, error)
 }
 ```
 
@@ -207,15 +202,9 @@ type OpenAIRatingService struct {
     client openai.Client
 }
 
-func (o *OpenAIRatingService) ProduceRating(comp Competition, ratingType RatingType) (Rating, error) {
-    switch ratingType {
-    case RatingTypeAI:
-        // Current AI excitement logic
-    case RatingTypeQuality:
-        // New: rate game quality independent of outcome
-    case RatingTypeUpset:
-        // New: rate how unexpected the result was
-    }
+func (o *OpenAIRatingService) ProduceRating(comp Competition) (Rating, error) {
+    // Generate excitement rating using current logic
+    return o.generateExcitementRating(comp), nil
 }
 ```
 
@@ -256,18 +245,16 @@ curl "http://localhost:8089/backfill?week=4&season=2024&seasontype=3"
 ```go
 type AnalyticsService interface {
     GetTeamPerformance(teamName string, season string) TeamStats
-    GetRatingDistribution(ratingType RatingType) RatingDistribution
-    GetTopGames(ratingType RatingType, limit int) []Competition
-    GetRatingCorrelations() map[RatingType]map[RatingType]float64
-    FindUpsets(sport Sport, threshold int) []Competition
+    GetRatingDistribution() RatingDistribution
+    GetTopGames(limit int) []Competition
+    FindHighRatedGames(threshold int) []Competition
 }
 
 type TeamStats struct {
     Name            string              `json:"name"`
     GamesPlayed     int                 `json:"games_played"`
-    AvgRatings      map[RatingType]float64 `json:"avg_ratings"`
+    AvgRating       float64             `json:"avg_rating"`
     TopGames        []Competition       `json:"top_games"`
-    UpsetVictories  []Competition       `json:"upset_victories"`
 }
 ```
 
@@ -282,240 +269,43 @@ SELECT
 FROM teams t
 JOIN competition_teams ct ON t.id = ct.team_id  
 JOIN ratings r ON ct.competition_id = r.competition_id
-WHERE r.type = 'ai_excitement'
+WHERE r.type = 'excitement'
 GROUP BY t.name;
 
--- Rating correlations
+-- Rating distribution
 SELECT 
-    r1.type as rating_1,
-    r2.type as rating_2,
-    CORR(r1.score, r2.score) as correlation
-FROM ratings r1
-JOIN ratings r2 ON r1.competition_id = r2.competition_id
-WHERE r1.type != r2.type
-GROUP BY r1.type, r2.type;
+    FLOOR(score/10)*10 as score_range,
+    COUNT(*) as game_count
+FROM ratings 
+WHERE type = 'excitement'
+GROUP BY FLOOR(score/10)*10
+ORDER BY score_range;
 ```
 
 #### API Endpoints
 ```go
-// New analytics endpoints
+// Analytics endpoints
 http.HandleFunc("/api/analytics/team/{name}", handleTeamAnalytics)
 http.HandleFunc("/api/analytics/top-games", handleTopGames)  
-http.HandleFunc("/api/analytics/correlations", handleRatingCorrelations)
-http.HandleFunc("/api/analytics/upsets", handleUpsets)
+http.HandleFunc("/api/analytics/distribution", handleRatingDistribution)
 ```
 
 **✅ Success Criteria:** Rich analytics available, fast query performance
 
 ---
 
-### Phase 5: Multi-Rating Implementation  
-**Goal:** Generate multiple rating types for comprehensive game evaluation
-
-#### New Rating Types
-```go
-// Quality rating (independent of excitement)
-func (o *OpenAIRatingService) generateQualityRating(comp Competition) Rating {
-    prompt := `Rate this game's overall quality (0-100) based on:
-    - Player performance levels
-    - Strategic execution  
-    - Competitive balance
-    - Technical skill displayed
-    
-    Focus on quality independent of excitement or upset factor.`
-}
-
-// Upset factor rating
-func (o *OpenAIRatingService) generateUpsetRating(comp Competition) Rating {
-    prompt := `Rate how surprising this result was (0-100) based on:
-    - Pre-game expectations
-    - Team records and standings
-    - Historical matchup data
-    - Score differential vs expected`
-}
-```
-
-#### Batch Rating Generation
-```go
-func (o *OpenAIRatingService) ProduceAllRatings(comp Competition) map[RatingType]Rating {
-    ratings := make(map[RatingType]Rating)
-    
-    // Generate all rating types in parallel
-    var wg sync.WaitGroup
-    wg.Add(3)
-    
-    go func() {
-        defer wg.Done()
-        ratings[RatingTypeAI] = o.generateAIRating(comp)
-    }()
-    
-    go func() {
-        defer wg.Done()
-        ratings[RatingTypeQuality] = o.generateQualityRating(comp)
-    }()
-    
-    go func() {
-        defer wg.Done() 
-        ratings[RatingTypeUpset] = o.generateUpsetRating(comp)
-    }()
-    
-    wg.Wait()
-    return ratings
-}
-```
-
-#### UI Updates
-- Multi-rating display on game cards
-- Rating type filters  
-- Correlation visualizations
-- Top games by rating type
-
-**✅ Success Criteria:** All games have multiple rating perspectives
-
----
-
-### Phase 6: Second Sport Integration
-**Goal:** Prove architecture extensibility with NBA/MLB
-
-#### NBA Data Source
-```go
-type NBADataSource struct {
-    client *http.Client
-    apiKey string
-}
-
-func (n *NBADataSource) GetSport() Sport { return SportNBA }
-
-func (n *NBADataSource) ListLatest() ([]Competition, error) {
-    // Implement NBA API integration
-    // Map NBA games to Competition format
-    // Handle NBA-specific periods (quarters, OT)
-}
-```
-
-#### Sport Configuration
-```go
-type SportConfig struct {
-    ID           Sport             `json:"id"`
-    Name         string            `json:"name"`
-    PeriodNames  map[string]string `json:"period_names"`
-    SeasonTypes  map[string]string `json:"season_types"`
-    RatingTypes  []RatingType      `json:"rating_types"`
-}
-
-// NFL config
-nflConfig := SportConfig{
-    ID:   SportNFL,
-    Name: "National Football League",
-    PeriodNames: map[string]string{
-        "1": "Week", "2": "Week", ..., "22": "Super Bowl",
-    },
-    SeasonTypes: map[string]string{
-        "1": "Preseason", "2": "Regular Season", "3": "Playoffs",
-    },
-}
-
-// NBA config  
-nbaConfig := SportConfig{
-    ID:   SportNBA,
-    Name: "National Basketball Association",
-    PeriodNames: map[string]string{
-        "1": "Game", "2": "Game", ...,
-    },
-    SeasonTypes: map[string]string{
-        "1": "Preseason", "2": "Regular Season", "3": "Playoffs",
-    },
-}
-```
-
-#### Multi-Sport UI
-- Sport selector in navigation
-- Sport-specific terminology
-- Unified analytics across sports
-
-**✅ Success Criteria:** Two sports working independently with shared infrastructure
-
----
-
-### Phase 7: Advanced Features
-**Goal:** Add sentiment analysis and social media integration
-
-#### Sentiment Rating Service
-```go
-type SentimentRatingService struct {
-    redditClient  RedditClient
-    twitterClient TwitterClient
-    analyzer      SentimentAnalyzer
-}
-
-func (s *SentimentRatingService) ProduceRating(comp Competition) Rating {
-    // 1. Find social media discussions
-    posts := s.findGameDiscussions(comp)
-    
-    // 2. Analyze sentiment and engagement
-    sentiment := s.analyzer.AnalyzeSentiment(posts)
-    
-    // 3. Convert to 0-100 excitement score
-    score := s.sentimentToExcitement(sentiment)
-    
-    return Rating{
-        Type:        RatingTypeSentiment,
-        Score:       score,
-        Source:      "social_media",
-        Confidence:  sentiment.Confidence,
-        Explanation: sentiment.Summary,
-    }
-}
-```
-
-#### Social Media Integration
-```go
-type RedditClient interface {
-    FindGameThreads(teamNames []string, date time.Time) []RedditPost
-    GetPostMetrics(postID string) RedditMetrics
-}
-
-type SentimentAnalyzer interface {
-    AnalyzeSentiment(texts []string) SentimentScore
-    GetEngagementScore(metrics []SocialMetrics) float64
-}
-```
-
-**✅ Success Criteria:** Games have social sentiment scores alongside AI ratings
-
----
-
-### Phase 8: Performance & Polish
+### Phase 5: Performance & Polish
 **Goal:** Optimize performance and add production-ready features
 
 #### Performance Optimization
 ```sql
 -- Add strategic indexes
 CREATE INDEX idx_competitions_sport_season ON competitions(sport_id, season);
-CREATE INDEX idx_ratings_type_score ON ratings(type, score DESC);
+CREATE INDEX idx_ratings_score ON ratings(score DESC);
 CREATE INDEX idx_competition_teams_team ON competition_teams(team_id);
 ```
 
-#### Caching Layer
-```go
-type CachedAnalyticsService struct {
-    base  AnalyticsService
-    cache map[string]interface{}
-    ttl   time.Duration
-}
 
-// Cache frequently accessed analytics
-func (c *CachedAnalyticsService) GetTeamPerformance(team string) TeamStats {
-    key := fmt.Sprintf("team_perf_%s", team)
-    if cached, ok := c.cache[key]; ok {
-        return cached.(TeamStats)
-    }
-    
-    stats := c.base.GetTeamPerformance(team)
-    c.cache[key] = stats
-    return stats
-}
-```
 
 #### Production Features
 - Health check endpoints
@@ -534,15 +324,14 @@ func (c *CachedAnalyticsService) GetTeamPerformance(team string) TeamStats {
 - ✅ **Zero technical debt** from legacy migration
 - ✅ **Perfect data consistency** across all games
 
-### Medium-term (After Phase 5)
+### Medium-term (After Phase 4)
 - 📊 **Rich analytics** across all games and teams
-- 🎯 **Multiple rating perspectives** per game
 - ⚡ **Fast, complex queries** on structured data
 
-### Long-term (After Phase 7)
-- 🏀 **Multi-sport platform** ready for NBA, MLB, etc.
-- 🌐 **Social sentiment** integration
-- 📈 **Comprehensive game evaluation** system
+### Long-term (After Phase 5)
+- 🏗️ **Sport-agnostic architecture** ready for future expansion
+- 📈 **Extensible rating system** for additional rating types
+- ⚡ **Production-ready** performance and reliability
 
 ---
 
@@ -583,8 +372,8 @@ func (c *CachedAnalyticsService) GetTeamPerformance(team string) TeamStats {
 
 - ✅ **All 358 games** regenerated successfully  
 - ✅ **Analytics queries** perform under 50ms
-- ✅ **Multiple rating types** generated for all games
-- ✅ **Multi-sport ready** architecture
+- ✅ **Excitement ratings** generated for all games
+- ✅ **Sport-agnostic** architecture foundation
 - ✅ **Clean, maintainable** codebase
 
 ---
