@@ -41,6 +41,12 @@ func (uc *getTemplateDataUseCase) Execute(season, week, seasonType string) (doma
 		return domain.TemplateData{}, err
 	}
 
+	// Convert results to template format with computed categories
+	var templateResults []domain.TemplateResult
+	for _, result := range results {
+		templateResults = append(templateResults, result.ToTemplateResult())
+	}
+
 	// Convert dates to template format
 	var templateDates []domain.DateTemplate
 	for _, date := range dates {
@@ -62,7 +68,7 @@ func (uc *getTemplateDataUseCase) Execute(season, week, seasonType string) (doma
 	}
 
 	templateData := domain.TemplateData{
-		Results: results,
+		Results: templateResults,
 		Dates:   templateDates,
 		Seasons: seasons,
 		Current: currentDate.Template(),

@@ -84,7 +84,18 @@
 
         <div class="flex flex-col gap-8 md:gap-12 items-center justify-center px-4">
             {{ range $index, $element := .Results }}
-            <div class="flex items-center card bg-base-100 w-full max-w-md md:max-w-lg shadow-lg">
+            <div class="flex items-center card bg-base-100 w-full max-w-md md:max-w-lg shadow-lg relative">
+                <!-- Rating Category Badge - Top Right -->
+                <div class="absolute top-2 right-2 z-10">
+                    <div class="badge badge-sm font-medium px-2 py-1 {{ if eq $element.Rating.Category.Key "legendary"
+                        }}badge-success{{ else if eq $element.Rating.Category.Key "must_watch" }}badge-secondary{{ else
+                        if eq $element.Rating.Category.Key "entertaining" }}badge-info{{ else if eq
+                        $element.Rating.Category.Key "decent" }}badge-warning{{ else if eq
+                        $element.Rating.Category.Key "mediocre" }}badge-neutral{{ else if eq
+                        $element.Rating.Category.Key "skippable" }}badge-error{{ else }}badge-error{{ end }}">
+                        {{ $element.Rating.Category.Name }}
+                    </div>
+                </div>
                 <div class="flex flex-row items-center justify-between">
                     <figure>
                         <img src="{{$element.Game.Away.Logo}}" alt="Away" width="150" height="150" />

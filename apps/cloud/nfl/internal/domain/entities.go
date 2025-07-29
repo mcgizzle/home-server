@@ -26,6 +26,15 @@ type Rating struct {
 	SpoilerFree string `json:"spoiler_free_explanation"`
 }
 
+// RatingCategory represents a categorization of game ratings
+type RatingCategory struct {
+	Key         string `json:"key"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Min         int    `json:"min_score"`
+	Max         int    `json:"max_score"`
+}
+
 // Result represents a complete game result with metadata
 type Result struct {
 	Id         int    `json:"id"`
@@ -53,12 +62,49 @@ type DateTemplate struct {
 	SeasonType         string `json:"season_type"`
 }
 
+// TemplateRating represents a rating with computed category for template display
+type TemplateRating struct {
+	Score       int            `json:"score"`
+	Explanation string         `json:"explanation"`
+	SpoilerFree string         `json:"spoiler_free_explanation"`
+	Category    RatingCategory `json:"category"`
+}
+
+// TemplateResult represents a result with template-specific enhancements
+type TemplateResult struct {
+	Id         int            `json:"id"`
+	EventId    string         `json:"event_id"`
+	Season     string         `json:"season"`
+	Week       string         `json:"week"`
+	SeasonType string         `json:"season_type"`
+	Rating     TemplateRating `json:"rating"`
+	Game       Game           `json:"game"`
+}
+
 // TemplateData represents the complete data structure passed to HTML templates
 type TemplateData struct {
-	Results []Result       `json:"results"`
-	Dates   []DateTemplate `json:"dates"`
-	Seasons []string       `json:"seasons"`
-	Current DateTemplate   `json:"current"`
+	Results []TemplateResult `json:"results"`
+	Dates   []DateTemplate   `json:"dates"`
+	Seasons []string         `json:"seasons"`
+	Current DateTemplate     `json:"current"`
+}
+
+// ToTemplateResult converts a domain Result to a TemplateResult with computed category
+func (r Result) ToTemplateResult() TemplateResult {
+	return TemplateResult{
+		Id:         r.Id,
+		EventId:    r.EventId,
+		Season:     r.Season,
+		Week:       r.Week,
+		SeasonType: r.SeasonType,
+		Rating: TemplateRating{
+			Score:       r.Rating.Score,
+			Explanation: r.Rating.Explanation,
+			SpoilerFree: r.Rating.SpoilerFree,
+			Category:    GetRatingCategory(r.Rating.Score),
+		},
+		Game: r.Game,
+	}
 }
 
 // DetailsItem represents individual plays or events in games
@@ -156,4 +202,26 @@ func (r Rating) MarshalJSON() ([]byte, error) {
 		Explanation: r.Explanation,
 		SpoilerFree: r.SpoilerFree,
 	})
+}
+
+// GetRatingCategory returns the appropriate rating category for a given score
+func GetRatingCategory(score int) RatingCategory {
+	categories := []RatingCategory{
+		{Key: "legendary", Name: "Legendary", Description: "Instant classic", Min: 90, Max: 100},
+		{Key: "must_watch", Name: "Must Watch", Description: "Don't miss this one", Min: 75, Max: 89},
+		{Key: "entertaining", Name: "Entertaining", Description: "Worth your time", Min: 60, Max: 74},
+		{Key: "decent", Name: "Decent", Description: "Solid game", Min: 45, Max: 59},
+		{Key: "mediocre", Name: "Mediocre", Description: "Only if you're bored", Min: 30, Max: 44},
+		{Key: "skippable", Name: "Skippable", Description: "Save your time", Min: 15, Max: 29},
+		{Key: "unwatchable", Name: "Unwatchable", Description: "Complete snoozefest", Min: 0, Max: 14},
+	}
+
+	for _, category := range categories {
+		if score >= category.Min && score <= category.Max {
+			return category
+		}
+	}
+
+	// Fallback for edge cases (should not happen with valid scores 0-100)
+	return categories[len(categories)-1] // Return unwatchable as fallback
 }
