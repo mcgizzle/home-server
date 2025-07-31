@@ -68,14 +68,14 @@
                         <div class="divider divider-horizontal hidden md:block"></div>
                         <div class="flex items-center justify-between md:justify-start gap-2 md:gap-3">
                             <span class="font-medium text-base-content/70">Type:</span>
-                            <span class="font-semibold">{{ if eq .Current.SeasonType "1" }}Preseason{{ else if eq
-                                .Current.SeasonType "2" }}Regular Season{{ else if eq .Current.SeasonType "3"
-                                }}Playoffs{{ else }}{{ .Current.SeasonType }}{{ end }}</span>
+                            <span class="font-semibold">{{ if eq .Current.PeriodType "1" }}Preseason{{ else if eq
+                                .Current.PeriodType "2" }}Regular Season{{ else if eq .Current.PeriodType "3"
+                                }}Playoffs{{ else }}{{ .Current.PeriodType }}{{ end }}</span>
                         </div>
                         <div class="divider divider-horizontal hidden md:block"></div>
                         <div class="flex items-center justify-between md:justify-start gap-2 md:gap-3">
                             <span class="font-medium text-base-content/70">Week:</span>
-                            <span class="font-semibold">{{ .Current.WeekDisplay }}</span>
+                            <span class="font-semibold">{{ .Current.PeriodDisplay }}</span>
                         </div>
                     </div>
                 </div>
@@ -85,34 +85,40 @@
         <div class="flex flex-col gap-8 md:gap-12 items-center justify-center px-4">
             {{ range $index, $element := .Results }}
             {{/* Define variables for comparison to avoid formatter issues */}}
-            {{ $categoryKey := $element.Rating.Category.Key }}
-            {{ $isLegendary := eq $categoryKey "legendary" }}
-            {{ $isMustWatch := eq $categoryKey "must_watch" }}
-            {{ $isEntertaining := eq $categoryKey "entertaining" }}
-            {{ $isDecent := eq $categoryKey "decent" }}
-            {{ $isMediocre := eq $categoryKey "mediocre" }}
+            {{ $categoryKey := $element.Rating.Category }}
+            {{ $isMustWatch := eq $categoryKey "must-watch" }}
+            {{ $isRecommended := eq $categoryKey "recommended" }}
+            {{ $isGood := eq $categoryKey "good" }}
+            {{ $isOkay := eq $categoryKey "okay" }}
             {{ $isSkippable := eq $categoryKey "skippable" }}
 
-            <div class="flex items-center card bg-base-100 w-full max-w-md md:max-w-lg shadow-lg relative">
-                <!-- Rating Category Badge - Top Right -->
+            {{/* Extract home and away teams from V2 Competition structure */}}
+            {{ $awayTeam := "" }}{{ $homeTeam := "" }}
+            {{ range $element.Competition.Teams }}
+            {{ if eq .HomeAway "away" }}{{ $awayTeam = . }}{{ end }}
+            {{ if eq .HomeAway "home" }}{{ $homeTeam = . }}{{ end }}
+            {{ end }}
+
+            <div class="card glass shadow-xl bg-base-100 w-full max-w-xs lg:max-w-sm relative">
                 <div class="absolute top-2 right-2">
                     <div
-                        class="badge  {{ if $isLegendary }}badge-success{{ else if $isMustWatch }}badge-accent{{ else if $isEntertaining }}badge-info{{ else if $isDecent }}badge-warning{{ else if $isMediocre }}badge-neutral{{ else if $isSkippable }}badge-error{{ else }}badge-ghost{{ end }}">
-                        {{ if $isLegendary }}🏆{{ else if $isMustWatch }}🔥{{ else if $isEntertaining }}👍{{ else if
-                        $isDecent }}👌{{ else if $isMediocre }}😐{{ else if $isSkippable }}👎{{ else }}🤢{{ end }} {{
-                        $element.Rating.Category.Name }}
+                        class="badge  {{ if $isMustWatch }}badge-success{{ else if $isRecommended }}badge-accent{{ else if $isGood }}badge-info{{ else if $isOkay }}badge-warning{{ else if $isSkippable }}badge-error{{ else }}badge-ghost{{ end }}">
+                        {{ if $isMustWatch }}🔥{{ else if $isRecommended }}👍{{ else if $isGood }}👌{{ else if
+                        $isOkay }}😐{{ else if $isSkippable }}👎{{ else }}🤢{{ end }} {{
+                        $element.Rating.Category }}
                     </div>
                 </div>
                 <div class="flex flex-row items-center justify-between mt-8 mb-4 px-4">
                     <figure>
-                        <img src="{{$element.Game.Away.Logo}}" alt="Away" width="150" height="150" />
+                        <img src="{{$awayTeam.Team.LogoURL}}" alt="Away" width="150" height="150" />
                     </figure>
                     <figure>
-                        <img src="{{$element.Game.Home.Logo}}" alt="Home" width="150" height="150" />
+                        <img src="{{$homeTeam.Team.LogoURL}}" alt="Home" width="150" height="150" />
                     </figure>
                 </div>
                 <div class="card-body text-center">
-                    <h2 class="card-title text-sm">{{$element.Game.Away.Name}} @ {{$element.Game.Home.Name}} </h2>
+                    <h2 class="card-title text-sm text-center justify-center mx-auto">{{$awayTeam.Team.Name}} @
+                        {{$homeTeam.Team.Name}} </h2>
                     <div class="stat place-items-center">
                         <div class="stat-title">Rating</div>
                         {{ $score := .Rating.Score }}
@@ -122,7 +128,7 @@
                         </div>
                     </div>
                     <div class="flex flex-row card-actions justify-center">
-                        <dialog id="spoiler_{{ $element.Id }}" class="modal">
+                        <dialog id="spoiler_{{ $element.ID }}" class="modal">
                             <div class="modal-box">
                                 <h3 class="text-lg font-bold">What happened?</h3>
                                 <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
@@ -140,7 +146,7 @@
                             </div>
                         </dialog>
                         <button class="btn btn-primary btn-sm btn-square" title="Spoiler-Free Summary"
-                            onclick="modalId('spoiler_{{ $element.Id }}')">
+                            onclick="modalId('spoiler_{{ $element.ID }}')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -148,14 +154,14 @@
                             </svg>
                         </button>
                         <button class="btn btn-secondary btn-sm btn-square" title="Full Explanation (Spoilers)"
-                            onclick="modalId('explanation_{{ $element.Id }}')">
+                            onclick="modalId('explanation_{{ $element.ID }}')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                             </svg>
                         </button>
-                        <dialog id="explanation_{{ $element.Id }}" class="modal">
+                        <dialog id="explanation_{{ $element.ID }}" class="modal">
                             <div class="modal-box">
                                 <h3 class="text-lg font-bold">What happened?</h3>
                                 <p class="py-4">{{ $element.Rating.Explanation }}</p>
@@ -233,9 +239,9 @@
                     <!-- TODO: Simplify this - could generate week buttons directly in template or use simple JSON instead of hidden div with data attributes -->
                     <div id="weekData" style="display: none;">
                         {{ range $element := .Dates }}
-                        <span data-season="{{ $element.Season }}" data-week="{{ $element.Week }}"
-                            data-week-display="{{ $element.WeekDisplay }}"
-                            data-season-type="{{ $element.SeasonType }}"></span>
+                        <span data-season="{{ $element.Season }}" data-week="{{ $element.Period }}"
+                            data-week-display="{{ $element.PeriodDisplay }}"
+                            data-season-type="{{ $element.PeriodType }}"></span>
                         {{ end }}
                     </div>
                 </div>

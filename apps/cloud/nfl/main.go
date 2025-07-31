@@ -2,17 +2,20 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/application"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/application/use_cases"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/external"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/infrastructure/database"
+	v2application "github.com/mcgizzle/home-server/apps/cloud/internal/v2/application"
+	v2usecases "github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/use_cases"
+	v2repository "github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
 )
 
 var DB_PATH = "data/results.db"
@@ -22,37 +25,46 @@ func initDb() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sqlStmt := `
-	create table if not exists results (id integer not null primary key, event_id integer unique, week integer, season integer, season_type integer, rating integer, explanation text, spoiler_free_explanation text, game text);
-	`
-	_, err = db.Exec(sqlStmt)
+
+	// Run V2 migrations instead of manual table creation
+	migrationsPath := "internal/infrastructure/migrations"
+	err = database.RunMigrations(DB_PATH, migrationsPath)
 	if err != nil {
-		log.Fatalf("%q: %s\n", err, sqlStmt)
+		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
+	log.Println("Database migrations completed successfully")
 	return db
 }
 
-func backgroundLatestEvents(ratingSvc application.RatingService, fetchLatestUseCase use_cases.FetchLatestResultsUseCase, saveUseCase use_cases.SaveResultsUseCase) {
+// V2 background process using pure V2 use cases
+func backgroundLatestEvents(
+	v2FetchUseCase v2usecases.FetchLatestCompetitionsUseCase,
+	v2SaveUseCase v2usecases.SaveCompetitionsUseCase,
+) {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
 
 	for range ticker.C {
-		log.Println("Checking for new events")
-		newResults, err := fetchLatestUseCase.Execute()
+		log.Println("Checking for new events (V2)")
+		competitions, err := v2FetchUseCase.Execute("nfl")
 		if err != nil {
-			log.Printf("Error fetching latest results: %v", err)
+			log.Printf("Error fetching latest competitions: %v", err)
 			continue
 		}
-		err = saveUseCase.Execute(newResults)
+		err = v2SaveUseCase.Execute(competitions)
 		if err != nil {
-			log.Printf("Error saving results: %v", err)
+			log.Printf("Error saving competitions: %v", err)
 			continue
 		}
+		log.Printf("Successfully processed %d competitions (V2)", len(competitions))
 	}
 }
 
 func main() {
+	log.Println("Starting NFL Excitement Rating Service")
+
+	// Check required environment variables
 	openAIKey := os.Getenv("OPENAI_API_KEY")
 	if openAIKey == "" {
 		log.Fatal("OPENAI_API_KEY not set")
@@ -60,129 +72,201 @@ func main() {
 
 	db := initDb()
 
-	// Create dependencies
-	resultRepo := repository.NewSQLiteResultRepository(db)
+	// Create V2 dependencies - pure V2 system
 	espnClient := external.NewHTTPESPNClient()
-	ratingSvc := application.NewOpenAIRatingService(openAIKey)
+	v2Repo := v2repository.NewSQLiteV2Repository(db)
+	v2RatingService := v2application.NewV2RatingService(openAIKey)
 
-	// Create use cases
-	fetchLatestUseCase := use_cases.NewFetchLatestResultsUseCase(espnClient, resultRepo, ratingSvc)
-	fetchSpecificUseCase := use_cases.NewFetchSpecificResultsUseCase(espnClient, resultRepo, ratingSvc)
-	saveUseCase := use_cases.NewSaveResultsUseCase(resultRepo)
-	getTemplateDataUseCase := use_cases.NewGetTemplateDataUseCase(resultRepo)
+	// V2 use cases replacing V1 equivalents
+	v2GetTemplateDataUseCase := v2usecases.NewGetTemplateDataUseCase(v2Repo)
+	v2GetAvailableDatesUseCase := v2usecases.NewGetAvailableDatesUseCase(v2Repo)
 
+	// NEW: V2 fetch and save use cases for pure V2 pipeline
+	v2FetchLatestUseCase := v2usecases.NewFetchLatestCompetitionsUseCase(espnClient, v2Repo)
+	v2FetchSpecificUseCase := v2usecases.NewFetchSpecificCompetitionsUseCase(espnClient, v2Repo)
+	v2SaveUseCase := v2usecases.NewSaveCompetitionsUseCase(v2Repo)
+	v2GenerateRatingsUseCase := v2usecases.NewGenerateRatingsUseCase(v2Repo, v2Repo, v2RatingService)
+	v2BackfillSeasonUseCase := v2usecases.NewBackfillSeasonUseCase(v2Repo, v2FetchSpecificUseCase, v2SaveUseCase)
+
+	// Start background process using V2 - REPLACED V1 WITH V2
 	go func() {
-		backgroundLatestEvents(ratingSvc, fetchLatestUseCase, saveUseCase)
+		backgroundLatestEvents(v2FetchLatestUseCase, v2SaveUseCase)
+	}()
+	go func() {
+		v2GenerateRatingsUseCase.Execute("nfl")
 	}()
 
-	tmpl := template.Must(template.ParseFiles("static/template.html"))
+	// Load template
+	tmpl, err := template.ParseFiles("static/template.html")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	http.Handle("/run", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		newResults, err := fetchLatestUseCase.Execute()
+	// REPLACED: /run endpoint now uses V2 pipeline
+	http.HandleFunc("/run", func(w http.ResponseWriter, r *http.Request) {
+		competitions, err := v2FetchLatestUseCase.Execute("nfl")
 		if err != nil {
-			log.Printf("Error fetching latest results: %v", err)
+			log.Printf("Error fetching latest competitions: %v", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
-		err = saveUseCase.Execute(newResults)
+
+		err = v2SaveUseCase.Execute(competitions)
 		if err != nil {
-			log.Printf("Error saving results: %v", err)
+			log.Printf("Error saving competitions: %v", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
+
+		log.Printf("Successfully processed %d competitions via /run", len(competitions))
 		w.WriteHeader(http.StatusOK)
-	}))
+	})
 
-	http.Handle("/backfill", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/backfill", func(w http.ResponseWriter, r *http.Request) {
 		week := r.URL.Query().Get("week")
 		season := r.URL.Query().Get("season")
 		seasonType := r.URL.Query().Get("seasontype")
 
 		if week == "" || season == "" || seasonType == "" {
-			http.Error(w, "Missing week or season", http.StatusBadRequest)
+			http.Error(w, "Missing required parameters: week, season, seasontype", http.StatusBadRequest)
 			return
 		}
 
-		results, err := fetchSpecificUseCase.Execute(season, week, seasonType)
-		if err != nil {
-			log.Printf("Error fetching specific results: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
+		// Convert V1 seasonType to V2 periodType
+		periodType := "regular"
+		if seasonType == "3" {
+			periodType = "playoff"
 		}
-		err = saveUseCase.Execute(results)
+
+		// REPLACED: Now using V2 specific fetch and save
+		competitions, err := v2FetchSpecificUseCase.Execute("nfl", season, week, periodType)
 		if err != nil {
-			log.Printf("Error saving results: %v", err)
+			log.Printf("Error fetching specific competitions: %v", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
 
+		err = v2SaveUseCase.Execute(competitions)
+		if err != nil {
+			log.Printf("Error saving competitions: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		log.Printf("Successfully processed %d competitions via /backfill", len(competitions))
 		w.WriteHeader(http.StatusOK)
-	}))
+	})
 
+	// NEW: Season backfill endpoint using V2 backfill use case
+	http.HandleFunc("/backfill-season", func(w http.ResponseWriter, r *http.Request) {
+		season := r.URL.Query().Get("season")
+		if season == "" {
+			http.Error(w, "Missing required parameter: season", http.StatusBadRequest)
+			return
+		}
+
+		limitStr := r.URL.Query().Get("limit")
+		var limit int
+		if limitStr != "" {
+			parsedLimit, err := strconv.Atoi(limitStr)
+			if err != nil {
+				http.Error(w, "Invalid limit parameter: must be a number", http.StatusBadRequest)
+				return
+			}
+			limit = parsedLimit
+		}
+
+		if limit > 0 {
+			log.Printf("Starting season backfill for season %s with limit %d", season, limit)
+		} else {
+			log.Printf("Starting season backfill for season %s", season)
+		}
+
+		var result *v2usecases.BackfillResult
+		var err error
+
+		if limit > 0 {
+			result, err = v2BackfillSeasonUseCase.ExecuteWithLimit("nfl", season, limit)
+		} else {
+			result, err = v2BackfillSeasonUseCase.Execute("nfl", season)
+		}
+
+		if err != nil {
+			log.Printf("Error during season backfill: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		log.Printf("Season backfill completed: %d periods processed, %d competitions added, %d errors",
+			result.PeriodsProcessed, result.CompetitionsAdded, len(result.Errors))
+
+		// Return JSON response with backfill results
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result)
+	})
+
+	// Main page handler using V2 for template data and available dates
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		week := r.URL.Query().Get("week")
+		// Get query parameters with defaults
 		season := r.URL.Query().Get("season")
+		week := r.URL.Query().Get("week")
 		seasonType := r.URL.Query().Get("seasontype")
 
-		// If any parameters are missing, find the best defaults
-		if week == "" || season == "" || seasonType == "" {
-			log.Printf("Missing query parameters, checking for existing data")
-
-			// Check if any data exists at all
-			dates, err := resultRepo.LoadDates()
+		// Default parameter discovery using V2
+		if season == "" || week == "" || seasonType == "" {
+			dates, err := v2GetAvailableDatesUseCase.Execute("nfl")
 			if err != nil {
 				log.Printf("Error loading dates: %v", err)
 				http.Error(w, "Internal server error", http.StatusInternalServerError)
 				return
 			}
 
-			if len(dates) == 0 {
-				log.Printf("No game data exists in database")
-				http.Error(w, "No game data available. Please run /run to fetch the latest games or use /backfill to load specific weeks.", http.StatusNotFound)
-				return
+			if len(dates) > 0 {
+				latestV2Date := dates[len(dates)-1]
+				if season == "" {
+					season = latestV2Date.Season
+				}
+				if week == "" {
+					week = latestV2Date.Period
+				}
+				if seasonType == "" {
+					// Convert V2 PeriodType to V1 SeasonType for backward compatibility
+					if latestV2Date.PeriodType == "playoff" {
+						seasonType = "3"
+					} else {
+						seasonType = "2"
+					}
+				}
 			}
-
-			// Use the latest week with actual data
-			latestDate := dates[0]
-			if season == "" {
-				season = latestDate.Season
-			}
-			if week == "" {
-				week = latestDate.Week
-			}
-			if seasonType == "" {
-				seasonType = latestDate.SeasonType
-			}
-			log.Printf("Using latest week with data: Season %s, Week %s, SeasonType %s", season, week, seasonType)
 		}
 
-		data, err := getTemplateDataUseCase.Execute(season, week, seasonType)
+		// Convert V1 seasonType to V2 periodType
+		periodType := "regular"
+		if seasonType == "3" {
+			periodType = "playoff"
+		}
+
+		// Get template data using V2
+		templateData, err := v2GetTemplateDataUseCase.Execute("nfl", season, week, periodType)
 		if err != nil {
 			log.Printf("Error getting template data: %v", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
-		log.Println(data.Seasons)
 
-		err = tmpl.Execute(w, data)
+		err = tmpl.Execute(w, templateData)
 		if err != nil {
 			log.Printf("Error executing template: %v", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
 		}
 	})
 
-	http.HandleFunc("/main.css", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, "static/main.css")
-	})
+	// Serve static files
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	// serve static files
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-
-	log.Printf("Starting server on :8089")
-
-	err := http.ListenAndServe(":8089", nil)
-	if err != nil {
+	log.Println("Server started on http://localhost:8089")
+	if err := http.ListenAndServe(":8089", nil); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,0 +1,305 @@
+package application
+
+import (
+	"encoding/json"
+	"log"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
+)
+
+// V2RatingService defines the interface for V2 rating operations
+type V2RatingService interface {
+	ProduceRatingForCompetition(comp domain.Competition) (domain.Rating, error)
+}
+
+// V2OpenAIRatingService implements V2RatingService using OpenAI API
+type V2OpenAIRatingService struct {
+	apiKey string
+	client *resty.Client
+}
+
+// NewV2RatingService creates a new V2 OpenAI rating service
+func NewV2RatingService(apiKey string) V2RatingService {
+	return &V2OpenAIRatingService{
+		apiKey: apiKey,
+		client: resty.New(),
+	}
+}
+
+const prompt = "Analyze the provided NFL game play-by-play data and generate a 'rant score' between 0 and 100, acting as a HARSH judge of the game's excitement and intensity. Consider these factors:" +
+	"Close score: Games decided by one score (8 points or less) are preferred." +
+	"Controversial calls: Penalties that are questionable or have a major impact on the game." +
+	"Big plays: Include passes of 50+ yards, runs of 30+ yards, and all turnovers." +
+	"Momentum shifts: Defined as a team scoring 14 unanswered points or having 2+ consecutive turnovers." +
+	"Blowouts: Games with a margin of victory of 17+ points will receive a significantly lower score." +
+	"Excitement Factor: Give a high score to games with EITHER multiple lead changes OR a comeback where a team overcame a 14+ point deficit to win/tie or almost win." +
+	"Give extra weight to:" +
+	"High completion percentages from both quarterbacks." +
+	"Total passing yards exceeding 600 yards." +
+	"A combined total of 5+ touchdown passes." +
+	"Limited penalties called (under 10 total), especially pre-snap penalties and offensive holding." +
+	"Big plays and crucial conversions (3rd/4th downs) occurring in the 4th quarter or overtime, especially during a comeback." +
+	"The data covers the entire game.  I favor games with good quarterback play and a high quality of play with few penalties and balanced offenses." +
+	"Consider the overall 'wow' factor of the game. Were there memorable moments or plays that would be discussed for years to come? Be a tough critic - only truly exceptional games should score above 90!" +
+	"IMPORTANT: Return as JSON with shape : { 'score' : 0, 'explanation' : 'Your explanation here, may include game spoilers.', 'spoiler_free_explanation' : 'Your spoiler-free explanation here, do not include any details about the outcome of the game' }"
+
+const prompt2 = `
+You are an expert NFL game analyst. Your task is to analyze the provided play-by-play data and generate an 'Excitement Score' from 0 to 100. The primary goal is to reward games that are competitive, high-quality, and dramatic, especially those that remain in doubt until the final minutes.
+
+Follow this scoring rubric precisely:
+
+1. Foundational Score (Margin + Game Quality)
+Instead of a rigid baseline based only on the final margin, the foundational score considers both competitiveness (final margin) and the overall quality and flow of the game. A close game that is poorly played should start significantly lower than a close game that is well-played.
+
+For Close Games (decided by 1-8 points or a tie):
+
+High-Quality Close Game (e.g., strong offensive output, big plays, good QB duel, back-and-forth scoring): Start the score in the 70-85 range.
+
+Sloppy/Poorly-Played Close Game (e.g., marred by turnovers, excessive penalties, offensive ineptitude, a "punt-fest"): Start the score in the 50-65 range.
+
+For Moderately Close Games (decided by 9-16 points):
+
+High-Quality Game (e.g., an entertaining offensive shootout where one team pulled away late, lots of yards/points): Start the score in the 55-70 range.
+
+Average or Lopsided Game (e.g., one team was clearly better, scoring was front-loaded, few memorable moments): Start the score in the 40-55 range.
+
+For Blowouts (decided by 17+ points):
+
+The score is fundamentally capped. No matter the stats, the final score cannot exceed 40.
+
+If the game is exceptionally one-sided and dull (25+ point margin), the score should not exceed 25.
+
+2. Major Positive Modifiers (The "Legendary" Factors)
+After establishing the foundation, ADD significant points for the following dramatic elements. These can elevate a game to a classic status.
+
+Late-Game Drama: A game-winning or game-tying score occurs in the final two minutes of the 4th quarter or in overtime. This is the single most important modifier.
+
+Major Comeback: A team overcomes a deficit of 14+ points to win or force overtime.
+
+Multiple Lead Changes: The lead changes hands 3 or more times, especially in the second half.
+
+"Wow" Factor: The game featured a signature, memorable play that will be remembered (e.g., a "Hail Mary," a stunning one-handed catch for a TD, a game-sealing defensive stand on the goal line).
+
+3. Specific Gameplay Bonuses
+Also ADD points for high-level execution and exciting play:
+
+Elite QB Duel (Huge Bonus): This is a primary driver of excitement. Award a significant bonus if the game features a high-level quarterback battle. Look for high completion percentages from both QBs, a combined total of 600+ passing yards, OR a combined total of 5+ touchdown passes.
+
+Big Plays: Multiple explosive plays (passes of 50+ yards, runs of 30+ yards) or impactful turnovers (interceptions/fumbles returned for touchdowns).
+
+Clutch Conversions: Critical 3rd or 4th down conversions in high-leverage moments of the 4th quarter or overtime.
+
+4. Negative Modifier (Fine-Tuning)
+SUBTRACT points if the game was exceptionally poor, even for its category.
+
+Excessive Sloppiness: The game is marred by an extreme number of penalties (15+), unforced turnovers (fumbled snaps, etc.), or dreadful special teams play that consistently stalls momentum. This is used to penalize games that are even worse than the "Sloppy" foundational score accounts for.
+
+Final Score Definition:
+A score of 90+ should be reserved for legendary, all-time classic games that combine a high-quality, nail-biting foundation with multiple Major Positive Modifiers.
+
+Explanation Style:
+In your explanation, justify the score with a narrative analysis. Crucially, do not reveal the inner workings of the scoring rubric. Avoid mentioning foundational scores or specific point values. Your analysis should read like an expert's summary, not a calculation. For example, instead of saying "The score started at 60 because it was a sloppy close game," say "While the final score was close, the game was plagued by mistakes and lacked offensive rhythm, which kept the excitement level in check."
+
+IMPORTANT: Return as JSON with the following shape:
+
+JSON
+
+{
+  "score": 0,
+  "explanation": "Your detailed explanation here. You may include game spoilers and justify the score based on the rubric provided.",
+  "spoiler_free_explanation": "Your spoiler-free explanation here. Describe the general flow and quality of the game without revealing the winner, final score, or specific game-changing plays."
+}
+`
+
+// ProduceRatingForCompetition generates a rating for a V2 competition using OpenAI API
+func (s *V2OpenAIRatingService) ProduceRatingForCompetition(comp domain.Competition) (domain.Rating, error) {
+	type Body struct {
+		Model       string  `json:"model"`
+		Temperature float64 `json:"temperature"`
+		Messages    []struct {
+			Role    string `json:"role"`
+			Content string `json:"content"`
+		} `json:"messages"`
+	}
+
+	// Convert V2 Competition to game structure for OpenAI (same as V1 structure)
+	gameForAPI := convertCompetitionToGameStructure(comp)
+	gameAsJson, err := json.Marshal(gameForAPI)
+	if err != nil {
+		log.Printf("Error marshaling game: %v", err)
+		return domain.Rating{}, err
+	}
+
+	body := Body{
+		Model:       "gpt-4o-mini",
+		Temperature: 0.1,
+		Messages: []struct {
+			Role    string `json:"role"`
+			Content string `json:"content"`
+		}{
+			{
+				Role:    "user",
+				Content: prompt2 + string(gameAsJson),
+			},
+		},
+	}
+
+	// Use environment variable for API URL in tests
+	apiURL := os.Getenv("OPENAI_API_URL")
+	if apiURL == "" {
+		apiURL = "https://api.openai.com/v1/chat/completions"
+	}
+
+	// Log the request being sent to OpenAI
+	requestBody, err := json.MarshalIndent(body, "", "  ")
+	if err != nil {
+		log.Printf("Error marshaling request body for logging: %v", err)
+	} else {
+		log.Printf("=== OpenAI Request ===")
+		log.Printf("URL: %s", apiURL)
+		log.Printf("Request Body: %s", string(requestBody))
+
+		// Log game data summary instead of full payload
+		log.Printf("Game Data Summary:")
+		log.Printf("  Payload size: %d bytes", len(gameAsJson))
+
+		// Extract and log game summary
+		if home, exists := gameForAPI["home"]; exists {
+			if homeMap, ok := home.(map[string]interface{}); ok {
+				log.Printf("  Home: %v (Score: %v)", homeMap["name"], homeMap["score"])
+			}
+		}
+		if away, exists := gameForAPI["away"]; exists {
+			if awayMap, ok := away.(map[string]interface{}); ok {
+				log.Printf("  Away: %v (Score: %v)", awayMap["name"], awayMap["score"])
+			}
+		}
+
+		// Log play-by-play summary
+		if details, exists := gameForAPI["details"]; exists {
+			if detailsSlice, ok := details.([]interface{}); ok {
+				log.Printf("  Play-by-play: %d plays", len(detailsSlice))
+				if len(detailsSlice) > 0 {
+					log.Printf("  First play: %v", detailsSlice[0])
+					if len(detailsSlice) > 1 {
+						log.Printf("  Last play: %v", detailsSlice[len(detailsSlice)-1])
+					}
+				}
+			}
+		}
+		log.Printf("======================")
+	}
+
+	post, err := s.client.R().SetAuthToken(s.apiKey).SetBody(body).Post(apiURL)
+	if err != nil {
+		log.Printf("Error calling OpenAI API: %v", err)
+		return domain.Rating{}, err
+	}
+
+	// Log the response received from OpenAI
+	log.Printf("=== OpenAI Response ===")
+	log.Printf("Status Code: %d", post.StatusCode())
+	log.Printf("Response Headers: %v", post.Header())
+	log.Printf("Raw Response Body: %s", post.String())
+	log.Printf("=======================")
+
+	type OuterResponse struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+
+	var outerJsonResponse OuterResponse
+	err = json.Unmarshal([]byte(post.String()), &outerJsonResponse)
+	if err != nil {
+		log.Printf("Error unmarshaling JSON: %v", err)
+		return domain.Rating{}, err
+	}
+
+	if len(outerJsonResponse.Choices) == 0 {
+		log.Printf("No choices in OpenAI response")
+		return domain.Rating{}, err
+	}
+
+	jsonString := outerJsonResponse.Choices[0].Message.Content
+	jsonString = strings.TrimPrefix(jsonString, "```json\n")
+	jsonString = strings.TrimSuffix(jsonString, "\n```")
+	jsonString = strings.ReplaceAll(jsonString, "\\n", "")
+	jsonString = strings.ReplaceAll(jsonString, "\\\"", "\"")
+
+	// Parse into temporary structure matching OpenAI response
+	var tempResponse struct {
+		Score                  int    `json:"score"`
+		Explanation            string `json:"explanation"`
+		SpoilerFreeExplanation string `json:"spoiler_free_explanation"`
+	}
+
+	err = json.Unmarshal([]byte(jsonString), &tempResponse)
+	if err != nil {
+		log.Printf("Error unmarshaling rating JSON: %v", err)
+		return domain.Rating{}, err
+	}
+
+	// Create V2 Rating entity
+	v2Rating := domain.Rating{
+		Type:        domain.RatingTypeExcitement,
+		Score:       tempResponse.Score,
+		Explanation: tempResponse.Explanation,
+		SpoilerFree: tempResponse.SpoilerFreeExplanation,
+		Source:      domain.RatingSourceOpenAI,
+		GeneratedAt: time.Now(),
+	}
+
+	log.Printf("Response: %s", v2Rating.SpoilerFree)
+	log.Printf("Rating Score: %d", v2Rating.Score)
+
+	return v2Rating, nil
+}
+
+// convertCompetitionToGameStructure converts V2 Competition to game structure for OpenAI API
+func convertCompetitionToGameStructure(comp domain.Competition) map[string]interface{} {
+	game := map[string]interface{}{}
+
+	if len(comp.Teams) >= 2 {
+		for _, team := range comp.Teams {
+			if team.HomeAway == domain.HomeAwayHome {
+				game["home"] = map[string]interface{}{
+					"name":   team.Team.Name,
+					"score":  team.Score,
+					"record": getRecordFromStats(team.Stats),
+				}
+			} else {
+				game["away"] = map[string]interface{}{
+					"name":   team.Team.Name,
+					"score":  team.Score,
+					"record": getRecordFromStats(team.Stats),
+				}
+			}
+		}
+	}
+
+	// Add details if available
+	if comp.Details != nil && comp.Details.PlayByPlay != nil {
+		game["details"] = comp.Details.PlayByPlay
+	} else {
+		game["details"] = []interface{}{}
+	}
+
+	return game
+}
+
+// getRecordFromStats extracts record from team stats
+func getRecordFromStats(stats map[string]interface{}) string {
+	if record, exists := stats["record"]; exists {
+		if recordStr, ok := record.(string); ok {
+			return recordStr
+		}
+	}
+	return ""
+}
