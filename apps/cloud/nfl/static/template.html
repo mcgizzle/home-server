@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="main.css" type="text/css">
+    <link rel="stylesheet" href="/static/main.css" type="text/css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="/static/assets/favicon.ico" sizes="32x32" type="image/x-icon">
     <title>NFL Game Ratings</title>
@@ -104,7 +104,7 @@
                     <div
                         class="badge  {{ if $isMustWatch }}badge-success{{ else if $isRecommended }}badge-accent{{ else if $isGood }}badge-info{{ else if $isOkay }}badge-warning{{ else if $isSkippable }}badge-error{{ else }}badge-ghost{{ end }}">
                         {{ if $isMustWatch }}🔥{{ else if $isRecommended }}👍{{ else if $isGood }}👌{{ else if
-                        $isOkay }}😐{{ else if $isSkippable }}👎{{ else }}🤢{{ end }} {{
+                        $isOkay }}😐{{ else if $isSkippable }}👎{{ else }}❓{{ end }} {{
                         $element.Rating.Category }}
                     </div>
                 </div>
@@ -122,10 +122,17 @@
                     <div class="stat place-items-center">
                         <div class="stat-title">Rating</div>
                         {{ $score := .Rating.Score }}
+                        {{ if eq $score 0 }}
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="loading loading-spinner loading-lg text-primary"></div>
+                            <div class="text-sm font-medium text-base-content/70">Rating Coming Soon</div>
+                        </div>
+                        {{ else }}
                         <div
                             class="stat-value text-primary text-6xl {{ if lt $score 30 }}text-red-500{{ else if and (ge $score 30) (lt $score 65) }}text-yellow-500{{ else if and (ge $score 65) (lt $score 80) }}text-green-400{{ else if and (ge $score 80) (le $score 100) }}text-green-600{{ end }}">
                             {{ $score }}
                         </div>
+                        {{ end }}
                     </div>
                     <div class="flex flex-row card-actions justify-center">
                         <dialog id="spoiler_{{ $element.ID }}" class="modal">
@@ -212,15 +219,16 @@
                         </label>
                         <div class="flex flex-col gap-2">
                             <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="seasonType" value="2" class="radio radio-primary" checked />
+                                <input type="radio" name="seasonType" value="regular" class="radio radio-primary"
+                                    checked />
                                 <span class="label-text">Regular Season</span>
                             </label>
                             <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="seasonType" value="3" class="radio radio-primary" />
+                                <input type="radio" name="seasonType" value="playoff" class="radio radio-primary" />
                                 <span class="label-text">Playoffs</span>
                             </label>
                             <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="seasonType" value="1" class="radio radio-primary" />
+                                <input type="radio" name="seasonType" value="preseason" class="radio radio-primary" />
                                 <span class="label-text">Preseason</span>
                             </label>
                         </div>
@@ -293,9 +301,19 @@
             yearSelect.value = currentSeason;
         }
 
-        // Set season type radio button
+        // Set season type radio button - convert legacy values to v2 format
         if (currentSeasonType) {
-            const seasonTypeRadio = document.querySelector(`input[name="seasonType"][value="${currentSeasonType}"]`);
+            let v2SeasonType = currentSeasonType;
+            // Convert legacy season type numbers to v2 format
+            if (currentSeasonType === "1") {
+                v2SeasonType = "preseason";
+            } else if (currentSeasonType === "2") {
+                v2SeasonType = "regular";
+            } else if (currentSeasonType === "3") {
+                v2SeasonType = "playoff";
+            }
+
+            const seasonTypeRadio = document.querySelector(`input[name="seasonType"][value="${v2SeasonType}"]`);
             if (seasonTypeRadio) {
                 // Uncheck all first
                 document.querySelectorAll('input[name="seasonType"]').forEach(radio => radio.checked = false);
@@ -339,22 +357,30 @@
 
         // Initialize browse section if switching to browse tab
         if (tabName === 'browse') {
+            console.log('Switching to browse tab, initializing...');
             setCurrentValuesFromURL();
             populateWeekGrid();
         }
     }
 
     function populateWeekGrid() {
+        console.log('populateWeekGrid called');
         const seasonTypeElement = document.querySelector('input[name="seasonType"]:checked');
-        if (!seasonTypeElement) return; // Exit if no season type is selected
+        if (!seasonTypeElement) {
+            console.log('No season type selected');
+            return; // Exit if no season type is selected
+        }
 
         const seasonType = seasonTypeElement.value;
         const selectedYear = document.getElementById('yearSelect').value;
         const weekGrid = document.getElementById('weekGrid');
         weekGrid.innerHTML = '';
 
+        console.log('Selected:', { seasonType, selectedYear });
+
         // Get available weeks from template data
         const weekDataElements = document.querySelectorAll('#weekData span');
+        console.log('Found weekDataElements:', weekDataElements.length);
         const availableWeeks = [];
 
         weekDataElements.forEach(element => {
@@ -363,8 +389,13 @@
             const weekDisplay = element.getAttribute('data-week-display');
             const weekSeasonType = element.getAttribute('data-season-type');
 
+            console.log(`Checking week: season=${season}, weekSeasonType=${weekSeasonType}, week=${week}`);
+            console.log(`Match check: season(${season}) === selectedYear(${selectedYear}): ${season === selectedYear}`);
+            console.log(`Match check: weekSeasonType(${weekSeasonType}) === seasonType(${seasonType}): ${weekSeasonType === seasonType}`);
+
             // Filter by selected year and season type
             if (season === selectedYear && weekSeasonType === seasonType) {
+                console.log(`Adding week ${week} to availableWeeks`);
                 availableWeeks.push({
                     week: week,
                     display: weekDisplay
@@ -382,6 +413,8 @@
             }
         });
         uniqueWeeks.sort((a, b) => a.week - b.week);
+
+        console.log('Final uniqueWeeks:', uniqueWeeks);
 
         // Create week buttons using actual available data
         uniqueWeeks.forEach(weekData => {
@@ -421,15 +454,25 @@
             return;
         }
 
-        const seasonType = seasonTypeElement.value;
+        const v2SeasonType = seasonTypeElement.value;
 
         if (!selectedWeek) {
             alert('Please select a week');
             return;
         }
 
+        // Convert v2 season type to legacy format for URL parameters
+        let legacySeasonType = "2"; // default to regular
+        if (v2SeasonType === "preseason") {
+            legacySeasonType = "1";
+        } else if (v2SeasonType === "regular") {
+            legacySeasonType = "2";
+        } else if (v2SeasonType === "playoff") {
+            legacySeasonType = "3";
+        }
+
         // Build URL and redirect to show results in main flow
-        const url = `?season=${year}&week=${selectedWeek}&seasontype=${seasonType}`;
+        const url = `?season=${year}&week=${selectedWeek}&seasontype=${legacySeasonType}`;
         window.location.href = url;
     }
 
@@ -445,9 +488,8 @@
             radio.addEventListener('change', populateWeekGrid);
         });
 
-        // Initialize browse settings from URL and week grid
+        // Initialize browse settings from URL only (don't populate week grid on page load)
         setCurrentValuesFromURL();
-        populateWeekGrid();
     });
 </script>
 

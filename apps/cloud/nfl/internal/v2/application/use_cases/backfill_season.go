@@ -223,7 +223,7 @@ func (uc *backfillSeasonUseCase) getPeriodsForSeason(sportID, season string) []P
 }
 
 // getNFLPeriods returns all possible NFL periods for a season
-// TDOD: get this data from the ESPN API
+// TODO: get this data from the ESPN API
 func (uc *backfillSeasonUseCase) getNFLPeriods(season string) []PeriodInfo {
 	var periods []PeriodInfo
 
@@ -235,8 +235,8 @@ func (uc *backfillSeasonUseCase) getNFLPeriods(season string) []PeriodInfo {
 		})
 	}
 
-	// Playoff weeks (Wildcard, Divisional, Conference, Super Bowl)
-	playoffWeeks := []string{"1", "2", "3", "4"}
+	// Playoff weeks (Wildcard, Divisional, Conference, Pro Bowl, Super Bowl)
+	playoffWeeks := []string{"1", "2", "3", "4", "5"}
 	for _, week := range playoffWeeks {
 		periods = append(periods, PeriodInfo{
 			Period:     week,

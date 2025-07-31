@@ -149,7 +149,8 @@ func WeekToDisplay(week string, seasonType string) string {
 			return "Divisional"
 		case "3":
 			return "Conference Championship"
-		// Week 4 is skipped in the post-season
+		case "4":
+			return "Pro Bowl"
 		case "5":
 			return "Super Bowl"
 		default:

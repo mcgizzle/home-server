@@ -110,7 +110,7 @@ func (d Date) Template() DateTemplate {
 	return DateTemplate{
 		Season:             d.Season,
 		Period:             d.Period,
-		PeriodDisplay:      d.Period,
+		PeriodDisplay:      getPeriodDisplay(d.Period, d.PeriodType),
 		PeriodTypeShowable: getPeriodTypeDisplay(d.PeriodType),
 		PeriodType:         d.PeriodType,
 	}
@@ -180,4 +180,26 @@ func getPeriodTypeDisplay(periodType string) string {
 	default:
 		return periodType
 	}
+}
+
+// getPeriodDisplay converts a period number to a display name, especially for playoff rounds
+// This mirrors the V1 WeekToDisplay function to ensure consistency
+func getPeriodDisplay(period string, periodType string) string {
+	if periodType == "playoff" { // Playoffs
+		switch period {
+		case "1":
+			return "Wild Card"
+		case "2":
+			return "Divisional"
+		case "3":
+			return "Conference Championship"
+		case "4":
+			return "Pro Bowl"
+		case "5":
+			return "Super Bowl"
+		default:
+			return "Week " + period
+		}
+	}
+	return "Week " + period
 }
