@@ -155,45 +155,38 @@ func (s *V2OpenAIRatingService) ProduceRatingForCompetition(comp domain.Competit
 		apiURL = "https://api.openai.com/v1/chat/completions"
 	}
 
-	// Log the request being sent to OpenAI
-	requestBody, err := json.MarshalIndent(body, "", "  ")
-	if err != nil {
-		log.Printf("Error marshaling request body for logging: %v", err)
-	} else {
-		log.Printf("=== OpenAI Request ===")
-		log.Printf("URL: %s", apiURL)
-		log.Printf("Request Body: %s", string(requestBody))
+	log.Printf("=== OpenAI Request ===")
+	log.Printf("URL: %s", apiURL)
 
-		// Log game data summary instead of full payload
-		log.Printf("Game Data Summary:")
-		log.Printf("  Payload size: %d bytes", len(gameAsJson))
+	// Log game data summary instead of full payload
+	log.Printf("Game Data Summary:")
+	log.Printf("  Payload size: %d bytes", len(gameAsJson))
 
-		// Extract and log game summary
-		if home, exists := gameForAPI["home"]; exists {
-			if homeMap, ok := home.(map[string]interface{}); ok {
-				log.Printf("  Home: %v (Score: %v)", homeMap["name"], homeMap["score"])
-			}
+	// Extract and log game summary
+	if home, exists := gameForAPI["home"]; exists {
+		if homeMap, ok := home.(map[string]interface{}); ok {
+			log.Printf("  Home: %v (Score: %v)", homeMap["name"], homeMap["score"])
 		}
-		if away, exists := gameForAPI["away"]; exists {
-			if awayMap, ok := away.(map[string]interface{}); ok {
-				log.Printf("  Away: %v (Score: %v)", awayMap["name"], awayMap["score"])
-			}
+	}
+	if away, exists := gameForAPI["away"]; exists {
+		if awayMap, ok := away.(map[string]interface{}); ok {
+			log.Printf("  Away: %v (Score: %v)", awayMap["name"], awayMap["score"])
 		}
+	}
 
-		// Log play-by-play summary
-		if details, exists := gameForAPI["details"]; exists {
-			if detailsSlice, ok := details.([]interface{}); ok {
-				log.Printf("  Play-by-play: %d plays", len(detailsSlice))
-				if len(detailsSlice) > 0 {
-					log.Printf("  First play: %v", detailsSlice[0])
-					if len(detailsSlice) > 1 {
-						log.Printf("  Last play: %v", detailsSlice[len(detailsSlice)-1])
-					}
+	// Log play-by-play summary
+	if details, exists := gameForAPI["details"]; exists {
+		if detailsSlice, ok := details.([]interface{}); ok {
+			log.Printf("  Play-by-play: %d plays", len(detailsSlice))
+			if len(detailsSlice) > 0 {
+				log.Printf("  First play: %v", detailsSlice[0])
+				if len(detailsSlice) > 1 {
+					log.Printf("  Last play: %v", detailsSlice[len(detailsSlice)-1])
 				}
 			}
 		}
-		log.Printf("======================")
 	}
+	log.Printf("======================")
 
 	post, err := s.client.R().SetAuthToken(s.apiKey).SetBody(body).Post(apiURL)
 	if err != nil {

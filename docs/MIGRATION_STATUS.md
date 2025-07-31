@@ -12,7 +12,10 @@
 - **Phase 2**: ✅ **COMPLETED** - V2 Repository Layer (Pure V2 Data Access)  
 - **Phase 3**: ✅ **COMPLETED** - V2 Use Cases (Pure V2 Business Logic)
 - **Phase 4**: ✅ **COMPLETED** - Gradual V1→V2 Use Case Replacement
-- **Phase 5**: ⏳ **PLANNED** - V1 Cleanup & V2 Production
+- **Phase 5**: 🔄 **IN PROGRESS** - V1 Cleanup & V2 Production
+
+**Current Status**: ✅ **Core functionality working** - All endpoints operational with V2 implementation  
+**Remaining Work**: 🔧 **Tests need reworking** + 🧹 **Old V1 code cleanup**
 
 ---
 
@@ -151,14 +154,34 @@ Replace V1 date loading with V2 in main page handler:
 
 ---
 
-## ⏳ Phase 5: V1 Cleanup & V2 Production
-**Status**: **PLANNED** ⏳  
+## 🔄 Phase 5: V1 Cleanup & V2 Production
+**Status**: **IN PROGRESS** 🔄  
+**Core V2 functionality**: ✅ **WORKING** - All endpoints operational  
+**Remaining tasks**: 🔧 **Test rework** + 🧹 **V1 code cleanup**
 
-### Goals:
-- Remove all V1 code after V2 handles all functionality
-- Drop V1 "results" table 
-- Optimize V2 schema with indexes
-- V2-only production system
+### ✅ Completed:
+- ✅ **All endpoints working** with V2 implementation
+- ✅ **V2 system fully operational** - fetch, save, template, backfill
+- ✅ **Production ready** - serving real traffic successfully
+
+### 🔄 In Progress:
+- 🔧 **Test suite rework** - Updating tests for V2 architecture
+- 🧹 **V1 code removal** - Clean up legacy code and dependencies
+
+### ⏳ Remaining Tasks:
+- 🔧 **Rework existing tests** for V2 entities and use cases
+- 🧹 **Remove V1 implementation files**:
+  - `internal/domain/entities.go` (V1 entities)
+  - `internal/repository/result_repository.go` (V1 repository)  
+  - `internal/application/use_cases/*.go` (V1 use cases)
+  - `internal/application/rating_service.go` (V1 rating service)
+- 🗑️ **Drop V1 database table**: `DROP TABLE results;`
+- 🚀 **V2 production optimization**: Add strategic indexes
+
+### Priority:
+1. **Tests first** - Ensure V2 test coverage before cleanup
+2. **V1 code removal** - Clean architecture achieved
+3. **Performance optimization** - Production-ready V2 system
 
 ---
 
