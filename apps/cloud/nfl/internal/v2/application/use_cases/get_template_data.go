@@ -3,6 +3,7 @@ package use_cases
 import (
 	"log"
 	"slices"
+	"sort"
 
 	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
@@ -48,6 +49,26 @@ func (uc *getTemplateDataUseCase) Execute(sportID, season, period, periodType st
 	for _, competition := range competitions {
 		templateResults = append(templateResults, competition.ToTemplateResult())
 	}
+
+	// Sort template results by rating score (highest first), with unrated games at the end
+	sort.Slice(templateResults, func(i, j int) bool {
+		ratingI := templateResults[i].Rating.Score
+		ratingJ := templateResults[j].Rating.Score
+
+		// If both are unrated (score 0), maintain original order
+		if ratingI == 0 && ratingJ == 0 {
+			return false
+		}
+		// If one is unrated, put it after the rated one
+		if ratingI == 0 {
+			return false
+		}
+		if ratingJ == 0 {
+			return true
+		}
+		// Both are rated, sort by score descending
+		return ratingI > ratingJ
+	})
 
 	// Convert dates to template format
 	var templateDates []domain.DateTemplate
