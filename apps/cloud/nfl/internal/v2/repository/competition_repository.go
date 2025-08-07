@@ -9,4 +9,5 @@ type CompetitionRepository interface {
 	SaveCompetition(comp domain.Competition) error
 	FindByPeriod(season, period, periodType string, sport domain.Sport) ([]domain.Competition, error)
 	GetAvailablePeriods(sport domain.Sport) ([]domain.Date, error)
+	GetCompetitionByID(id string) (*domain.Competition, error)
 }

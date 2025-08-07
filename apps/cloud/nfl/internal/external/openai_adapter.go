@@ -17,6 +17,7 @@ import (
 type OpenAIAdapter struct {
 	apiKey string
 	client *resty.Client
+	prompt string // Custom prompt, uses default if empty
 }
 
 // NewOpenAIAdapter creates a new OpenAI adapter that implements RatingService
@@ -24,6 +25,16 @@ func NewOpenAIAdapter(apiKey string) services.RatingService {
 	return &OpenAIAdapter{
 		apiKey: apiKey,
 		client: resty.New(),
+		prompt: ExcitementPrompt, // Use default prompt
+	}
+}
+
+// NewCustomOpenAIAdapter creates a new OpenAI adapter with a custom prompt
+func NewCustomOpenAIAdapter(apiKey, customPrompt string) services.RatingService {
+	return &OpenAIAdapter{
+		apiKey: apiKey,
+		client: resty.New(),
+		prompt: customPrompt,
 	}
 }
 
@@ -55,7 +66,7 @@ func (a *OpenAIAdapter) ProduceRatingForCompetition(comp domain.Competition) (do
 		}{
 			{
 				Role:    "user",
-				Content: excitementPrompt + string(gameAsJson),
+				Content: a.prompt + string(gameAsJson),
 			},
 		},
 	}
@@ -209,8 +220,8 @@ func (a *OpenAIAdapter) getRecordFromStats(stats map[string]interface{}) string 
 	return ""
 }
 
-// excitementPrompt is the refined prompt for generating excitement ratings
-const excitementPrompt = `
+// ExcitementPrompt is the refined prompt for generating excitement ratings
+const ExcitementPrompt = `
 You are an expert NFL game analyst. Your task is to analyze the provided play-by-play data and generate an 'Excitement Score' from 0 to 100.
 
 Core Philosophy: Reward Drama, Forgive Imperfection

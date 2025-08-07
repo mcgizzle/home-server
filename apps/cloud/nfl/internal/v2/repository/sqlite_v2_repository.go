@@ -98,6 +98,14 @@ func (r *SQLiteV2Repository) FindByPeriod(season, period, periodType string, spo
 	return competitions, nil
 }
 
+func (r *SQLiteV2Repository) GetCompetitionByID(id string) (*domain.Competition, error) {
+	competition, err := r.loadCompetition(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load competition %s: %w", id, err)
+	}
+	return &competition, nil
+}
+
 func (r *SQLiteV2Repository) GetAvailablePeriods(sport domain.Sport) ([]domain.Date, error) {
 	query := `
 		SELECT DISTINCT season, period, period_type 
