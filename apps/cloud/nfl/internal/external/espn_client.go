@@ -70,6 +70,7 @@ type EventResponse struct {
 type Competitions struct {
 	Competitors   []Competitors `json:"competitors"`
 	DetailsRefs   DetailsRef    `json:"details"`
+	Date          string        `json:"date"` // Game start date/time in ISO 8601 format
 	LiveAvailable bool          `json:"liveAvailable"`
 }
 

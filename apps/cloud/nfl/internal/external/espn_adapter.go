@@ -250,6 +250,20 @@ func (a *ESPNAdapter) convertEventToCompetition(event EventResponse, sport domai
 		return nil, fmt.Errorf("skipping unplayed game")
 	}
 
+	// Parse the start time from ESPN competition date
+	var startTime *time.Time
+	if espnCompetition.Date != "" {
+		// ESPN uses ISO 8601 format with 'Z' suffix for UTC
+		// Try RFC3339 first, then fall back to custom format
+		if parsedTime, err := time.Parse(time.RFC3339, espnCompetition.Date); err == nil {
+			startTime = &parsedTime
+		} else if parsedTime, err := time.Parse("2006-01-02T15:04Z", espnCompetition.Date); err == nil {
+			startTime = &parsedTime
+		} else {
+			log.Printf("Failed to parse competition date %s: %v", espnCompetition.Date, err)
+		}
+	}
+
 	return &domain.Competition{
 		ID:         event.Id,
 		EventID:    event.Id,
@@ -257,6 +271,7 @@ func (a *ESPNAdapter) convertEventToCompetition(event EventResponse, sport domai
 		Season:     date.Season,
 		Period:     date.Period,
 		PeriodType: date.PeriodType,
+		StartTime:  startTime,
 		Status:     "completed", // Could be enhanced to detect actual status
 		Teams:      teams,
 		CreatedAt:  time.Now(),

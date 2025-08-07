@@ -3,7 +3,7 @@ package use_cases
 import (
 	"log"
 
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/application"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/services"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
 )
@@ -17,14 +17,14 @@ type GenerateRatingsUseCase interface {
 type generateRatingsUseCase struct {
 	competitionRepo repository.CompetitionRepository
 	ratingRepo      repository.RatingRepository
-	ratingService   application.V2RatingService
+	ratingService   services.RatingService
 }
 
 // NewGenerateRatingsUseCase creates a new instance of GenerateRatingsUseCase
 func NewGenerateRatingsUseCase(
 	competitionRepo repository.CompetitionRepository,
 	ratingRepo repository.RatingRepository,
-	ratingService application.V2RatingService,
+	ratingService services.RatingService,
 ) GenerateRatingsUseCase {
 	return &generateRatingsUseCase{
 		competitionRepo: competitionRepo,
@@ -60,7 +60,7 @@ func (uc *generateRatingsUseCase) Execute(sportID string) (int, error) {
 			if err != nil {
 				// Rating doesn't exist, generate one
 				log.Printf("Generating missing rating for competition %s", competition.ID)
-				
+
 				rating, err := uc.ratingService.ProduceRatingForCompetition(competition)
 				if err != nil {
 					log.Printf("Error generating rating for competition %s: %v", competition.ID, err)

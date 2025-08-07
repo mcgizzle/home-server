@@ -13,6 +13,8 @@ import (
 type BackfillSeasonUseCase interface {
 	Execute(sportID, season string) (*BackfillResult, error)
 	ExecuteWithLimit(sportID, season string, limit int) (*BackfillResult, error)
+	ExecuteUpdate(sportID, season string) (*BackfillResult, error)
+	ExecuteUpdateWithLimit(sportID, season string, limit int) (*BackfillResult, error)
 }
 
 // BackfillResult represents the result of a backfill operation
@@ -134,6 +136,151 @@ func (uc *backfillSeasonUseCase) ExecuteWithLimit(sportID, season string, limit 
 		sportID, season, result.PeriodsProcessed, result.CompetitionsAdded, len(result.Errors), limitMsg)
 
 	return result, nil
+}
+
+// ExecuteUpdate performs update of existing competitions for all periods in a given season
+func (uc *backfillSeasonUseCase) ExecuteUpdate(sportID, season string) (*BackfillResult, error) {
+	return uc.ExecuteUpdateWithLimit(sportID, season, -1) // -1 means no limit
+}
+
+// ExecuteUpdateWithLimit performs update of existing competitions with a competition limit
+func (uc *backfillSeasonUseCase) ExecuteUpdateWithLimit(sportID, season string, limit int) (*BackfillResult, error) {
+	sport := domain.Sport(sportID)
+
+	limitMsg := ""
+	if limit > 0 {
+		limitMsg = fmt.Sprintf(" (limit: %d competitions)", limit)
+	}
+	log.Printf("Starting update mode for %s season %s%s", sportID, season, limitMsg)
+
+	result := &BackfillResult{
+		Season:        season,
+		Limit:         limit,
+		PeriodResults: []BackfillPeriodResult{},
+		Errors:        []BackfillError{},
+	}
+
+	// Get periods to update based on sport
+	periods := uc.getPeriodsForSeason(sportID, season)
+
+	for _, periodInfo := range periods {
+		// Check if we've reached the limit
+		if limit > 0 && result.CompetitionsAdded >= limit {
+			log.Printf("Reached competition limit of %d, stopping update", limit)
+			result.LimitReached = true
+			break
+		}
+
+		// Calculate remaining limit for this period
+		remainingLimit := -1 // No limit
+		if limit > 0 {
+			remainingLimit = limit - result.CompetitionsAdded
+			if remainingLimit <= 0 {
+				break
+			}
+		}
+
+		periodResult := uc.updatePeriodWithLimit(sport, season, periodInfo.Period, periodInfo.PeriodType, remainingLimit)
+		result.PeriodResults = append(result.PeriodResults, periodResult)
+
+		if periodResult.Error != "" {
+			result.Errors = append(result.Errors, BackfillError{
+				Period:     periodInfo.Period,
+				PeriodType: periodInfo.PeriodType,
+				Error:      periodResult.Error,
+			})
+		}
+
+		result.PeriodsProcessed++
+		result.CompetitionsAdded += periodResult.AddedCount
+
+		// Check if we've reached the limit after processing this period
+		if limit > 0 && result.CompetitionsAdded >= limit {
+			log.Printf("Reached competition limit of %d after processing %s %s",
+				limit, periodInfo.Period, periodInfo.PeriodType)
+			result.LimitReached = true
+			break
+		}
+	}
+
+	log.Printf("Update completed for %s season %s: %d periods processed, %d competitions updated, %d errors%s",
+		sportID, season, result.PeriodsProcessed, result.CompetitionsAdded, len(result.Errors), limitMsg)
+
+	return result, nil
+}
+
+// updatePeriodWithLimit handles update for a specific period with a competition limit
+// This differs from backfill by only processing periods that have existing competitions
+func (uc *backfillSeasonUseCase) updatePeriodWithLimit(sport domain.Sport, season, period, periodType string, remainingLimit int) BackfillPeriodResult {
+	result := BackfillPeriodResult{
+		Period:     period,
+		PeriodType: periodType,
+	}
+
+	// Check existing competitions for this period
+	existingCompetitions, err := uc.competitionRepo.FindByPeriod(season, period, periodType, sport)
+	if err != nil {
+		result.Error = fmt.Sprintf("Error checking existing competitions: %v", err)
+		return result
+	}
+
+	result.ExistingCount = len(existingCompetitions)
+
+	// In update mode, skip periods with no existing competitions
+	if len(existingCompetitions) == 0 {
+		result.Skipped = true
+		result.SkipReason = "No existing competitions to update for this period"
+		log.Printf("Skipping %s %s %s - no existing competitions to update", season, period, periodType)
+		return result
+	}
+
+	log.Printf("Updating %d existing competitions for %s %s %s",
+		len(existingCompetitions), season, period, periodType)
+
+	// Fetch fresh data from ESPN to update existing competitions
+	// Use ExecuteForUpdate to get ALL competitions (not just new ones)
+	var fetchedCompetitions []domain.Competition
+	if remainingLimit > 0 {
+		fetchedCompetitions, err = uc.fetchSpecificUseCase.ExecuteForUpdateWithLimit(string(sport), season, period, periodType, remainingLimit)
+	} else {
+		fetchedCompetitions, err = uc.fetchSpecificUseCase.ExecuteForUpdate(string(sport), season, period, periodType)
+	}
+
+	if err != nil {
+		result.Error = fmt.Sprintf("Error fetching competitions for update: %v", err)
+		return result
+	}
+
+	result.FetchedCount = len(fetchedCompetitions)
+
+	if len(fetchedCompetitions) == 0 {
+		result.Skipped = true
+		result.SkipReason = "No fresh competition data found from ESPN for update"
+		log.Printf("No fresh data found for updating %s %s %s", season, period, periodType)
+		return result
+	}
+
+	// Save the updated competitions (INSERT OR REPLACE will update existing ones)
+	competitionsToUpdate := fetchedCompetitions
+	if len(competitionsToUpdate) > 0 {
+		err = uc.saveUseCase.Execute(competitionsToUpdate)
+		if err != nil {
+			result.Error = fmt.Sprintf("Error updating competitions: %v", err)
+			return result
+		}
+	}
+
+	result.AddedCount = len(competitionsToUpdate)
+
+	if remainingLimit > 0 {
+		log.Printf("Updated %s %s %s: %d competitions updated (with limit %d)",
+			season, period, periodType, len(competitionsToUpdate), remainingLimit)
+	} else {
+		log.Printf("Updated %s %s %s: %d competitions updated",
+			season, period, periodType, len(competitionsToUpdate))
+	}
+
+	return result
 }
 
 // backfillPeriodWithLimit handles backfill for a specific period with a competition limit

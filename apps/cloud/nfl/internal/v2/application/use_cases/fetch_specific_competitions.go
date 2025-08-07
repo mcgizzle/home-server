@@ -13,6 +13,8 @@ import (
 type FetchSpecificCompetitionsUseCase interface {
 	Execute(sportID, season, period, periodType string) ([]domain.Competition, error)
 	ExecuteWithLimit(sportID, season, period, periodType string, limit int) ([]domain.Competition, error)
+	ExecuteForUpdate(sportID, season, period, periodType string) ([]domain.Competition, error)
+	ExecuteForUpdateWithLimit(sportID, season, period, periodType string, limit int) ([]domain.Competition, error)
 }
 
 // fetchSpecificCompetitionsUseCase implements FetchSpecificCompetitionsUseCase
@@ -95,4 +97,51 @@ func (uc *fetchSpecificCompetitionsUseCase) ExecuteWithLimit(sportID, season, pe
 	}
 	log.Printf("Fetched %d new competitions for specific period%s", len(newCompetitions), limitMsg)
 	return newCompetitions, nil
+}
+
+// ExecuteForUpdate fetches ALL competitions for a period (including existing ones) for update purposes
+func (uc *fetchSpecificCompetitionsUseCase) ExecuteForUpdate(sportID, season, period, periodType string) ([]domain.Competition, error) {
+	return uc.ExecuteForUpdateWithLimit(sportID, season, period, periodType, -1) // -1 means no limit
+}
+
+// ExecuteForUpdateWithLimit fetches ALL competitions for a period with a limit, ignoring existing competitions
+func (uc *fetchSpecificCompetitionsUseCase) ExecuteForUpdateWithLimit(sportID, season, period, periodType string, limit int) ([]domain.Competition, error) {
+	sport := domain.Sport(sportID)
+
+	// Create date for the specific period
+	date := domain.Date{
+		Season:     season,
+		Period:     period,
+		PeriodType: periodType,
+	}
+
+	// Get competitions for the specific period (don't filter out existing ones for updates)
+	competitions, err := uc.sportsData.GetCompetitions(sport, date)
+	if err != nil {
+		log.Printf("Error getting competitions: %v", err)
+		return []domain.Competition{}, err
+	}
+
+	// Apply limit if specified
+	var limitedCompetitions []domain.Competition
+	processedCount := 0
+
+	for _, comp := range competitions {
+		// Check limit before processing each competition
+		if limit > 0 && processedCount >= limit {
+			log.Printf("Reached processing limit of %d competitions for update %s %s %s, stopping early",
+				limit, season, period, periodType)
+			break
+		}
+
+		limitedCompetitions = append(limitedCompetitions, comp)
+		processedCount++
+	}
+
+	limitMsg := ""
+	if limit > 0 {
+		limitMsg = fmt.Sprintf(" (limit: %d)", limit)
+	}
+	log.Printf("Fetched %d competitions for update%s", len(limitedCompetitions), limitMsg)
+	return limitedCompetitions, nil
 }

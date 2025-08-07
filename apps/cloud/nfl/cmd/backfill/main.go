@@ -17,24 +17,49 @@ import (
 
 var DB_PATH = "data/results.db"
 
+func init() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "NFL Backfill Tool\n\n")
+		fmt.Fprintf(os.Stderr, "This tool systematically fetches missing competition data for a complete season.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n")
+		fmt.Fprintf(os.Stderr, "  %s [OPTIONS]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Examples:\n")
+		fmt.Fprintf(os.Stderr, "  %s -season 2024                    # Backfill 2024 NFL season (add missing competitions)\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -season 2023 -json             # Backfill 2023 NFL season with JSON output\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -season 2024 -update           # Update existing 2024 competitions (e.g., fill missing start times)\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -season 2024 -limit 5          # Backfill 2024 season, stop after 5 competitions\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -season 2024 -sport nfl        # Explicitly specify sport (default: nfl)\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Options:\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nThe tool will:\n")
+		fmt.Fprintf(os.Stderr, "1. Check all regular season weeks (1-18) and playoff weeks (1-4)\n")
+		fmt.Fprintf(os.Stderr, "2. For each period, verify what competitions already exist\n")
+		fmt.Fprintf(os.Stderr, "3. In normal mode: Fetch missing competition data from ESPN\n")
+		fmt.Fprintf(os.Stderr, "   In update mode: Re-fetch existing competitions to update them\n")
+		fmt.Fprintf(os.Stderr, "4. Save competitions to the database (new or updated)\n")
+		fmt.Fprintf(os.Stderr, "5. Report progress and results\n")
+	}
+}
+
 func main() {
 	var (
 		season     = flag.String("season", "", "Season to backfill (required)")
 		sport      = flag.String("sport", "nfl", "Sport to backfill")
 		limit      = flag.Int("limit", 0, "Limit number of competitions to process (0 = no limit)")
 		jsonOutput = flag.Bool("json", false, "Output results as JSON")
+		updateMode = flag.Bool("update", false, "Update existing competitions (useful for filling missing start times)")
 		help       = flag.Bool("help", false, "Show help")
 	)
 	flag.Parse()
 
 	if *help {
-		printHelp()
+		flag.Usage()
 		os.Exit(0)
 	}
 
 	if *season == "" {
 		fmt.Fprintf(os.Stderr, "Error: season parameter is required\n\n")
-		printHelp()
+		flag.Usage()
 		os.Exit(1)
 	}
 
@@ -56,21 +81,48 @@ func main() {
 
 	// Create dependencies
 	espnClient := external.NewHTTPESPNClient()
+	espnAdapter := external.NewESPNAdapter(espnClient)
 	v2Repo := v2repository.NewSQLiteV2Repository(db)
 
 	// Create use cases
-	v2FetchSpecificUseCase := v2usecases.NewFetchSpecificCompetitionsUseCase(espnClient, v2Repo)
+	v2FetchSpecificUseCase := v2usecases.NewFetchSpecificCompetitionsUseCase(espnAdapter, v2Repo)
 	v2SaveUseCase := v2usecases.NewSaveCompetitionsUseCase(v2Repo)
 	v2BackfillSeasonUseCase := v2usecases.NewBackfillSeasonUseCase(v2Repo, v2FetchSpecificUseCase, v2SaveUseCase)
+
+	// Determine command to execute
+	var cmd string
+	if *updateMode {
+		if *limit > 0 {
+			cmd = "update-with-limit"
+		} else {
+			cmd = "update"
+		}
+	} else {
+		if *limit > 0 {
+			cmd = "backfill-with-limit"
+		} else {
+			cmd = "backfill"
+		}
+	}
 
 	// Execute backfill
 	var result *v2usecases.BackfillResult
 
-	if *limit > 0 {
-		log.Printf("Using competition limit: %d", *limit)
-		result, err = v2BackfillSeasonUseCase.ExecuteWithLimit(*sport, *season, *limit)
-	} else {
+	switch cmd {
+	case "update":
+		log.Printf("Update mode: updating existing competitions")
+		result, err = v2BackfillSeasonUseCase.ExecuteUpdate(*sport, *season)
+	case "update-with-limit":
+		log.Printf("Update mode with competition limit: %d", *limit)
+		result, err = v2BackfillSeasonUseCase.ExecuteUpdateWithLimit(*sport, *season, *limit)
+	case "backfill":
+		log.Printf("Backfill mode: adding missing competitions")
 		result, err = v2BackfillSeasonUseCase.Execute(*sport, *season)
+	case "backfill-with-limit":
+		log.Printf("Backfill mode with competition limit: %d", *limit)
+		result, err = v2BackfillSeasonUseCase.ExecuteWithLimit(*sport, *season, *limit)
+	default:
+		log.Fatalf("Unknown command: %s", cmd)
 	}
 
 	if err != nil {
@@ -91,37 +143,6 @@ func main() {
 	if len(result.Errors) > 0 {
 		os.Exit(1) // Exit with error code if there were errors
 	}
-}
-
-func printHelp() {
-	fmt.Printf(`NFL Backfill Tool
-
-This tool systematically fetches missing competition data for a complete season.
-
-Usage:
-  %s -season YYYY [-sport SPORT] [-limit N] [-json]
-
-Examples:
-  %s -season 2024                    # Backfill 2024 NFL season
-  %s -season 2023 -json             # Backfill 2023 NFL season with JSON output
-  %s -season 2024 -limit 5          # Backfill 2024 season, stop after 5 competitions
-  %s -season 2024 -sport nfl        # Explicitly specify sport (default: nfl)
-
-Options:
-  -season string    Season to backfill (required)
-  -sport string     Sport to backfill (default: nfl)
-  -limit int        Limit number of competitions to process (0 = no limit)
-  -json             Output detailed results as JSON
-  -help             Show this help message
-
-The tool will:
-1. Check all regular season weeks (1-18) and playoff weeks (1-4)
-2. For each period, verify what competitions already exist
-3. Fetch missing competition data from ESPN
-4. Save new competitions to the database
-5. Report progress and results
-
-`, os.Args[0], os.Args[0], os.Args[0], os.Args[0])
 }
 
 func printSummary(result *v2usecases.BackfillResult) {
