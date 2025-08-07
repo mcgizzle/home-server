@@ -98,26 +98,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// REPLACED: /run endpoint now uses V2 pipeline
-	http.HandleFunc("/run", func(w http.ResponseWriter, r *http.Request) {
-		competitions, err := v2FetchLatestUseCase.Execute("nfl")
-		if err != nil {
-			log.Printf("Error fetching latest competitions: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		err = v2SaveUseCase.Execute(competitions)
-		if err != nil {
-			log.Printf("Error saving competitions: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		log.Printf("Successfully processed %d competitions via /run", len(competitions))
-		w.WriteHeader(http.StatusOK)
-	})
-
 	// Main page handler using V2 for template data and available dates
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Get query parameters with defaults
