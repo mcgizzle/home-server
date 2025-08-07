@@ -305,7 +305,7 @@
         // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const currentSeason = urlParams.get('season');
-        const currentSeasonType = urlParams.get('seasontype');
+        const currentPeriodType = urlParams.get('periodtype');
         const currentWeek = urlParams.get('week');
 
         // Set year dropdown
@@ -314,19 +314,9 @@
             yearSelect.value = currentSeason;
         }
 
-        // Set season type radio button - convert legacy values to v2 format
-        if (currentSeasonType) {
-            let v2SeasonType = currentSeasonType;
-            // Convert legacy season type numbers to v2 format
-            if (currentSeasonType === "1") {
-                v2SeasonType = "preseason";
-            } else if (currentSeasonType === "2") {
-                v2SeasonType = "regular";
-            } else if (currentSeasonType === "3") {
-                v2SeasonType = "playoff";
-            }
-
-            const seasonTypeRadio = document.querySelector(`input[name="seasonType"][value="${v2SeasonType}"]`);
+        // Set season type radio button using semantic period type
+        if (currentPeriodType) {
+            const seasonTypeRadio = document.querySelector(`input[name="seasonType"][value="${currentPeriodType}"]`);
             if (seasonTypeRadio) {
                 // Uncheck all first
                 document.querySelectorAll('input[name="seasonType"]').forEach(radio => radio.checked = false);
@@ -467,25 +457,15 @@
             return;
         }
 
-        const v2SeasonType = seasonTypeElement.value;
+        const periodType = seasonTypeElement.value;
 
         if (!selectedWeek) {
             alert('Please select a week');
             return;
         }
 
-        // Convert v2 season type to legacy format for URL parameters
-        let legacySeasonType = "2"; // default to regular
-        if (v2SeasonType === "preseason") {
-            legacySeasonType = "1";
-        } else if (v2SeasonType === "regular") {
-            legacySeasonType = "2";
-        } else if (v2SeasonType === "playoff") {
-            legacySeasonType = "3";
-        }
-
-        // Build URL and redirect to show results in main flow
-        const url = `?season=${year}&week=${selectedWeek}&seasontype=${legacySeasonType}`;
+        // Build URL and redirect to show results in main flow using semantic period type
+        const url = `?season=${year}&week=${selectedWeek}&periodtype=${periodType}`;
         window.location.href = url;
     }
 

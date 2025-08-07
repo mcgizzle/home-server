@@ -74,6 +74,7 @@ func main() {
 
 	// Create V2 dependencies - pure V2 system
 	espnClient := external.NewHTTPESPNClient()
+	espnAdapter := external.NewESPNAdapter(espnClient)
 	v2Repo := v2repository.NewSQLiteV2Repository(db)
 	v2RatingService := v2application.NewV2RatingService(openAIKey)
 
@@ -82,8 +83,8 @@ func main() {
 	v2GetAvailableDatesUseCase := v2usecases.NewGetAvailableDatesUseCase(v2Repo)
 
 	// NEW: V2 fetch and save use cases for pure V2 pipeline
-	v2FetchLatestUseCase := v2usecases.NewFetchLatestCompetitionsUseCase(espnClient, v2Repo)
-	v2FetchSpecificUseCase := v2usecases.NewFetchSpecificCompetitionsUseCase(espnClient, v2Repo)
+	v2FetchLatestUseCase := v2usecases.NewFetchLatestCompetitionsUseCase(espnAdapter, v2Repo)
+	v2FetchSpecificUseCase := v2usecases.NewFetchSpecificCompetitionsUseCase(espnAdapter, v2Repo)
 	v2SaveUseCase := v2usecases.NewSaveCompetitionsUseCase(v2Repo)
 	v2GenerateRatingsUseCase := v2usecases.NewGenerateRatingsUseCase(v2Repo, v2Repo, v2RatingService)
 	v2BackfillSeasonUseCase := v2usecases.NewBackfillSeasonUseCase(v2Repo, v2FetchSpecificUseCase, v2SaveUseCase)
@@ -125,20 +126,14 @@ func main() {
 	http.HandleFunc("/backfill", func(w http.ResponseWriter, r *http.Request) {
 		week := r.URL.Query().Get("week")
 		season := r.URL.Query().Get("season")
-		seasonType := r.URL.Query().Get("seasontype")
+		periodType := r.URL.Query().Get("periodtype")
 
-		if week == "" || season == "" || seasonType == "" {
-			http.Error(w, "Missing required parameters: week, season, seasontype", http.StatusBadRequest)
+		if week == "" || season == "" || periodType == "" {
+			http.Error(w, "Missing required parameters: week, season, periodtype", http.StatusBadRequest)
 			return
 		}
 
-		// Convert V1 seasonType to V2 periodType
-		periodType := "regular"
-		if seasonType == "3" {
-			periodType = "playoff"
-		}
-
-		// REPLACED: Now using V2 specific fetch and save
+		// Use V2 specific fetch and save directly with semantic period type
 		competitions, err := v2FetchSpecificUseCase.Execute("nfl", season, week, periodType)
 		if err != nil {
 			log.Printf("Error fetching specific competitions: %v", err)
@@ -210,10 +205,10 @@ func main() {
 		// Get query parameters with defaults
 		season := r.URL.Query().Get("season")
 		week := r.URL.Query().Get("week")
-		seasonType := r.URL.Query().Get("seasontype")
+		periodType := r.URL.Query().Get("periodtype")
 
 		// Default parameter discovery using V2
-		if season == "" || week == "" || seasonType == "" {
+		if season == "" || week == "" || periodType == "" {
 			dates, err := v2GetAvailableDatesUseCase.Execute("nfl")
 			if err != nil {
 				log.Printf("Error loading dates: %v", err)
@@ -222,28 +217,17 @@ func main() {
 			}
 
 			if len(dates) > 0 {
-				latestV2Date := dates[len(dates)-1]
+				latestV2Date := dates[0]
 				if season == "" {
 					season = latestV2Date.Season
 				}
 				if week == "" {
 					week = latestV2Date.Period
 				}
-				if seasonType == "" {
-					// Convert V2 PeriodType to V1 SeasonType for backward compatibility
-					if latestV2Date.PeriodType == "playoff" {
-						seasonType = "3"
-					} else {
-						seasonType = "2"
-					}
+				if periodType == "" {
+					periodType = latestV2Date.PeriodType
 				}
 			}
-		}
-
-		// Convert V1 seasonType to V2 periodType
-		periodType := "regular"
-		if seasonType == "3" {
-			periodType = "playoff"
 		}
 
 		// Get template data using V2

@@ -6,8 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-
-	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 )
 
 // ESPNClient defines the interface for ESPN API operations
@@ -21,7 +19,6 @@ type ESPNClient interface {
 	GetRecord(ref string) (RecordResponse, error)
 	GetDetails(ref string, page int) (DetailsResponse, error)
 	GetDetailsPaged(ref string) ([]DetailsResponse, error)
-	GetTeamAndScore(response EventResponse) *domain.Game
 }
 
 // HTTPESPNClient implements ESPNClient using HTTP requests
@@ -134,11 +131,16 @@ type RecordItem struct {
 	DisplayValue string `json:"displayValue"`
 }
 
+// DetailsItem represents individual plays or events in games
+type DetailsItem struct {
+	Text string `json:"text"`
+}
+
 // DetailsResponse represents a details response from ESPN
 type DetailsResponse struct {
-	PageIndex int                  `json:"pageIndex"`
-	PageCount int                  `json:"pageCount"`
-	Items     []domain.DetailsItem `json:"items"`
+	PageIndex int           `json:"pageIndex"`
+	PageCount int           `json:"pageCount"`
+	Items     []DetailsItem `json:"items"`
 }
 
 // ListLatestEvents fetches data for the current week's games
@@ -363,71 +365,4 @@ func (c *HTTPESPNClient) GetDetailsPaged(ref string) ([]DetailsResponse, error) 
 		details = append(details, res)
 	}
 	return details, nil
-}
-
-// GetTeamAndScore converts an ESPN event response to a domain Game
-func (c *HTTPESPNClient) GetTeamAndScore(response EventResponse) *domain.Game {
-	competitors := response.Competitions[0].Competitors
-
-	if response.Competitions[0].LiveAvailable {
-		log.Printf("Game is live, skipping")
-		return nil
-	}
-
-	var game domain.Game
-
-	for _, competitor := range competitors {
-		team, err := c.GetTeam(competitor.Team.Ref)
-		if err != nil {
-			log.Printf("Error getting team: %v", err)
-			continue
-		}
-
-		score, err := c.GetScore(competitor.Score.Ref)
-		if err != nil {
-			log.Printf("Error getting score: %v", err)
-			continue
-		}
-
-		record, err := c.GetRecord(competitor.Record.Ref)
-		if err != nil {
-			log.Printf("Error getting record: %v", err)
-			continue
-		}
-
-		teamResult := domain.Team{
-			Name:   team.DisplayName,
-			Logo:   &team.Logos[0].Href,
-			Score:  score.Value,
-			Record: record.Items[0].DisplayValue,
-		}
-
-		if competitor.HomeAway == "home" {
-			game.Home = teamResult
-		} else {
-			game.Away = teamResult
-		}
-	}
-
-	// If game is not played yet, skip
-	if game.Home.Score == 0 {
-		return nil
-	}
-
-	details := response.Competitions[0].DetailsRefs
-
-	detailsResponses, err := c.GetDetailsPaged(details.Ref)
-	if err != nil {
-		log.Printf("Error getting details: %v", err)
-		return &game
-	}
-
-	var detailsItems []domain.DetailsItem
-	for _, detail := range detailsResponses {
-		detailsItems = append(detailsItems, detail.Items...)
-	}
-
-	game.Details = detailsItems
-
-	return &game
 }
