@@ -103,7 +103,14 @@ func (r *SQLiteV2Repository) GetAvailablePeriods(sport domain.Sport) ([]domain.D
 		SELECT DISTINCT season, period, period_type 
 		FROM competitions 
 		WHERE sport_id = ? 
-		ORDER BY season DESC, period_type DESC, period DESC`
+		ORDER BY season ASC, 
+		         CASE 
+		             WHEN period_type = 'preseason' THEN 0 
+		             WHEN period_type = 'regular' THEN 1 
+		             WHEN period_type = 'playoff' THEN 2 
+		             ELSE 3 
+		         END,
+		         CAST(period AS INTEGER) ASC`
 
 	rows, err := r.db.Query(query, sport)
 	if err != nil {

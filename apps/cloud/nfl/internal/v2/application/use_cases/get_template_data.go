@@ -77,6 +77,6 @@ func (uc *getTemplateDataUseCase) Execute(sportID, season, period, periodType st
 		Current: currentDate.Template(),
 	}
 
-	log.Printf("Successfully retrieved template data with %d competitions for sport %s", len(competitions), sportID)
+	log.Printf("Successfully retrieved template data with %d competitions and %d dates for sport %s", len(competitions), len(templateDates), sportID)
 	return templateData, nil
 }
