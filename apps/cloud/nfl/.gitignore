@@ -10,6 +10,8 @@ coverage.html
 # Temporary files
 .tmp/
 tmp/
+evaluations/
+prompts/
 
 # Keep testdata/template_data_golden.json (needed for regression tests)
 testdata/*
