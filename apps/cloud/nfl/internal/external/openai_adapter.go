@@ -2,14 +2,15 @@ package external
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/services"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/application/services"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 )
 
 // OpenAIAdapter implements the RatingService interface using OpenAI API
@@ -47,6 +48,11 @@ func (a *OpenAIAdapter) ProduceRatingForCompetition(comp domain.Competition) (do
 			Role    string `json:"role"`
 			Content string `json:"content"`
 		} `json:"messages"`
+	}
+
+	// Guard: require play-by-play to be present
+	if comp.Details == nil || comp.Details.PlayByPlay == nil || len(comp.Details.PlayByPlay) == 0 {
+		return domain.Rating{}, fmt.Errorf("missing play-by-play; refusing to rate competition %s", comp.ID)
 	}
 
 	// Convert competition to game structure for OpenAI

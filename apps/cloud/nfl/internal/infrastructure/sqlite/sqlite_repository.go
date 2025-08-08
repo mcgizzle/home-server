@@ -5,23 +5,23 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
 
-// SQLiteV2Repository implements V2 repository interfaces using SQLite
-type SQLiteV2Repository struct {
+// SQLiteRepository implements repository interfaces using SQLite
+type SQLiteRepository struct {
 	db *sql.DB
 }
 
-// NewSQLiteV2Repository creates a new V2 SQLite repository
-func NewSQLiteV2Repository(db *sql.DB) *SQLiteV2Repository {
-	return &SQLiteV2Repository{db: db}
+// NewSQLiteRepository creates a new SQLite repository
+func NewSQLiteRepository(db *sql.DB) *SQLiteRepository {
+	return &SQLiteRepository{db: db}
 }
 
 // CompetitionRepository implementation
 
-func (r *SQLiteV2Repository) SaveCompetition(comp domain.Competition) error {
+func (r *SQLiteRepository) SaveCompetition(comp domain.Competition) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -69,7 +69,7 @@ func (r *SQLiteV2Repository) SaveCompetition(comp domain.Competition) error {
 	return tx.Commit()
 }
 
-func (r *SQLiteV2Repository) FindByPeriod(season, period, periodType string, sport domain.Sport) ([]domain.Competition, error) {
+func (r *SQLiteRepository) FindByPeriod(season, period, periodType string, sport domain.Sport) ([]domain.Competition, error) {
 	query := `
 		SELECT c.id 
 		FROM competitions c
@@ -99,7 +99,7 @@ func (r *SQLiteV2Repository) FindByPeriod(season, period, periodType string, spo
 	return competitions, nil
 }
 
-func (r *SQLiteV2Repository) GetCompetitionByID(id string) (*domain.Competition, error) {
+func (r *SQLiteRepository) GetCompetitionByID(id string) (*domain.Competition, error) {
 	competition, err := r.loadCompetition(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load competition %s: %w", id, err)
@@ -107,7 +107,7 @@ func (r *SQLiteV2Repository) GetCompetitionByID(id string) (*domain.Competition,
 	return &competition, nil
 }
 
-func (r *SQLiteV2Repository) GetAvailablePeriods(sport domain.Sport) ([]domain.Date, error) {
+func (r *SQLiteRepository) GetAvailablePeriods(sport domain.Sport) ([]domain.Date, error) {
 	query := `
 		SELECT DISTINCT season, period, period_type 
 		FROM competitions 
@@ -141,7 +141,7 @@ func (r *SQLiteV2Repository) GetAvailablePeriods(sport domain.Sport) ([]domain.D
 
 // RatingRepository implementation
 
-func (r *SQLiteV2Repository) SaveRating(compID string, rating domain.Rating) error {
+func (r *SQLiteRepository) SaveRating(compID string, rating domain.Rating) error {
 	query := `
 		INSERT OR REPLACE INTO ratings 
 		(competition_id, type, score, explanation, spoiler_free, source, confidence, generated_at)
@@ -153,7 +153,7 @@ func (r *SQLiteV2Repository) SaveRating(compID string, rating domain.Rating) err
 	return err
 }
 
-func (r *SQLiteV2Repository) LoadRating(compID string, ratingType domain.RatingType) (domain.Rating, error) {
+func (r *SQLiteRepository) LoadRating(compID string, ratingType domain.RatingType) (domain.Rating, error) {
 	query := `
 		SELECT type, score, explanation, spoiler_free, source, confidence, generated_at
 		FROM ratings WHERE competition_id = ? AND type = ?`
@@ -169,7 +169,7 @@ func (r *SQLiteV2Repository) LoadRating(compID string, ratingType domain.RatingT
 
 // TeamRepository implementation
 
-func (r *SQLiteV2Repository) SaveTeam(team domain.Team) error {
+func (r *SQLiteRepository) SaveTeam(team domain.Team) error {
 	query := `
 		INSERT OR REPLACE INTO teams (id, name, sport_id, logo_url)
 		VALUES (?, ?, ?, ?)`
@@ -180,7 +180,7 @@ func (r *SQLiteV2Repository) SaveTeam(team domain.Team) error {
 
 // SportRepository implementation
 
-func (r *SQLiteV2Repository) ListSports() ([]repository.SportInfo, error) {
+func (r *SQLiteRepository) ListSports() ([]repository.SportInfo, error) {
 	query := `SELECT id, name FROM sports ORDER BY name`
 
 	rows, err := r.db.Query(query)
@@ -201,7 +201,7 @@ func (r *SQLiteV2Repository) ListSports() ([]repository.SportInfo, error) {
 	return sports, nil
 }
 
-func (r *SQLiteV2Repository) GetSport(sportID string) (repository.SportInfo, error) {
+func (r *SQLiteRepository) GetSport(sportID string) (repository.SportInfo, error) {
 	query := `SELECT id, name FROM sports WHERE id = ?`
 
 	var sport repository.SportInfo
@@ -211,7 +211,7 @@ func (r *SQLiteV2Repository) GetSport(sportID string) (repository.SportInfo, err
 
 // Private helper methods
 
-func (r *SQLiteV2Repository) loadCompetition(id string) (domain.Competition, error) {
+func (r *SQLiteRepository) loadCompetition(id string) (domain.Competition, error) {
 	// Load basic competition data
 	comp, err := r.loadBasicCompetition(id)
 	if err != nil {
@@ -240,13 +240,13 @@ func (r *SQLiteV2Repository) loadCompetition(id string) (domain.Competition, err
 	return comp, nil
 }
 
-func (r *SQLiteV2Repository) saveTeamTx(tx *sql.Tx, team domain.Team) error {
+func (r *SQLiteRepository) saveTeamTx(tx *sql.Tx, team domain.Team) error {
 	query := `INSERT OR REPLACE INTO teams (id, name, sport_id, logo_url) VALUES (?, ?, ?, ?)`
 	_, err := tx.Exec(query, team.ID, team.Name, team.Sport, team.LogoURL)
 	return err
 }
 
-func (r *SQLiteV2Repository) saveCompetitionTx(tx *sql.Tx, comp domain.Competition) error {
+func (r *SQLiteRepository) saveCompetitionTx(tx *sql.Tx, comp domain.Competition) error {
 	query := `
 		INSERT OR REPLACE INTO competitions 
 		(id, event_id, sport_id, season, period, period_type, start_time, status, created_at)
@@ -257,7 +257,7 @@ func (r *SQLiteV2Repository) saveCompetitionTx(tx *sql.Tx, comp domain.Competiti
 	return err
 }
 
-func (r *SQLiteV2Repository) saveCompetitionTeamTx(tx *sql.Tx, compID string, ct domain.CompetitionTeam) error {
+func (r *SQLiteRepository) saveCompetitionTeamTx(tx *sql.Tx, compID string, ct domain.CompetitionTeam) error {
 	statsJSON, err := json.Marshal(ct.Stats)
 	if err != nil {
 		return fmt.Errorf("failed to marshal stats: %w", err)
@@ -272,7 +272,7 @@ func (r *SQLiteV2Repository) saveCompetitionTeamTx(tx *sql.Tx, compID string, ct
 	return err
 }
 
-func (r *SQLiteV2Repository) saveRatingTx(tx *sql.Tx, compID string, rating domain.Rating) error {
+func (r *SQLiteRepository) saveRatingTx(tx *sql.Tx, compID string, rating domain.Rating) error {
 	query := `
 		INSERT OR REPLACE INTO ratings 
 		(competition_id, type, score, explanation, spoiler_free, source, confidence, generated_at)
@@ -283,7 +283,7 @@ func (r *SQLiteV2Repository) saveRatingTx(tx *sql.Tx, compID string, rating doma
 	return err
 }
 
-func (r *SQLiteV2Repository) saveCompetitionDetailsTx(tx *sql.Tx, compID string, details domain.CompetitionDetails) error {
+func (r *SQLiteRepository) saveCompetitionDetailsTx(tx *sql.Tx, compID string, details domain.CompetitionDetails) error {
 	playByPlayJSON, err := json.Marshal(details.PlayByPlay)
 	if err != nil {
 		return fmt.Errorf("failed to marshal play by play: %w", err)
@@ -303,7 +303,7 @@ func (r *SQLiteV2Repository) saveCompetitionDetailsTx(tx *sql.Tx, compID string,
 	return err
 }
 
-func (r *SQLiteV2Repository) loadBasicCompetition(id string) (domain.Competition, error) {
+func (r *SQLiteRepository) loadBasicCompetition(id string) (domain.Competition, error) {
 	query := `
 		SELECT id, event_id, sport_id, season, period, period_type, start_time, status, created_at
 		FROM competitions WHERE id = ?`
@@ -325,7 +325,7 @@ func (r *SQLiteV2Repository) loadBasicCompetition(id string) (domain.Competition
 	return comp, nil
 }
 
-func (r *SQLiteV2Repository) loadCompetitionTeams(compID string) ([]domain.CompetitionTeam, error) {
+func (r *SQLiteRepository) loadCompetitionTeams(compID string) ([]domain.CompetitionTeam, error) {
 	query := `
 		SELECT t.id, t.name, t.sport_id, t.logo_url, ct.home_away, ct.score, ct.stats
 		FROM competition_teams ct
@@ -365,7 +365,7 @@ func (r *SQLiteV2Repository) loadCompetitionTeams(compID string) ([]domain.Compe
 	return teams, nil
 }
 
-func (r *SQLiteV2Repository) loadCompetitionRating(compID string) (domain.Rating, error) {
+func (r *SQLiteRepository) loadCompetitionRating(compID string) (domain.Rating, error) {
 	query := `
 		SELECT type, score, explanation, spoiler_free, source, confidence, generated_at
 		FROM ratings WHERE competition_id = ? LIMIT 1`
@@ -379,7 +379,7 @@ func (r *SQLiteV2Repository) loadCompetitionRating(compID string) (domain.Rating
 	return rating, err
 }
 
-func (r *SQLiteV2Repository) loadCompetitionDetails(compID string) (domain.CompetitionDetails, error) {
+func (r *SQLiteRepository) loadCompetitionDetails(compID string) (domain.CompetitionDetails, error) {
 	query := `SELECT play_by_play, metadata FROM competition_details WHERE competition_id = ?`
 
 	var details domain.CompetitionDetails

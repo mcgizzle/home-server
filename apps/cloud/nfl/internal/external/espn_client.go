@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 )
 
 // ESPNClient defines the interface for ESPN API operations
@@ -321,7 +322,14 @@ func (c *HTTPESPNClient) GetRecord(ref string) (RecordResponse, error) {
 
 // GetDetails fetches details by reference URL and page number
 func (c *HTTPESPNClient) GetDetails(ref string, page int) (DetailsResponse, error) {
-	url := fmt.Sprintf("%s&page=%d", ref, page)
+	if strings.TrimSpace(ref) == "" {
+		return DetailsResponse{}, fmt.Errorf("empty details ref for page %d", page)
+	}
+	sep := "?"
+	if strings.Contains(ref, "?") {
+		sep = "&"
+	}
+	url := fmt.Sprintf("%s%spage=%d", ref, sep, page)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

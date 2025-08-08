@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/services"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/application/services"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
 
 // FetchSpecificCompetitionsUseCase defines the V2 business operation for fetching specific period competitions
@@ -86,6 +86,14 @@ func (uc *fetchSpecificCompetitionsUseCase) ExecuteWithLimit(sportID, season, pe
 		}
 
 		if !isExisting {
+			// Fetch details so we persist play-by-play when saving
+			details, derr := uc.sportsData.GetCompetitionDetails(comp.ID)
+			if derr != nil {
+				log.Printf("Warning: failed to get details for %s: %v", comp.ID, derr)
+			} else if details != nil {
+				comp.Details = details
+			}
+
 			newCompetitions = append(newCompetitions, comp)
 			processedCount++
 		}
@@ -132,6 +140,14 @@ func (uc *fetchSpecificCompetitionsUseCase) ExecuteForUpdateWithLimit(sportID, s
 			log.Printf("Reached processing limit of %d competitions for update %s %s %s, stopping early",
 				limit, season, period, periodType)
 			break
+		}
+
+		// Fetch details so we can fill missing play-by-play during update
+		details, derr := uc.sportsData.GetCompetitionDetails(comp.ID)
+		if derr != nil {
+			log.Printf("Warning: failed to get details for %s: %v", comp.ID, derr)
+		} else if details != nil {
+			comp.Details = details
 		}
 
 		limitedCompetitions = append(limitedCompetitions, comp)

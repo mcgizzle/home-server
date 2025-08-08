@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/external"
 	sqliteinfra "github.com/mcgizzle/home-server/apps/cloud/internal/infrastructure/sqlite"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 
 	"database/sql"
 
@@ -60,7 +60,7 @@ func main() {
 	}
 	defer db.Close()
 
-	repo := sqliteinfra.NewSQLiteV2Repository(db)
+	repo := sqliteinfra.NewSQLiteRepository(db)
 
 	// Handle list games command
 	if *listGames {

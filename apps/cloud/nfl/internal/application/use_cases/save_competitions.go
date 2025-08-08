@@ -3,8 +3,8 @@ package use_cases
 import (
 	"log"
 
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
 
 // SaveCompetitionsUseCase defines the V2 business operation for saving competitions

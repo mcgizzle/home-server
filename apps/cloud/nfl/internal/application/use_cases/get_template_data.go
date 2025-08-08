@@ -5,8 +5,8 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
 
 // GetTemplateDataUseCase defines the V2 business operation for getting template data

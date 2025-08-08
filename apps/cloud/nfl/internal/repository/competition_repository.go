@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 )
 
 // CompetitionRepository handles competition-specific operations

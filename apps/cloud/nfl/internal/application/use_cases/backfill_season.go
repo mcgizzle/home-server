@@ -5,8 +5,8 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
 
 // BackfillSeasonUseCase defines the V2 business operation for backfilling missing competition data
@@ -15,6 +15,9 @@ type BackfillSeasonUseCase interface {
 	ExecuteWithLimit(sportID, season string, limit int) (*BackfillResult, error)
 	ExecuteUpdate(sportID, season string) (*BackfillResult, error)
 	ExecuteUpdateWithLimit(sportID, season string, limit int) (*BackfillResult, error)
+	// Period-scoped operations
+	ExecutePeriod(sportID, season, period, periodType string) (*BackfillResult, error)
+	ExecutePeriodUpdate(sportID, season, period, periodType string) (*BackfillResult, error)
 }
 
 // BackfillResult represents the result of a backfill operation
@@ -206,6 +209,48 @@ func (uc *backfillSeasonUseCase) ExecuteUpdateWithLimit(sportID, season string, 
 	log.Printf("Update completed for %s season %s: %d periods processed, %d competitions updated, %d errors%s",
 		sportID, season, result.PeriodsProcessed, result.CompetitionsAdded, len(result.Errors), limitMsg)
 
+	return result, nil
+}
+
+// ExecutePeriod performs backfill for a specific period only
+func (uc *backfillSeasonUseCase) ExecutePeriod(sportID, season, period, periodType string) (*BackfillResult, error) {
+	sport := domain.Sport(sportID)
+
+	result := &BackfillResult{
+		Season:        season,
+		Limit:         -1,
+		PeriodResults: []BackfillPeriodResult{},
+		Errors:        []BackfillError{},
+	}
+
+	pr := uc.backfillPeriodWithLimit(sport, season, period, periodType, -1)
+	result.PeriodResults = append(result.PeriodResults, pr)
+	result.PeriodsProcessed = 1
+	result.CompetitionsAdded = pr.AddedCount
+	if pr.Error != "" {
+		result.Errors = append(result.Errors, BackfillError{Period: period, PeriodType: periodType, Error: pr.Error})
+	}
+	return result, nil
+}
+
+// ExecutePeriodUpdate performs update for a specific period only
+func (uc *backfillSeasonUseCase) ExecutePeriodUpdate(sportID, season, period, periodType string) (*BackfillResult, error) {
+	sport := domain.Sport(sportID)
+
+	result := &BackfillResult{
+		Season:        season,
+		Limit:         -1,
+		PeriodResults: []BackfillPeriodResult{},
+		Errors:        []BackfillError{},
+	}
+
+	pr := uc.updatePeriodWithLimit(sport, season, period, periodType, -1)
+	result.PeriodResults = append(result.PeriodResults, pr)
+	result.PeriodsProcessed = 1
+	result.CompetitionsAdded = pr.AddedCount
+	if pr.Error != "" {
+		result.Errors = append(result.Errors, BackfillError{Period: period, PeriodType: periodType, Error: pr.Error})
+	}
 	return result, nil
 }
 

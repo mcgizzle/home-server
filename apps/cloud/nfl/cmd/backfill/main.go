@@ -9,10 +9,10 @@ import (
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
+	usecases "github.com/mcgizzle/home-server/apps/cloud/internal/application/use_cases"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/external"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/infrastructure/database"
 	sqliteinfra "github.com/mcgizzle/home-server/apps/cloud/internal/infrastructure/sqlite"
-	v2usecases "github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/use_cases"
 )
 
 var DB_PATH = "data/results.db"
@@ -48,6 +48,8 @@ func main() {
 		limit      = flag.Int("limit", 0, "Limit number of competitions to process (0 = no limit)")
 		jsonOutput = flag.Bool("json", false, "Output results as JSON")
 		updateMode = flag.Bool("update", false, "Update existing competitions (useful for filling missing start times)")
+		period     = flag.String("period", "", "Specific period/week to process (e.g., 1)")
+		periodType = flag.String("periodtype", "", "Specific period type (regular|playoff|preseason)")
 		help       = flag.Bool("help", false, "Show help")
 	)
 	flag.Parse()
@@ -82,12 +84,12 @@ func main() {
 	// Create dependencies
 	espnClient := external.NewHTTPESPNClient()
 	espnAdapter := external.NewESPNAdapter(espnClient)
-	v2Repo := sqliteinfra.NewSQLiteV2Repository(db)
+	repo := sqliteinfra.NewSQLiteRepository(db)
 
 	// Create use cases
-	v2FetchSpecificUseCase := v2usecases.NewFetchSpecificCompetitionsUseCase(espnAdapter, v2Repo)
-	v2SaveUseCase := v2usecases.NewSaveCompetitionsUseCase(v2Repo)
-	v2BackfillSeasonUseCase := v2usecases.NewBackfillSeasonUseCase(v2Repo, v2FetchSpecificUseCase, v2SaveUseCase)
+	fetchSpecificUseCase := usecases.NewFetchSpecificCompetitionsUseCase(espnAdapter, repo)
+	saveUseCase := usecases.NewSaveCompetitionsUseCase(repo)
+	backfillSeasonUseCase := usecases.NewBackfillSeasonUseCase(repo, fetchSpecificUseCase, saveUseCase)
 
 	// Determine command to execute
 	var cmd string
@@ -106,23 +108,37 @@ func main() {
 	}
 
 	// Execute backfill
-	var result *v2usecases.BackfillResult
+	var result *usecases.BackfillResult
 
-	switch cmd {
-	case "update":
-		log.Printf("Update mode: updating existing competitions")
-		result, err = v2BackfillSeasonUseCase.ExecuteUpdate(*sport, *season)
-	case "update-with-limit":
-		log.Printf("Update mode with competition limit: %d", *limit)
-		result, err = v2BackfillSeasonUseCase.ExecuteUpdateWithLimit(*sport, *season, *limit)
-	case "backfill":
-		log.Printf("Backfill mode: adding missing competitions")
-		result, err = v2BackfillSeasonUseCase.Execute(*sport, *season)
-	case "backfill-with-limit":
-		log.Printf("Backfill mode with competition limit: %d", *limit)
-		result, err = v2BackfillSeasonUseCase.ExecuteWithLimit(*sport, *season, *limit)
-	default:
-		log.Fatalf("Unknown command: %s", cmd)
+	// If period-scoped flags are provided, run period-specific flows
+	if *period != "" && *periodType != "" {
+		switch cmd {
+		case "update", "update-with-limit":
+			log.Printf("Update mode (period): %s %s", *periodType, *period)
+			result, err = backfillSeasonUseCase.ExecutePeriodUpdate(*sport, *season, *period, *periodType)
+		case "backfill", "backfill-with-limit":
+			log.Printf("Backfill mode (period): %s %s", *periodType, *period)
+			result, err = backfillSeasonUseCase.ExecutePeriod(*sport, *season, *period, *periodType)
+		default:
+			log.Fatalf("Unknown command: %s", cmd)
+		}
+	} else {
+		switch cmd {
+		case "update":
+			log.Printf("Update mode: updating existing competitions")
+			result, err = backfillSeasonUseCase.ExecuteUpdate(*sport, *season)
+		case "update-with-limit":
+			log.Printf("Update mode with competition limit: %d", *limit)
+			result, err = backfillSeasonUseCase.ExecuteUpdateWithLimit(*sport, *season, *limit)
+		case "backfill":
+			log.Printf("Backfill mode: adding missing competitions")
+			result, err = backfillSeasonUseCase.Execute(*sport, *season)
+		case "backfill-with-limit":
+			log.Printf("Backfill mode with competition limit: %d", *limit)
+			result, err = backfillSeasonUseCase.ExecuteWithLimit(*sport, *season, *limit)
+		default:
+			log.Fatalf("Unknown command: %s", cmd)
+		}
 	}
 
 	if err != nil {
@@ -145,7 +161,7 @@ func main() {
 	}
 }
 
-func printSummary(result *v2usecases.BackfillResult) {
+func printSummary(result *usecases.BackfillResult) {
 	fmt.Printf("=== Backfill Summary for Season %s ===\n", result.Season)
 	if result.Limit > 0 {
 		fmt.Printf("Competition Limit: %d", result.Limit)

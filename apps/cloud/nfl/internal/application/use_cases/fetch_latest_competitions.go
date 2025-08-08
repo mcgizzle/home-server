@@ -3,9 +3,9 @@ package use_cases
 import (
 	"log"
 
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/services"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/application/services"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/repository"
 )
 
 // FetchLatestCompetitionsUseCase defines the V2 business operation for fetching latest competitions
@@ -74,6 +74,13 @@ func (uc *fetchLatestCompetitionsUseCase) Execute(sportID string) ([]domain.Comp
 			}
 		}
 		if !isExisting {
+			// Fetch details so we persist play-by-play when saving
+			details, derr := uc.sportsData.GetCompetitionDetails(comp.ID)
+			if derr != nil {
+				log.Printf("Warning: failed to get details for %s: %v", comp.ID, derr)
+			} else if details != nil {
+				comp.Details = details
+			}
 			newCompetitions = append(newCompetitions, comp)
 		}
 	}

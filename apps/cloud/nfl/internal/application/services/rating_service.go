@@ -1,6 +1,6 @@
 package services
 
-import "github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
+import "github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 
 // RatingService defines the interface for generating ratings for competitions.
 // This interface is owned by the application layer and implemented by infrastructure.

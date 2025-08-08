@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/services"
-	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/application/services"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 )
 
 // ESPNAdapter implements the SportsDataService interface using ESPN API
@@ -147,6 +147,9 @@ func (a *ESPNAdapter) GetCompetitionDetails(competitionID string) (*domain.Compe
 
 	// Get paginated details
 	detailsRef := event.Competitions[0].DetailsRefs.Ref
+	if detailsRef == "" {
+		return nil, fmt.Errorf("missing details ref for competition %s", competitionID)
+	}
 	detailsResponses, err := a.client.GetDetailsPaged(detailsRef)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get competition details: %w", err)

@@ -1,6 +1,6 @@
 package services
 
-import "github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
+import "github.com/mcgizzle/home-server/apps/cloud/internal/domain"
 
 // SportsDataService defines the interface for retrieving sports competition data.
 // This interface is owned by the application layer and implemented by infrastructure.
