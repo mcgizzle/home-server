@@ -58,6 +58,24 @@ func backgroundLatestEvents(
 	}
 }
 
+// backgroundFillMissingDetails periodically fetches and saves play-by-play for recent periods
+func backgroundFillMissingDetails(
+	fillUseCase usecases.FillMissingDetailsUseCase,
+) {
+	ticker := time.NewTicker(30 * time.Minute)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		log.Println("Filling missing details for recent periods")
+		processed, updated, err := fillUseCase.Execute("nfl", 6)
+		if err != nil {
+			log.Printf("Detail fill run error: %v", err)
+			continue
+		}
+		log.Printf("Detail fill run complete: processed=%d, updated=%d", processed, updated)
+	}
+}
+
 func main() {
 	log.Println("Starting NFL Excitement Rating Service")
 
@@ -78,6 +96,7 @@ func main() {
 	// Use cases
 	getTemplateDataUseCase := usecases.NewGetTemplateDataUseCase(repo)
 	getAvailableDatesUseCase := usecases.NewGetAvailableDatesUseCase(repo)
+	getLatestRatedDateUseCase := usecases.NewGetLatestRatedDateUseCase(repo)
 
 	// Fetch/save and rating use cases
 	fetchLatestUseCase := usecases.NewFetchLatestCompetitionsUseCase(espnAdapter, repo)
@@ -90,6 +109,10 @@ func main() {
 	}()
 	go func() {
 		generateRatingsUseCase.Execute("nfl")
+	}()
+	go func() {
+		fillDetailsUseCase := usecases.NewFillMissingDetailsUseCase(espnAdapter, repo)
+		backgroundFillMissingDetails(fillDetailsUseCase)
 	}()
 
 	// Load template
@@ -105,25 +128,37 @@ func main() {
 		week := r.URL.Query().Get("week")
 		periodType := r.URL.Query().Get("periodtype")
 
-		// Default parameter discovery
+		// Default parameter discovery, prefer latest period that has any rating
 		if season == "" || week == "" || periodType == "" {
-			dates, err := getAvailableDatesUseCase.Execute("nfl")
-			if err != nil {
-				log.Printf("Error loading dates: %v", err)
-				http.Error(w, "Internal server error", http.StatusInternalServerError)
-				return
-			}
-
-			if len(dates) > 0 {
-				latestDate := dates[0]
+			if date, ok, err := getLatestRatedDateUseCase.Execute("nfl"); err == nil && ok {
 				if season == "" {
-					season = latestDate.Season
+					season = date.Season
 				}
 				if week == "" {
-					week = latestDate.Period
+					week = date.Period
 				}
 				if periodType == "" {
-					periodType = latestDate.PeriodType
+					periodType = date.PeriodType
+				}
+			} else {
+				// Fallback: use most recent available date
+				dates, err := getAvailableDatesUseCase.Execute("nfl")
+				if err != nil {
+					log.Printf("Error loading dates: %v", err)
+					http.Error(w, "Internal server error", http.StatusInternalServerError)
+					return
+				}
+				if len(dates) > 0 {
+					latestDate := dates[len(dates)-1]
+					if season == "" {
+						season = latestDate.Season
+					}
+					if week == "" {
+						week = latestDate.Period
+					}
+					if periodType == "" {
+						periodType = latestDate.PeriodType
+					}
 				}
 			}
 		}
