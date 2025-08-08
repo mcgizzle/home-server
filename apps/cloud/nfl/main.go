@@ -11,8 +11,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/external"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/infrastructure/database"
+	sqliteinfra "github.com/mcgizzle/home-server/apps/cloud/internal/infrastructure/sqlite"
 	v2usecases "github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/use_cases"
-	v2repository "github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
 )
 
 var DB_PATH = "data/results.db"
@@ -72,7 +72,7 @@ func main() {
 	// Create V2 dependencies - pure V2 system
 	espnClient := external.NewHTTPESPNClient()
 	espnAdapter := external.NewESPNAdapter(espnClient)
-	v2Repo := v2repository.NewSQLiteV2Repository(db)
+	v2Repo := sqliteinfra.NewSQLiteV2Repository(db)
 	v2RatingService := external.NewOpenAIAdapter(openAIKey)
 
 	// V2 use cases replacing V1 equivalents

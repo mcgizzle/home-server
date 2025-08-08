@@ -11,8 +11,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/external"
 	"github.com/mcgizzle/home-server/apps/cloud/internal/infrastructure/database"
+	sqliteinfra "github.com/mcgizzle/home-server/apps/cloud/internal/infrastructure/sqlite"
 	v2usecases "github.com/mcgizzle/home-server/apps/cloud/internal/v2/application/use_cases"
-	v2repository "github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
 )
 
 var DB_PATH = "data/results.db"
@@ -82,7 +82,7 @@ func main() {
 	// Create dependencies
 	espnClient := external.NewHTTPESPNClient()
 	espnAdapter := external.NewESPNAdapter(espnClient)
-	v2Repo := v2repository.NewSQLiteV2Repository(db)
+	v2Repo := sqliteinfra.NewSQLiteV2Repository(db)
 
 	// Create use cases
 	v2FetchSpecificUseCase := v2usecases.NewFetchSpecificCompetitionsUseCase(espnAdapter, v2Repo)

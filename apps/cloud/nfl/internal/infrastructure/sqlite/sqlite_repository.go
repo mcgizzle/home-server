@@ -1,4 +1,4 @@
-package repository
+package sqlite
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/domain"
+	"github.com/mcgizzle/home-server/apps/cloud/internal/v2/repository"
 )
 
 // SQLiteV2Repository implements V2 repository interfaces using SQLite
@@ -179,7 +180,7 @@ func (r *SQLiteV2Repository) SaveTeam(team domain.Team) error {
 
 // SportRepository implementation
 
-func (r *SQLiteV2Repository) ListSports() ([]SportInfo, error) {
+func (r *SQLiteV2Repository) ListSports() ([]repository.SportInfo, error) {
 	query := `SELECT id, name FROM sports ORDER BY name`
 
 	rows, err := r.db.Query(query)
@@ -188,9 +189,9 @@ func (r *SQLiteV2Repository) ListSports() ([]SportInfo, error) {
 	}
 	defer rows.Close()
 
-	var sports []SportInfo
+	var sports []repository.SportInfo
 	for rows.Next() {
-		var sport SportInfo
+		var sport repository.SportInfo
 		if err := rows.Scan(&sport.ID, &sport.Name); err != nil {
 			return nil, err
 		}
@@ -200,10 +201,10 @@ func (r *SQLiteV2Repository) ListSports() ([]SportInfo, error) {
 	return sports, nil
 }
 
-func (r *SQLiteV2Repository) GetSport(sportID string) (SportInfo, error) {
+func (r *SQLiteV2Repository) GetSport(sportID string) (repository.SportInfo, error) {
 	query := `SELECT id, name FROM sports WHERE id = ?`
 
-	var sport SportInfo
+	var sport repository.SportInfo
 	err := r.db.QueryRow(query, sportID).Scan(&sport.ID, &sport.Name)
 	return sport, err
 }
