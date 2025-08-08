@@ -38,6 +38,7 @@ func initDb() *sql.DB {
 func backgroundLatestEvents(
 	fetchUseCase usecases.FetchLatestCompetitionsUseCase,
 	saveUseCase usecases.SaveCompetitionsUseCase,
+	generateUseCase usecases.GenerateRatingsUseCase,
 ) {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
@@ -55,6 +56,11 @@ func backgroundLatestEvents(
 			continue
 		}
 		log.Printf("Successfully processed %d competitions", len(competitions))
+
+		// Generate any missing ratings after new competitions are saved
+		if _, err := generateUseCase.Execute("nfl"); err != nil {
+			log.Printf("Error generating ratings: %v", err)
+		}
 	}
 }
 
@@ -105,10 +111,7 @@ func main() {
 
 	// Start background processes
 	go func() {
-		backgroundLatestEvents(fetchLatestUseCase, saveUseCase)
-	}()
-	go func() {
-		generateRatingsUseCase.Execute("nfl")
+		backgroundLatestEvents(fetchLatestUseCase, saveUseCase, generateRatingsUseCase)
 	}()
 	go func() {
 		fillDetailsUseCase := usecases.NewFillMissingDetailsUseCase(espnAdapter, repo)
