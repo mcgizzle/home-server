@@ -137,6 +137,20 @@ func (a *OpenAIAdapter) ProduceRatingForCompetition(comp domain.Competition) (do
 		} `json:"choices"`
 	}
 
+	// First check if there's an error in the response
+	type ErrorResponse struct {
+		Error struct {
+			Message string `json:"message"`
+			Type    string `json:"type"`
+			Code    string `json:"code"`
+		} `json:"error"`
+	}
+
+	var errorResponse ErrorResponse
+	if errUnmarshal := json.Unmarshal([]byte(post.String()), &errorResponse); errUnmarshal == nil && errorResponse.Error.Message != "" {
+		return domain.Rating{}, fmt.Errorf("OpenAI API error: %s", errorResponse.Error.Message)
+	}
+
 	var outerJsonResponse OuterResponse
 	err = json.Unmarshal([]byte(post.String()), &outerJsonResponse)
 	if err != nil {
@@ -146,7 +160,7 @@ func (a *OpenAIAdapter) ProduceRatingForCompetition(comp domain.Competition) (do
 
 	if len(outerJsonResponse.Choices) == 0 {
 		log.Printf("No choices in OpenAI response")
-		return domain.Rating{}, err
+		return domain.Rating{}, fmt.Errorf("no choices in OpenAI response")
 	}
 
 	jsonString := outerJsonResponse.Choices[0].Message.Content

@@ -26,5 +26,6 @@ EXPOSE 8089
 RUN mkdir -p data
 
 COPY --from=builder /app/static static
+COPY --from=builder /app/internal/infrastructure/migrations internal/infrastructure/migrations
 
 CMD ["./cloud"]

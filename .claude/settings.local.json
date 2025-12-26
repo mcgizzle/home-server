@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(arp:*)",
+      "Bash(ssh:*)",
+      "Bash(mkdir:*)"
+    ]
+  }
+}

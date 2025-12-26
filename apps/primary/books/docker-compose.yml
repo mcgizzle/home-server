@@ -1,6 +1,6 @@
 services:
   readarr:
-    image: lscr.io/linuxserver/readarr:develop
+    image: linuxserver/readarr:0.4.19-nightly
     container_name: readarr
     networks:
       - internal-net

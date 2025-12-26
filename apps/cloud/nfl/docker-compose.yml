@@ -1,7 +1,7 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-    command: tunnel --protocol http2 run
+    command: tunnel --no-autoupdate run --token eyJhIjoiNTY3Y2Q1ZmVkYjExZDZlOTJhZmI0NTRlNmUwMjA2ZTgiLCJ0IjoiYjBkM2VkNTItYjdkOS00MWQ2LTkyMzgtYTljMzE0NzU4YmFmIiwicyI6Ik4yVTVZamc0TkRVdFpqRmtNQzAwTldVeExXRXlaamN0TVRKaE1UVmxZek13WkdKaiJ9
     restart: unless-stopped
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TOKEN_NFL}

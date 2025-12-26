@@ -40,6 +40,25 @@ func backgroundLatestEvents(
 	saveUseCase usecases.SaveCompetitionsUseCase,
 	generateUseCase usecases.GenerateRatingsUseCase,
 ) {
+	// Run immediately on startup
+	log.Println("Checking for new events")
+	competitions, err := fetchUseCase.Execute("nfl")
+	if err != nil {
+		log.Printf("Error fetching latest competitions: %v", err)
+	} else {
+		err = saveUseCase.Execute(competitions)
+		if err != nil {
+			log.Printf("Error saving competitions: %v", err)
+		} else {
+			log.Printf("Successfully processed %d competitions", len(competitions))
+
+			// Generate any missing ratings after new competitions are saved
+			if _, err := generateUseCase.Execute("nfl"); err != nil {
+				log.Printf("Error generating ratings: %v", err)
+			}
+		}
+	}
+
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
 
@@ -68,6 +87,15 @@ func backgroundLatestEvents(
 func backgroundFillMissingDetails(
 	fillUseCase usecases.FillMissingDetailsUseCase,
 ) {
+	// Run immediately on startup
+	log.Println("Filling missing details for recent periods")
+	processed, updated, err := fillUseCase.Execute("nfl", 6)
+	if err != nil {
+		log.Printf("Detail fill run error: %v", err)
+	} else {
+		log.Printf("Detail fill run complete: processed=%d, updated=%d", processed, updated)
+	}
+
 	ticker := time.NewTicker(30 * time.Minute)
 	defer ticker.Stop()
 
