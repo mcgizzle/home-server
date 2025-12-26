@@ -49,3 +49,35 @@
     name: ip6table_filter
     state: present
   ignore_errors: "{{ is_docker | bool }}"
+
+- name: Install iptables-persistent
+  apt:
+    name: iptables-persistent
+    state: present
+  when: not is_docker | bool
+
+- name: Add NAT masquerade rule for exit node
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: eth0
+    jump: MASQUERADE
+  when: not is_docker | bool
+
+- name: Allow forwarding from tailscale0
+  ansible.builtin.iptables:
+    chain: FORWARD
+    in_interface: tailscale0
+    jump: ACCEPT
+  when: not is_docker | bool
+
+- name: Allow forwarding to tailscale0
+  ansible.builtin.iptables:
+    chain: FORWARD
+    out_interface: tailscale0
+    jump: ACCEPT
+  when: not is_docker | bool
+
+- name: Save iptables rules
+  ansible.builtin.shell: iptables-save > /etc/iptables/rules.v4
+  when: not is_docker | bool
