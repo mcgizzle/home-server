@@ -1,0 +1,60 @@
+- name: dublin
+  hosts: dublin
+  become: yes
+  vars:
+    home_server_repo: "https://github.com/mcgizzle/home-server.git"
+    home_server_path: "/home/admin/code/home-server"
+    docker_volume_path: "/home/admin/docker"
+    ts_authkey: "tskey-auth-krMwTtrodr11CNTRL-xqE6ih83XCGMHtM6Tt3TCGc9A3xy4pdy"
+  tasks:
+    - name: Initial setup
+      ansible.builtin.include_tasks:
+        file: tasks/initial-setup.yml
+
+    - name: Install Docker
+      ansible.builtin.include_tasks:
+        file: tasks/docker-arm.yml
+
+    - name: Setup tailscale networking
+      ansible.builtin.include_tasks:
+        file: tasks/tailscale.yml
+
+    - name: Create code directory
+      file:
+        path: "/home/admin/code"
+        state: directory
+        owner: admin
+        group: admin
+        mode: '0755'
+
+    - name: Clone home-server repository
+      git:
+        repo: "{{ home_server_repo }}"
+        dest: "{{ home_server_path }}"
+      become_user: admin
+
+    - name: Create docker volume directory
+      file:
+        path: "{{ docker_volume_path }}"
+        state: directory
+        owner: admin
+        group: admin
+        mode: '0755'
+
+    - name: Create .env file for dublin
+      copy:
+        content: |
+          TS_AUTHKEY_DUBLIN={{ ts_authkey }}
+          DOCKER_VOLUME_PATH={{ docker_volume_path }}
+        dest: "{{ home_server_path }}/apps/dublin/.env"
+        owner: admin
+        group: admin
+        mode: '0600'
+
+    - name: Start Tailscale container
+      community.docker.docker_compose_v2:
+        project_src: "{{ home_server_path }}/apps/dublin/tailscale"
+        env_files:
+          - "{{ home_server_path }}/apps/dublin/.env"
+        state: present
+      become_user: admin

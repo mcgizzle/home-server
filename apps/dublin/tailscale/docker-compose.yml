@@ -1,0 +1,18 @@
+services:
+  tailscale-dublin:
+    image: ghcr.io/tailscale/tailscale:latest
+    hostname: tailscale-dublin
+    container_name: tailscale-dublin
+    environment:
+      - TS_EXTRA_ARGS=--advertise-exit-node --advertise-tags=tag:container --advertise-routes=192.168.1.0/24
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+      - TS_AUTHKEY=${TS_AUTHKEY_DUBLIN}
+    volumes:
+      - "${DOCKER_VOLUME_PATH:-/home/admin/docker}/tailscale:/var/lib/tailscale"
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+    network_mode: "host"
+    restart: unless-stopped

@@ -11,7 +11,7 @@ down=false
 update=false
 
 function usage() {
-  echo "Usage: ./deploy.sh <primary|network> [options]"
+  echo "Usage: ./deploy.sh <primary|network|dublin> [options]"
   echo "Options:"
   echo "  -r, --restart  Restart the app"
   echo "  -p, --pull-only  Pull latest image"
@@ -28,14 +28,11 @@ function deploy() {
 
     if [ "$restart" = true ]; then
       options="up --force-recreate -d"
-    fi
-    if [ "$pull_only" = true ]; then
+    elif [ "$pull_only" = true ]; then
       options="pull"
-    fi
-    if [ "$down" = true ]; then
+    elif [ "$down" = true ]; then
       options="down"
-    fi
-    if [ "$update" = true ]; then
+    elif [ "$update" = true ]; then
       eval "$cmd pull"
       options="up --force-recreate -d"
     else
@@ -52,6 +49,9 @@ if [ "$command" = "primary" ]; then
 
 elif [ "$command" = "network" ]; then
   apps=$(find apps/network -mindepth 1 -maxdepth 1 -type d)
+
+elif [ "$command" = "dublin" ]; then
+  apps=$(find apps/dublin -mindepth 1 -maxdepth 1 -type d)
 else
   echo "Unknown command: $command"
   usage

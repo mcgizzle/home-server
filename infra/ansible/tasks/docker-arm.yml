@@ -1,0 +1,65 @@
+- name: Install initial packages
+  become: true
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+    pkg:
+      - ca-certificates
+      - curl
+      - gnupg
+
+- name: Create keyrings directory
+  become: true
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Install docker repo key to apt
+  become: true
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    keyring: /etc/apt/keyrings/docker.gpg
+
+- shell: lsb_release -sc
+  register: os_codename
+
+- shell: dpkg --print-architecture
+  register: arch
+
+- name: Install docker repository to apt
+  become: true
+  apt_repository:
+    repo: deb [arch={{ arch.stdout }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian "{{ os_codename.stdout }}" stable
+    state: present
+
+- name: Install docker packages
+  become: true
+  apt:
+    update_cache: true
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+
+- name: Enable docker.service
+  become: true
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Create "docker" group
+  become: true
+  group:
+    name: docker
+    state: present
+
+- name: Add user to "docker" group
+  become: true
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
