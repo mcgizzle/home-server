@@ -228,11 +228,11 @@ Consider these factors:
 - Look for consensus patterns across multiple comments
 - Consider the emotional intensity, not just positive/negative polarity
 
-IMPORTANT: Return as JSON with shape: { "score": 0, "sentiment": "excited|neutral|disappointed", "highlights": ["key theme 1", "key theme 2", "key theme 3"] }
+IMPORTANT: Return as JSON with shape: { "score": 0, "sentiment": "excited", "highlights": ["key theme 1", "key theme 2", "key theme 3"] }
 
 Where:
 - score: 0-100 excitement/engagement rating
-- sentiment: overall fan sentiment category
+- sentiment: MUST be exactly one of these three values: "excited", "neutral", or "disappointed" (no other values allowed, do NOT use "mixed")
 - highlights: 2-4 key themes from the comments (e.g., "Instant classic references", "Ref complaints dominated discussion", "High stress/anxiety expressions")
 
 Reddit comments:
