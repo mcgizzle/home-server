@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-theme="emerald">
+<html data-theme="forest">
 
 <head>
     <meta charset="UTF-8">
@@ -7,91 +7,35 @@
     <link rel="stylesheet" href="/static/main.css" type="text/css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="/static/assets/favicon.ico" sizes="32x32" type="image/x-icon">
-    <title>NFL Game Ratings</title>
+    <title>NFL Ratings</title>
 </head>
 
-<body>
-    <div class="flex flex-col items-center justify-center mt-4 md:mt-8 px-4">
-        <div class="flex flex-col md:flex-row items-center gap-3 md:gap-6 mb-4">
-            <h1 class="text-3xl md:text-5xl font-extrabold text-primary text-center">NFL Game Ratings</h1>
-            <button class="btn btn-primary btn-xs md:btn-sm rounded-md" onclick="goToLatest()">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                </svg>
-                Latest
-            </button>
-        </div>
-        <button class="btn btn-ghost m-1" onclick="toggleAbout()">
-            <svg id="aboutButtonIcon" class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20">
-                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-            </svg>
-        </button>
-        <div id="aboutSection" class="hidden p-2 max-w-lg mx-auto">
-            <p class="font-light text-gray-400 text-sm md:text-base text-center">Instantly find the most exciting games with two AI-powered scores:</p>
-            <div class="flex flex-col gap-2 mt-3">
-                <div class="flex items-center gap-2 text-sm text-gray-400">
-                    <span class="font-semibold text-primary">Game:</span> AI analysis of play-by-play action
-                </div>
-                <div class="flex items-center gap-2 text-sm text-gray-400">
-                    <span class="font-semibold text-orange-500">Fans:</span> Reddit community reaction analysis
-                </div>
-            </div>
-            <p class="font-light text-gray-400 text-xs mt-3 text-center">Completely spoiler-free. Now you'll always know which game is worth your time.</p>
-        </div>
-    </div>
-
-    <div style="height: 2rem;"></div>
-
-    <!-- Tabs Navigation -->
-    <div class="flex justify-center mb-6 md:mb-8 px-4">
-        <div class="tabs tabs-lifted tabs-lg md:tabs-xl gap-0 -space-x-1 md:-space-x-2">
-            <a class="tab tab-active text-lg md:text-xl font-semibold px-2 md:px-3 py-3 md:py-5"
-                onclick="switchTab('latest', this)">
-                <span
-                    class="badge badge-primary badge-lg md:badge-xl rounded-md px-6 md:px-12 py-3 md:py-6 text-lg md:text-2xl">Results</span>
-            </a>
-            <a class="tab text-lg md:text-xl font-semibold px-2 md:px-3 py-3 md:py-5"
-                onclick="switchTab('browse', this)">
-                <span
-                    class="badge badge-secondary opacity-60 badge-lg md:badge-xl rounded-md px-6 md:px-12 py-3 md:py-6 text-lg md:text-2xl">Browse</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Latest Tab Content -->
-    <div id="latest-content" class="tab-content pt-6">
-        <!-- Results Info Header -->
-        <div class="flex justify-center mb-6 px-4">
-            <div class="card bg-base-200 shadow-md w-full max-w-2xl">
-                <div class="card-body py-3 md:py-4 px-4 md:px-8">
-                    <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-sm md:text-base">
-                        <div class="flex items-center justify-between md:justify-start gap-2 md:gap-3">
-                            <span class="font-medium text-base-content/70">Season:</span>
-                            <span class="font-semibold">{{ .Current.Season }}</span>
-                        </div>
-                        <div class="divider divider-horizontal hidden md:block"></div>
-                        <div class="flex items-center justify-between md:justify-start gap-2 md:gap-3">
-                            <span class="font-medium text-base-content/70">Type:</span>
-                            <span class="font-semibold">{{ if eq .Current.PeriodType "1" }}Preseason{{ else if eq
-                                .Current.PeriodType "2" }}Regular Season{{ else if eq .Current.PeriodType "3"
-                                }}Playoffs{{ else }}{{ .Current.PeriodType }}{{ end }}</span>
-                        </div>
-                        <div class="divider divider-horizontal hidden md:block"></div>
-                        <div class="flex items-center justify-between md:justify-start gap-2 md:gap-3">
-                            <span class="font-medium text-base-content/70">Week:</span>
-                            <span class="font-semibold">{{ .Current.PeriodDisplay }}</span>
-                        </div>
-                    </div>
-                </div>
+<body class="min-h-screen bg-base-100">
+    <!-- Mobile-first Header -->
+    <header class="sticky top-0 z-50 bg-base-100/95 backdrop-blur border-b border-base-300">
+        <div class="flex items-center justify-between px-4 py-3">
+            <a href="/" class="text-lg font-bold">NFL Ratings</a>
+            <div class="tabs tabs-boxed tabs-sm bg-base-200">
+                <a class="tab tab-active" onclick="switchTab('latest', this)">Games</a>
+                <a class="tab" onclick="switchTab('browse', this)">Browse</a>
             </div>
         </div>
+    </header>
 
-        <div class="flex flex-col gap-8 md:gap-12 items-center justify-center px-4">
+    <!-- Results Tab -->
+    <div id="latest-content" class="tab-content">
+        <!-- Week Info - Compact for mobile -->
+        <div class="flex items-center justify-center gap-2 py-3 text-xs text-base-content/60 border-b border-base-200">
+            <span>{{ .Current.Season }}</span>
+            <span>•</span>
+            <span>{{ .Current.PeriodDisplay }}</span>
+            <span>•</span>
+            <span class="capitalize">{{ .Current.PeriodType }}</span>
+        </div>
+
+        <!-- Games List - Stack on mobile -->
+        <div class="px-3 py-4 space-y-3 max-w-lg mx-auto">
             {{ range $index, $element := .Results }}
-            {{/* Define variables for comparison to avoid formatter issues */}}
             {{ $categoryKey := $element.Rating.Category }}
             {{ $isMustWatch := eq $categoryKey "must-watch" }}
             {{ $isRecommended := eq $categoryKey "recommended" }}
@@ -99,504 +43,256 @@
             {{ $isOkay := eq $categoryKey "okay" }}
             {{ $isSkippable := eq $categoryKey "skippable" }}
 
-            {{/* Extract home and away teams from V2 Competition structure */}}
             {{ $awayTeam := "" }}{{ $homeTeam := "" }}
             {{ range $element.Competition.Teams }}
             {{ if eq .HomeAway "away" }}{{ $awayTeam = . }}{{ end }}
             {{ if eq .HomeAway "home" }}{{ $homeTeam = . }}{{ end }}
             {{ end }}
 
-            <div class="card glass shadow-xl bg-base-100 w-full max-w-xs lg:max-w-sm relative">
-                <div class="absolute top-3 right-3">
-                    <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold
-                        {{ if $isMustWatch }}bg-emerald-500 text-white
-                        {{ else if $isRecommended }}bg-blue-500 text-white
-                        {{ else if $isGood }}bg-indigo-500 text-white
-                        {{ else if $isOkay }}bg-amber-500 text-white
-                        {{ else if $isSkippable }}bg-rose-500 text-white
-                        {{ else }}bg-gray-500 text-white{{ end }}">
-                        {{ if $isMustWatch }}<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/></svg>
-                        {{ else if $isRecommended }}<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        {{ else if $isGood }}<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
-                        {{ else if $isOkay }}<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
-                        {{ else if $isSkippable }}<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                        {{ else }}<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>{{ end }}
-                        <span>{{ if $isMustWatch }}Must Watch{{ else if $isRecommended }}Recommended{{ else if $isGood }}Solid{{ else if $isOkay }}Meh{{ else if $isSkippable }}Skip{{ else }}—{{ end }}</span>
-                    </div>
-                </div>
-                <div class="flex flex-row items-center justify-between mt-8 mb-4 px-4">
-                    <figure>
-                        <img src="{{$awayTeam.Team.LogoURL}}" alt="Away" width="150" height="150" />
-                    </figure>
-                    <figure>
-                        <img src="{{$homeTeam.Team.LogoURL}}" alt="Home" width="150" height="150" />
-                    </figure>
-                </div>
-                <div class="card-body text-center pt-2">
-                    <h2 class="card-title text-sm text-center justify-center mx-auto">{{$awayTeam.Team.Name}} @
-                        {{$homeTeam.Team.Name}} </h2>
+            <div class="card bg-base-200 shadow-sm">
+                <div class="p-4">
+                    <!-- Top row: Teams + Badge -->
+                    <div class="flex items-center gap-3 mb-3">
+                        <!-- Away Team -->
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <img src="{{$awayTeam.Team.LogoURL}}" class="w-10 h-10 flex-shrink-0" />
+                            <span class="text-sm font-medium truncate">{{$awayTeam.Team.Name}}</span>
+                        </div>
 
-                    <!-- Dual Score Display -->
-                    <div class="flex flex-row gap-3 justify-center items-stretch mt-2">
-                        <!-- Game Rating (Play-by-Play Analysis) -->
-                        <div class="flex-1 bg-gradient-to-br from-base-200 to-base-300 rounded-xl p-3 min-w-[100px]">
-                            <div class="flex items-center justify-center gap-1 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-primary">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
-                                </svg>
-                                <span class="text-xs font-semibold text-base-content/70 uppercase tracking-wide">Game</span>
-                            </div>
+                        <span class="text-base-content/30 text-xs">@</span>
+
+                        <!-- Home Team -->
+                        <div class="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                            <span class="text-sm font-medium truncate text-right">{{$homeTeam.Team.Name}}</span>
+                            <img src="{{$homeTeam.Team.LogoURL}}" class="w-10 h-10 flex-shrink-0" />
+                        </div>
+                    </div>
+
+                    <!-- Scores Row -->
+                    <div class="flex items-center gap-2 mb-3">
+                        <!-- Game Score -->
+                        <div class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-base-300/50">
+                            <span class="text-[10px] uppercase text-base-content/50">Game</span>
                             {{ $score := .Rating.Score }}
                             {{ if eq $score 0 }}
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="loading loading-spinner loading-md text-primary"></div>
-                                <div class="text-xs text-base-content/50">Analyzing</div>
-                            </div>
+                            <span class="loading loading-dots loading-xs"></span>
                             {{ else }}
-                            <div class="text-4xl font-black {{ if lt $score 30 }}text-red-500{{ else if and (ge $score 30) (lt $score 65) }}text-yellow-500{{ else if and (ge $score 65) (lt $score 80) }}text-green-400{{ else if and (ge $score 80) (le $score 100) }}text-green-600{{ end }}">
-                                {{ $score }}
-                            </div>
+                            <span class="text-lg font-bold {{ if ge $score 80 }}text-emerald-400{{ else if ge $score 65 }}text-teal-400{{ else if ge $score 50 }}text-amber-400{{ else }}text-rose-400{{ end }}">{{ $score }}</span>
                             {{ end }}
                         </div>
 
-                        <!-- Fan Buzz (Reddit Sentiment) -->
-                        <div class="flex-1 bg-gradient-to-br from-orange-500/10 to-orange-600/20 rounded-xl p-3 min-w-[100px] border border-orange-500/20">
-                            <div class="flex items-center justify-center gap-1 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-orange-500">
-                                    <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 1 1 7.5 0 3.75 3.75 0 0 1-7.5 0ZM15.75 9.75a3 3 0 1 1 6 0 3 3 0 0 1-6 0ZM2.25 9.75a3 3 0 1 1 6 0 3 3 0 0 1-6 0ZM6.31 15.117A6.745 6.745 0 0 1 12 12a6.745 6.745 0 0 1 6.709 7.498.75.75 0 0 1-.372.568A12.696 12.696 0 0 1 12 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 0 1-.372-.568 6.787 6.787 0 0 1 1.019-4.38Z" clip-rule="evenodd" />
-                                    <path d="M5.082 14.254a8.287 8.287 0 0 0-1.308 5.135 9.687 9.687 0 0 1-1.764-.44l-.115-.04a.563.563 0 0 1-.373-.487l-.01-.121a3.75 3.75 0 0 1 3.57-4.047ZM20.226 19.389a8.287 8.287 0 0 0-1.308-5.135 3.75 3.75 0 0 1 3.57 4.047l-.01.121a.563.563 0 0 1-.373.486l-.115.04c-.567.2-1.156.349-1.764.441Z" />
-                                </svg>
-                                <span class="text-xs font-semibold text-orange-600 uppercase tracking-wide">Fans</span>
-                            </div>
+                        <!-- Fan Score -->
+                        <div class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-base-300/50">
+                            <span class="text-[10px] uppercase text-base-content/50">Fans</span>
                             {{ if .Sentiment.HasData }}
-                            <div class="text-4xl font-black {{ if lt .Sentiment.Score 30 }}text-red-500{{ else if and (ge .Sentiment.Score 30) (lt .Sentiment.Score 65) }}text-yellow-500{{ else if and (ge .Sentiment.Score 65) (lt .Sentiment.Score 80) }}text-orange-400{{ else if and (ge .Sentiment.Score 80) (le .Sentiment.Score 100) }}text-orange-500{{ end }}">
-                                {{ .Sentiment.Score }}
-                            </div>
+                            <span class="text-lg font-bold {{ if ge .Sentiment.Score 80 }}text-emerald-400{{ else if ge .Sentiment.Score 65 }}text-teal-400{{ else if ge .Sentiment.Score 50 }}text-amber-400{{ else }}text-rose-400{{ end }}">{{ .Sentiment.Score }}</span>
                             {{ else }}
-                            <div class="flex flex-col items-center gap-1">
-                                <span class="text-2xl">💬</span>
-                                <div class="text-xs text-base-content/50">Pending</div>
-                            </div>
+                            <span class="text-base-content/30">—</span>
                             {{ end }}
                         </div>
+
+                        <!-- Badge -->
+                        <span class="badge badge-sm {{ if $isMustWatch }}bg-emerald-600 border-emerald-600 text-white{{ else if $isRecommended }}bg-teal-600 border-teal-600 text-white{{ else if $isGood }}bg-slate-500 border-slate-500 text-white{{ else if $isOkay }}bg-amber-600 border-amber-600 text-white{{ else if $isSkippable }}bg-rose-600 border-rose-600 text-white{{ else }}badge-ghost{{ end }}">
+                            {{ if $isMustWatch }}🔥{{ else if $isRecommended }}⭐{{ else if $isGood }}👍{{ else if $isOkay }}😐{{ else if $isSkippable }}👎{{ else }}—{{ end }}
+                        </span>
                     </div>
 
-                    <div class="flex flex-row card-actions justify-center mt-3">
-                        <dialog id="spolier_free_{{ $element.ID }}" class="modal">
-                            <div class="modal-box">
-                                <h3 class="text-lg font-bold">What happened?</h3>
-                                <p class="py-4">{{ $element.Rating.SpoilerFree }}</p>
-                                <div class="modal-action">
-                                    <form method="dialog">
-                                        <button class="btn btn-ghost btn-sm btn-square">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M6 18 18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </dialog>
-                        <button class="btn btn-primary btn-sm btn-square" title="Spoiler-Free Summary"
-                            onclick="modalId('spolier_free_{{ $element.ID }}')">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" />
-                            </svg>
+                    <!-- Actions - Touch friendly -->
+                    <div class="flex gap-2">
+                        <button class="btn btn-ghost btn-sm flex-1" onclick="modalId('sf_{{ $element.ID }}')">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <span class="text-xs">Safe</span>
                         </button>
-                        <button class="btn btn-secondary btn-sm btn-square" title="Full Explanation (Spoilers)"
-                            onclick="modalId('explanation_with_spoiler_be_warned{{ $element.ID }}')">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                            </svg>
+                        <button class="btn btn-ghost btn-sm flex-1" onclick="modalId('sp_{{ $element.ID }}')">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <span class="text-xs">Spoilers</span>
                         </button>
                         {{ if .Sentiment.HasData }}
-                        <button class="btn btn-warning btn-sm btn-square" title="Fan Reactions"
-                            onclick="modalId('sentiment_{{ $element.ID }}')">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                                <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 0 1-3.476.383.39.39 0 0 0-.297.17l-2.755 4.133a.75.75 0 0 1-1.248 0l-2.755-4.133a.39.39 0 0 0-.297-.17 48.9 48.9 0 0 1-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97ZM6.75 8.25a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H7.5Z" clip-rule="evenodd" />
-                            </svg>
+                        <button class="btn btn-ghost btn-sm flex-1" onclick="modalId('fn_{{ $element.ID }}')">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            <span class="text-xs">Fans</span>
                         </button>
-                        <dialog id="sentiment_{{ $element.ID }}" class="modal">
-                            <div class="modal-box">
-                                <h3 class="text-lg font-bold flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-orange-500">
-                                        <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 1 1 7.5 0 3.75 3.75 0 0 1-7.5 0ZM15.75 9.75a3 3 0 1 1 6 0 3 3 0 0 1-6 0ZM2.25 9.75a3 3 0 1 1 6 0 3 3 0 0 1-6 0ZM6.31 15.117A6.745 6.745 0 0 1 12 12a6.745 6.745 0 0 1 6.709 7.498.75.75 0 0 1-.372.568A12.696 12.696 0 0 1 12 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 0 1-.372-.568 6.787 6.787 0 0 1 1.019-4.38Z" clip-rule="evenodd" />
-                                        <path d="M5.082 14.254a8.287 8.287 0 0 0-1.308 5.135 9.687 9.687 0 0 1-1.764-.44l-.115-.04a.563.563 0 0 1-.373-.487l-.01-.121a3.75 3.75 0 0 1 3.57-4.047ZM20.226 19.389a8.287 8.287 0 0 0-1.308-5.135 3.75 3.75 0 0 1 3.57 4.047l-.01.121a.563.563 0 0 1-.373.486l-.115.04c-.567.2-1.156.349-1.764.441Z" />
-                                    </svg>
-                                    Fan Reactions
-                                </h3>
-                                <div class="flex justify-center items-center gap-4 my-4 p-4 bg-gradient-to-r from-orange-500/10 to-orange-600/20 rounded-lg border border-orange-500/20">
-                                    <div class="text-center">
-                                        <div class="text-sm font-medium text-base-content/70">Buzz Score</div>
-                                        <div class="text-3xl font-bold text-orange-500">{{ .Sentiment.Score }}</div>
-                                    </div>
-                                    <div class="divider divider-horizontal"></div>
-                                    <div class="text-center">
-                                        <div class="text-sm font-medium text-base-content/70">Sentiment</div>
-                                        <div class="text-xl font-semibold capitalize {{ if eq .Sentiment.Sentiment "excited" }}text-green-500{{ else if eq .Sentiment.Sentiment "disappointed" }}text-red-500{{ else }}text-yellow-500{{ end }}">
-                                            {{ if eq .Sentiment.Sentiment "excited" }}🔥{{ else if eq .Sentiment.Sentiment "disappointed" }}😔{{ else }}😐{{ end }} {{ .Sentiment.Sentiment }}
-                                        </div>
-                                    </div>
-                                    <div class="divider divider-horizontal"></div>
-                                    <div class="text-center">
-                                        <div class="text-sm font-medium text-base-content/70">Comments</div>
-                                        <div class="text-xl font-semibold">{{ .Sentiment.CommentCount }}</div>
-                                    </div>
-                                </div>
-                                <div class="py-2">
-                                    <h4 class="font-semibold mb-2">Key Themes:</h4>
-                                    <ul class="list-disc list-inside space-y-1">
-                                        {{ range .Sentiment.Highlights }}
-                                        <li class="text-base-content/80">{{ . }}</li>
-                                        {{ end }}
-                                    </ul>
-                                </div>
-                                <div class="text-xs text-base-content/50 mt-4">
-                                    Source: <a href="{{ .Sentiment.ThreadURL }}" target="_blank" class="link link-primary">Reddit /r/nfl</a>
-                                </div>
-                                <div class="modal-action">
-                                    <form method="dialog">
-                                        <button class="btn btn-ghost btn-sm btn-square">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M6 18 18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </dialog>
                         {{ end }}
-                        <dialog id="explanation_with_spoiler_be_warned{{ $element.ID }}" class="modal">
-                            <div class="modal-box">
-                                <h3 class="text-lg font-bold">What happened?</h3>
-                                <div class="flex justify-center items-center gap-4 my-4 p-4 bg-base-200 rounded-lg">
-                                    <div class="text-center">
-                                        <div class="text-sm font-medium text-base-content/70">{{$awayTeam.Team.Name}}
-                                        </div>
-                                        <div class="text-2xl font-bold">{{ printf "%.0f" $awayTeam.Score }}</div>
-                                    </div>
-                                    <div class="text-xl font-bold text-base-content/50">-</div>
-                                    <div class="text-center">
-                                        <div class="text-sm font-medium text-base-content/70">{{$homeTeam.Team.Name}}
-                                        </div>
-                                        <div class="text-2xl font-bold">{{ printf "%.0f" $homeTeam.Score }}</div>
-                                    </div>
-                                </div>
-                                <p class="py-4">{{ $element.Rating.Explanation }}</p>
-                                <div class="modal-action">
-                                    <form method="dialog">
-                                        <button class="btn btn-ghost btn-sm btn-square">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M6 18 18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </dialog>
                     </div>
                 </div>
             </div>
+
+            <!-- Modals -->
+            <dialog id="sf_{{ $element.ID }}" class="modal modal-bottom sm:modal-middle">
+                <div class="modal-box">
+                    <h3 class="font-bold text-lg mb-3">Spoiler-Free</h3>
+                    <p class="text-base-content/80 text-sm leading-relaxed">{{ $element.Rating.SpoilerFree }}</p>
+                    <div class="modal-action">
+                        <form method="dialog"><button class="btn">Close</button></form>
+                    </div>
+                </div>
+                <form method="dialog" class="modal-backdrop"><button>close</button></form>
+            </dialog>
+
+            <dialog id="sp_{{ $element.ID }}" class="modal modal-bottom sm:modal-middle">
+                <div class="modal-box">
+                    <h3 class="font-bold text-lg mb-3">Full Analysis</h3>
+                    <div class="flex justify-center gap-6 py-3 mb-3 bg-base-200 rounded-lg">
+                        <div class="text-center">
+                            <div class="text-xs text-base-content/50 mb-1">{{$awayTeam.Team.Name}}</div>
+                            <div class="text-2xl font-bold">{{ printf "%.0f" $awayTeam.Score }}</div>
+                        </div>
+                        <div class="text-base-content/30 self-center text-xl">-</div>
+                        <div class="text-center">
+                            <div class="text-xs text-base-content/50 mb-1">{{$homeTeam.Team.Name}}</div>
+                            <div class="text-2xl font-bold">{{ printf "%.0f" $homeTeam.Score }}</div>
+                        </div>
+                    </div>
+                    <p class="text-base-content/80 text-sm leading-relaxed">{{ $element.Rating.Explanation }}</p>
+                    <div class="modal-action">
+                        <form method="dialog"><button class="btn">Close</button></form>
+                    </div>
+                </div>
+                <form method="dialog" class="modal-backdrop"><button>close</button></form>
+            </dialog>
+
+            {{ if .Sentiment.HasData }}
+            <dialog id="fn_{{ $element.ID }}" class="modal modal-bottom sm:modal-middle">
+                <div class="modal-box">
+                    <h3 class="font-bold text-lg mb-3">Fan Reactions</h3>
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="text-center p-3 bg-base-200 rounded-lg">
+                            <div class="text-2xl font-bold text-emerald-400">{{ .Sentiment.Score }}</div>
+                            <div class="text-[10px] uppercase text-base-content/50">Score</div>
+                        </div>
+                        <div class="text-center p-3 bg-base-200 rounded-lg">
+                            <div class="text-lg font-semibold capitalize">{{ .Sentiment.Sentiment }}</div>
+                            <div class="text-[10px] uppercase text-base-content/50">Mood</div>
+                        </div>
+                        <div class="text-center p-3 bg-base-200 rounded-lg">
+                            <div class="text-lg font-semibold">{{ .Sentiment.CommentCount }}</div>
+                            <div class="text-[10px] uppercase text-base-content/50">Comments</div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="text-xs font-semibold uppercase text-base-content/50 mb-2">Key Themes</div>
+                        <ul class="text-sm text-base-content/70 space-y-1">
+                            {{ range .Sentiment.Highlights }}<li>• {{ . }}</li>{{ end }}
+                        </ul>
+                    </div>
+                    <a href="{{ .Sentiment.ThreadURL }}" target="_blank" class="link link-hover text-xs text-base-content/60">View on Reddit →</a>
+                    <div class="modal-action">
+                        <form method="dialog"><button class="btn">Close</button></form>
+                    </div>
+                </div>
+                <form method="dialog" class="modal-backdrop"><button>close</button></form>
+            </dialog>
+            {{ end }}
             {{ end }}
         </div>
     </div>
 
-    <!-- Browse Tab Content -->
-    <div id="browse-content" class="tab-content hidden pt-6">
-        <div class="flex flex-col items-center justify-center px-4">
-            <div class="card bg-base-100 w-full max-w-4xl shadow-lg p-4 md:p-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">Browse Games</h2>
+    <!-- Browse Tab -->
+    <div id="browse-content" class="tab-content hidden">
+        <div class="px-4 py-6 max-w-lg mx-auto">
+            <div class="space-y-4">
+                <div class="form-control">
+                    <label class="label pb-1"><span class="label-text text-xs uppercase tracking-wider">Season</span></label>
+                    <select class="select select-bordered select-sm w-full" id="yearSelect">
+                        {{ range $element := .Seasons }}<option value="{{ $element }}">{{ $element }}</option>{{ end }}
+                    </select>
+                </div>
 
-                <!-- Year and Season Type Row -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    <!-- Year Selection -->
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text text-lg font-semibold">Year</span>
+                <div class="form-control">
+                    <label class="label pb-1"><span class="label-text text-xs uppercase tracking-wider">Type</span></label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="btn btn-sm btn-outline has-[:checked]:btn-neutral">
+                            <input type="radio" name="seasonType" value="regular" class="hidden" checked />Regular
                         </label>
-                        <select class="select select-bordered select-lg w-full" id="yearSelect">
-                            {{ range $element := .Seasons }}
-                            <option value="{{ $element }}">{{ $element }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
-
-                    <!-- Season Type Selection -->
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text text-lg font-semibold">Season Type</span>
+                        <label class="btn btn-sm btn-outline has-[:checked]:btn-neutral">
+                            <input type="radio" name="seasonType" value="playoff" class="hidden" />Playoffs
                         </label>
-                        <div class="flex flex-col gap-2">
-                            <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="seasonType" value="regular" class="radio radio-primary"
-                                    checked />
-                                <span class="label-text">Regular Season</span>
-                            </label>
-                            <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="seasonType" value="playoff" class="radio radio-primary" />
-                                <span class="label-text">Playoffs</span>
-                            </label>
-                            <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="seasonType" value="preseason" class="radio radio-primary" />
-                                <span class="label-text">Preseason</span>
-                            </label>
-                        </div>
+                        <label class="btn btn-sm btn-outline has-[:checked]:btn-neutral">
+                            <input type="radio" name="seasonType" value="preseason" class="hidden" />Pre
+                        </label>
                     </div>
                 </div>
 
-                <!-- Week Selection -->
-                <div class="form-control mb-8">
-                    <label class="label">
-                        <span class="label-text text-lg font-semibold">Week</span>
-                    </label>
-                    <div class="flex flex-wrap gap-2 justify-center" id="weekGrid">
-                        <!-- Weeks will be populated by JavaScript based on season type -->
-                    </div>
-                    <!-- Hidden data for available weeks -->
-                    <!-- TODO: Simplify this - could generate week buttons directly in template or use simple JSON instead of hidden div with data attributes -->
-                    <div id="weekData" style="display: none;">
+                <div class="form-control">
+                    <label class="label pb-1"><span class="label-text text-xs uppercase tracking-wider">Week</span></label>
+                    <div class="flex flex-wrap gap-2" id="weekGrid"></div>
+                    <div id="weekData" class="hidden">
                         {{ range $element := .Dates }}
-                        <span data-season="{{ $element.Season }}" data-week="{{ $element.Period }}"
-                            data-week-display="{{ $element.PeriodDisplay }}"
-                            data-season-type="{{ $element.PeriodType }}"></span>
+                        <span data-season="{{ $element.Season }}" data-week="{{ $element.Period }}" data-week-display="{{ $element.PeriodDisplay }}" data-season-type="{{ $element.PeriodType }}"></span>
                         {{ end }}
                     </div>
                 </div>
 
-                <!-- Search Button -->
-                <div class="flex justify-center">
-                    <button class="btn btn-primary btn-lg px-8 font-semibold" onclick="redirectToResults()">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                        View Games
-                    </button>
-                </div>
+                <button class="btn btn-neutral w-full mt-4" onclick="redirectToResults()">View Games</button>
             </div>
         </div>
     </div>
 
-</body>
+    <script>
+        function modalId(id) { document.getElementById(id).showModal(); }
+        let selectedWeek = null;
 
-<script>
-    function modalId(id) {
-        document.getElementById(id).showModal();
-    }
-
-    function toggleAbout() {
-        const aboutSection = document.getElementById('aboutSection');
-
-        if (aboutSection.classList.contains('hidden')) {
-            aboutSection.classList.remove('hidden');
-        } else {
-            aboutSection.classList.add('hidden');
-        }
-    }
-
-    let selectedWeek = null;
-
-    function setCurrentValuesFromURL() {
-        // Parse path-based URL: /season/{season}/week/{week}/type/{periodType}
-        const pathParts = window.location.pathname.split('/').filter(p => p);
-        let currentSeason = null;
-        let currentWeek = null;
-        let currentPeriodType = null;
-
-        // Expected: ["season", "2024", "week", "1", "type", "regular"]
-        if (pathParts.length === 6 && pathParts[0] === 'season' && pathParts[2] === 'week' && pathParts[4] === 'type') {
-            currentSeason = pathParts[1];
-            currentWeek = pathParts[3];
-            currentPeriodType = pathParts[5];
+        function switchTab(tabName, el) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
+            document.getElementById(tabName + '-content').classList.remove('hidden');
+            el.classList.add('tab-active');
+            if (tabName === 'browse') { setCurrentValuesFromURL(); populateWeekGrid(); }
         }
 
-        // Set year dropdown
-        const yearSelect = document.getElementById('yearSelect');
-        if (currentSeason && yearSelect) {
-            yearSelect.value = currentSeason;
-        }
-
-        // Set season type radio button using semantic period type
-        if (currentPeriodType) {
-            const seasonTypeRadio = document.querySelector(`input[name="seasonType"][value="${currentPeriodType}"]`);
-            if (seasonTypeRadio) {
-                // Uncheck all first
-                document.querySelectorAll('input[name="seasonType"]').forEach(radio => radio.checked = false);
-                // Check the current one
-                seasonTypeRadio.checked = true;
-            }
-        }
-
-        // Store current week to select it after week grid is populated
-        if (currentWeek) {
-            selectedWeek = parseInt(currentWeek);
-        }
-    }
-
-    function switchTab(tabName, element) {
-        // Hide all tab contents
-        const allContents = document.querySelectorAll('.tab-content');
-        allContents.forEach(content => content.classList.add('hidden'));
-
-        // Remove active class from all tabs and reset badge styles
-        const allTabs = document.querySelectorAll('.tab');
-        allTabs.forEach(tab => {
-            tab.classList.remove('tab-active');
-            const badge = tab.querySelector('.badge');
-            if (badge) {
-                badge.classList.remove('badge-primary');
-                badge.classList.add('badge-secondary', 'opacity-60');
-            }
-        });
-
-        // Show selected tab content
-        document.getElementById(tabName + '-content').classList.remove('hidden');
-
-        // Add active class to clicked tab and highlight its badge
-        element.classList.add('tab-active');
-        const activeBadge = element.querySelector('.badge');
-        if (activeBadge) {
-            activeBadge.classList.remove('badge-secondary', 'opacity-60');
-            activeBadge.classList.add('badge-primary');
-        }
-
-        // Initialize browse section if switching to browse tab
-        if (tabName === 'browse') {
-            console.log('Switching to browse tab, initializing...');
-            setCurrentValuesFromURL();
-            populateWeekGrid();
-        }
-    }
-
-    function populateWeekGrid() {
-        console.log('populateWeekGrid called');
-        const seasonTypeElement = document.querySelector('input[name="seasonType"]:checked');
-        if (!seasonTypeElement) {
-            console.log('No season type selected');
-            return; // Exit if no season type is selected
-        }
-
-        const seasonType = seasonTypeElement.value;
-        const selectedYear = document.getElementById('yearSelect').value;
-        const weekGrid = document.getElementById('weekGrid');
-        weekGrid.innerHTML = '';
-
-        console.log('Selected:', { seasonType, selectedYear });
-
-        // Get available weeks from template data
-        const weekDataElements = document.querySelectorAll('#weekData span');
-        console.log('Found weekDataElements:', weekDataElements.length);
-        const availableWeeks = [];
-
-        weekDataElements.forEach(element => {
-            const season = element.getAttribute('data-season');
-            const week = parseInt(element.getAttribute('data-week'));
-            const weekDisplay = element.getAttribute('data-week-display');
-            const weekSeasonType = element.getAttribute('data-season-type');
-
-            console.log(`Checking week: season=${season}, weekSeasonType=${weekSeasonType}, week=${week}`);
-            console.log(`Match check: season(${season}) === selectedYear(${selectedYear}): ${season === selectedYear}`);
-            console.log(`Match check: weekSeasonType(${weekSeasonType}) === seasonType(${seasonType}): ${weekSeasonType === seasonType}`);
-
-            // Filter by selected year and season type
-            if (season === selectedYear && weekSeasonType === seasonType) {
-                console.log(`Adding week ${week} to availableWeeks`);
-                availableWeeks.push({
-                    week: week,
-                    display: weekDisplay
+        function setCurrentValuesFromURL() {
+            const p = window.location.pathname.split('/').filter(x => x);
+            if (p.length === 6 && p[0] === 'season') {
+                document.getElementById('yearSelect').value = p[1];
+                document.querySelectorAll('input[name="seasonType"]').forEach(r => {
+                    r.checked = r.value === p[5];
+                    r.closest('label').classList.toggle('btn-neutral', r.checked);
+                    r.closest('label').classList.toggle('btn-outline', !r.checked);
                 });
+                selectedWeek = parseInt(p[3]);
             }
-        });
-
-        // Remove duplicates and sort by week number
-        const uniqueWeeks = [];
-        const seen = new Set();
-        availableWeeks.forEach(weekData => {
-            if (!seen.has(weekData.week)) {
-                seen.add(weekData.week);
-                uniqueWeeks.push(weekData);
-            }
-        });
-        uniqueWeeks.sort((a, b) => a.week - b.week);
-
-        console.log('Final uniqueWeeks:', uniqueWeeks);
-
-        // Create week buttons using actual available data
-        uniqueWeeks.forEach(weekData => {
-            const button = document.createElement('button');
-            button.className = 'btn btn-outline btn-sm whitespace-nowrap px-4 py-2 text-xs font-medium';
-            button.textContent = weekData.display; // Use display name (e.g., "Wild Card" instead of "1")
-            button.onclick = () => selectWeek(weekData.week, button);
-            weekGrid.appendChild(button);
-
-            // Auto-select the current week if it matches
-            if (selectedWeek && weekData.week === selectedWeek) {
-                selectWeek(weekData.week, button);
-            }
-        });
-    }
-
-    function selectWeek(week, buttonElement) {
-        // Remove selection from all week buttons
-        const weekButtons = document.querySelectorAll('#weekGrid button');
-        weekButtons.forEach(btn => {
-            btn.classList.remove('btn-primary', 'btn-active');
-            btn.classList.add('btn-outline');
-        });
-
-        // Highlight selected week
-        buttonElement.classList.remove('btn-outline');
-        buttonElement.classList.add('btn-primary', 'btn-active');
-        selectedWeek = week;
-    }
-
-    function redirectToResults() {
-        const year = document.getElementById('yearSelect').value;
-        const seasonTypeElement = document.querySelector('input[name="seasonType"]:checked');
-
-        if (!seasonTypeElement) {
-            alert('Please select a season type');
-            return;
         }
 
-        const periodType = seasonTypeElement.value;
-
-        if (!selectedWeek) {
-            alert('Please select a week');
-            return;
+        function populateWeekGrid() {
+            const type = document.querySelector('input[name="seasonType"]:checked')?.value;
+            const year = document.getElementById('yearSelect').value;
+            const grid = document.getElementById('weekGrid');
+            grid.innerHTML = '';
+            const weeks = new Map();
+            document.querySelectorAll('#weekData span').forEach(el => {
+                if (el.dataset.season === year && el.dataset.seasonType === type) {
+                    weeks.set(parseInt(el.dataset.week), el.dataset.weekDisplay);
+                }
+            });
+            [...weeks.entries()].sort((a, b) => a[0] - b[0]).forEach(([week, display]) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-sm ' + (selectedWeek === week ? 'btn-neutral' : 'btn-outline');
+                btn.textContent = display;
+                btn.onclick = () => { selectedWeek = week; populateWeekGrid(); };
+                grid.appendChild(btn);
+            });
         }
 
-        // Build path-based URL: /season/{year}/week/{week}/type/{periodType}
-        const url = `/season/${year}/week/${selectedWeek}/type/${periodType}`;
-        window.location.href = url;
-    }
+        function redirectToResults() {
+            const year = document.getElementById('yearSelect').value;
+            const type = document.querySelector('input[name="seasonType"]:checked')?.value;
+            if (!selectedWeek) { alert('Select a week'); return; }
+            window.location.href = `/season/${year}/week/${selectedWeek}/type/${type}`;
+        }
 
-    function goToLatest() {
-        // Redirect to root path (latest results without any parameters)
-        window.location.href = '/';
-    }
-
-    // Add event listeners for season type changes
-    document.addEventListener('DOMContentLoaded', function () {
-        const seasonTypeRadios = document.querySelectorAll('input[name="seasonType"]');
-        seasonTypeRadios.forEach(radio => {
-            radio.addEventListener('change', populateWeekGrid);
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[name="seasonType"]').forEach(r => {
+                r.addEventListener('change', () => {
+                    document.querySelectorAll('input[name="seasonType"]').forEach(x => {
+                        x.closest('label').classList.toggle('btn-neutral', x.checked);
+                        x.closest('label').classList.toggle('btn-outline', !x.checked);
+                    });
+                    selectedWeek = null;
+                    populateWeekGrid();
+                });
+            });
+            setCurrentValuesFromURL();
         });
-
-        // Initialize browse settings from URL only (don't populate week grid on page load)
-        setCurrentValuesFromURL();
-    });
-</script>
-
+    </script>
+</body>
 </html>
