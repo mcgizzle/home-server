@@ -1,0 +1,23 @@
+{
+  "home": {"name": "Kansas City Chiefs", "score": 25, "record": "11-1"},
+  "away": {"name": "Buffalo Bills", "score": 24, "record": "10-2"},
+  "details": [
+    {"quarter": 1, "time": "12:00", "play": "Bills kickoff to start the game"},
+    {"quarter": 1, "time": "10:23", "play": "J. Allen pass complete to S. Diggs for 45 yards"},
+    {"quarter": 1, "time": "8:15", "play": "Bills TD - J. Allen 12 yard pass to D. Knox. Bills 7-0"},
+    {"quarter": 1, "time": "5:30", "play": "P. Mahomes pass complete to T. Kelce for 28 yards"},
+    {"quarter": 1, "time": "2:45", "play": "Chiefs TD - I. Pacheco 3 yard run. Tied 7-7"},
+    {"quarter": 2, "time": "11:00", "play": "J. Allen intercepted by T. Mathieu"},
+    {"quarter": 2, "time": "9:30", "play": "Chiefs TD - P. Mahomes 15 yard pass to T. Kelce. Chiefs 14-7"},
+    {"quarter": 2, "time": "5:00", "play": "Bills FG - T. Bass 42 yards. Chiefs 14-10"},
+    {"quarter": 2, "time": "0:45", "play": "Chiefs FG - H. Butker 52 yards. Chiefs 17-10"},
+    {"quarter": 3, "time": "10:00", "play": "Bills TD - J. Allen 8 yard run. Tied 17-17"},
+    {"quarter": 3, "time": "5:30", "play": "P. Mahomes pass complete to M. Hardman for 55 yards"},
+    {"quarter": 3, "time": "4:15", "play": "Chiefs TD - I. Pacheco 1 yard run. Chiefs 24-17"},
+    {"quarter": 4, "time": "8:00", "play": "Bills TD - J. Allen 22 yard pass to S. Diggs. Tied 24-24"},
+    {"quarter": 4, "time": "3:30", "play": "P. Mahomes sacked, fumble recovered by Bills"},
+    {"quarter": 4, "time": "2:00", "play": "Bills FG attempt blocked by Chiefs"},
+    {"quarter": 4, "time": "0:13", "play": "Chiefs FG - H. Butker 38 yards. Chiefs 25-24"},
+    {"quarter": 4, "time": "0:00", "play": "Final: Chiefs 25, Bills 24"}
+  ]
+}

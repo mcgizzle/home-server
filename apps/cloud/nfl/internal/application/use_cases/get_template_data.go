@@ -17,12 +17,14 @@ type GetTemplateDataUseCase interface {
 // getTemplateDataUseCase implements GetTemplateDataUseCase
 type getTemplateDataUseCase struct {
 	competitionRepo repository.CompetitionRepository
+	sentimentRepo   repository.SentimentRatingRepository
 }
 
 // NewGetTemplateDataUseCase creates a new instance of V2 GetTemplateDataUseCase
-func NewGetTemplateDataUseCase(competitionRepo repository.CompetitionRepository) GetTemplateDataUseCase {
+func NewGetTemplateDataUseCase(competitionRepo repository.CompetitionRepository, sentimentRepo repository.SentimentRatingRepository) GetTemplateDataUseCase {
 	return &getTemplateDataUseCase{
 		competitionRepo: competitionRepo,
+		sentimentRepo:   sentimentRepo,
 	}
 }
 
@@ -47,7 +49,21 @@ func (uc *getTemplateDataUseCase) Execute(sportID, season, period, periodType st
 	// Convert competitions to template format with computed categories
 	var templateResults []domain.TemplateResult
 	for _, competition := range competitions {
-		templateResults = append(templateResults, competition.ToTemplateResult())
+		result := competition.ToTemplateResult()
+
+		// Fetch sentiment rating if available
+		if sentimentRating, err := uc.sentimentRepo.GetSentimentRating(competition.ID); err == nil && sentimentRating != nil {
+			result.Sentiment = domain.TemplateSentiment{
+				Score:        sentimentRating.Score,
+				Sentiment:    sentimentRating.Sentiment,
+				Highlights:   sentimentRating.Highlights,
+				CommentCount: sentimentRating.CommentCount,
+				ThreadURL:    sentimentRating.ThreadURL,
+				HasData:      true,
+			}
+		}
+
+		templateResults = append(templateResults, result)
 	}
 
 	// Sort template results by rating score (highest first), with unrated games at the end

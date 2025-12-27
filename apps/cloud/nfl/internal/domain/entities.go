@@ -92,6 +92,17 @@ type CompetitionDetails struct {
 	Metadata   map[string]interface{} `json:"metadata,omitempty"`     // Sport-specific data
 }
 
+// SentimentRating represents an AI-generated sentiment analysis from fan reactions
+type SentimentRating struct {
+	Source       string    `json:"source"`        // "reddit", "twitter", etc.
+	ThreadURL    string    `json:"thread_url"`    // URL to the source thread
+	CommentCount int       `json:"comment_count"` // Number of comments analyzed
+	Score        int       `json:"score"`         // 0-100 excitement/engagement rating
+	Sentiment    string    `json:"sentiment"`     // excited, neutral, disappointed
+	Highlights   []string  `json:"highlights"`    // Key themes from the comments
+	GeneratedAt  time.Time `json:"generated_at"`  // When the analysis was performed
+}
+
 // Result represents a complete game result with metadata (compatibility type)
 // This mirrors the v1 Result struct for easier migration
 type Result struct {
@@ -133,15 +144,26 @@ type TemplateRating struct {
 	Category    string `json:"category"`
 }
 
+// TemplateSentiment represents sentiment data formatted for template display
+type TemplateSentiment struct {
+	Score        int      `json:"score"`
+	Sentiment    string   `json:"sentiment"` // excited, neutral, disappointed
+	Highlights   []string `json:"highlights"`
+	CommentCount int      `json:"comment_count"`
+	ThreadURL    string   `json:"thread_url"`
+	HasData      bool     `json:"has_data"` // True if sentiment data exists
+}
+
 // TemplateResult represents a result formatted for template display
 type TemplateResult struct {
-	ID          string         `json:"id"`
-	EventID     string         `json:"event_id"`
-	Season      string         `json:"season"`
-	Period      string         `json:"period"`
-	PeriodType  string         `json:"period_type"`
-	Rating      TemplateRating `json:"rating"`
-	Competition Competition    `json:"competition"`
+	ID          string            `json:"id"`
+	EventID     string            `json:"event_id"`
+	Season      string            `json:"season"`
+	Period      string            `json:"period"`
+	PeriodType  string            `json:"period_type"`
+	Rating      TemplateRating    `json:"rating"`
+	Sentiment   TemplateSentiment `json:"sentiment"`
+	Competition Competition       `json:"competition"`
 }
 
 // TemplateData represents data formatted for web template rendering

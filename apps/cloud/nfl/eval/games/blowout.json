@@ -1,0 +1,17 @@
+{
+  "home": {"name": "San Francisco 49ers", "score": 42, "record": "9-3"},
+  "away": {"name": "Arizona Cardinals", "score": 10, "record": "3-9"},
+  "details": [
+    {"quarter": 1, "time": "12:00", "play": "49ers kickoff"},
+    {"quarter": 1, "time": "9:30", "play": "49ers TD - C. McCaffrey 15 yard run. 49ers 7-0"},
+    {"quarter": 1, "time": "5:00", "play": "Cardinals punt"},
+    {"quarter": 1, "time": "2:30", "play": "49ers TD - B. Purdy 25 yard pass to B. Aiyuk. 49ers 14-0"},
+    {"quarter": 2, "time": "10:00", "play": "Cardinals FG - M. Prater 45 yards. 49ers 14-3"},
+    {"quarter": 2, "time": "6:30", "play": "49ers TD - C. McCaffrey 8 yard run. 49ers 21-3"},
+    {"quarter": 2, "time": "1:00", "play": "49ers TD - D. Samuel 62 yard punt return. 49ers 28-3"},
+    {"quarter": 3, "time": "8:00", "play": "49ers TD - B. Purdy 10 yard pass to G. Kittle. 49ers 35-3"},
+    {"quarter": 3, "time": "2:00", "play": "Cardinals TD - K. Murray 5 yard run. 49ers 35-10"},
+    {"quarter": 4, "time": "10:00", "play": "49ers TD - J. Mason 4 yard run. 49ers 42-10"},
+    {"quarter": 4, "time": "0:00", "play": "Final: 49ers 42, Cardinals 10"}
+  ]
+}

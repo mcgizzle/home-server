@@ -15,4 +15,9 @@ prompts/
 
 # Keep testdata/template_data_golden.json (needed for regression tests)
 testdata/*
-!testdata/template_data_golden.json 
+!testdata/template_data_golden.json
+
+# Executables (root level only)
+/nfl-app
+/reddit-client
+/eval-export

@@ -1,0 +1,20 @@
+{
+  "home": {"name": "Minnesota Vikings", "score": 39, "record": "8-4"},
+  "away": {"name": "Indianapolis Colts", "score": 36, "record": "6-6"},
+  "details": [
+    {"quarter": 1, "time": "10:00", "play": "Colts TD - J. Taylor 20 yard run. Colts 7-0"},
+    {"quarter": 1, "time": "5:00", "play": "Colts TD - M. Pittman 35 yard pass from M. Ryan. Colts 14-0"},
+    {"quarter": 1, "time": "1:30", "play": "Colts TD - J. Taylor 5 yard run. Colts 21-0"},
+    {"quarter": 2, "time": "12:00", "play": "Vikings FG - G. Joseph 38 yards. Colts 21-3"},
+    {"quarter": 2, "time": "8:00", "play": "Colts TD - A. Pierce 45 yard pass. Colts 28-3"},
+    {"quarter": 2, "time": "4:00", "play": "Vikings TD - J. Jefferson 52 yard pass from K. Cousins. Colts 28-10"},
+    {"quarter": 2, "time": "0:30", "play": "Colts FG - M. Badgley 32 yards. Colts 33-10 at half"},
+    {"quarter": 3, "time": "10:00", "play": "Vikings TD - D. Cook 15 yard run. Colts 33-17"},
+    {"quarter": 3, "time": "5:00", "play": "Vikings TD - J. Jefferson 28 yard pass. Colts 33-24"},
+    {"quarter": 4, "time": "12:00", "play": "Vikings TD - A. Thielen 8 yard pass. Colts 33-31"},
+    {"quarter": 4, "time": "6:00", "play": "Colts FG - M. Badgley 40 yards. Colts 36-31"},
+    {"quarter": 4, "time": "2:30", "play": "Vikings drive 75 yards in 8 plays"},
+    {"quarter": 4, "time": "0:12", "play": "Vikings TD - J. Jefferson 12 yard pass. Vikings 39-36"},
+    {"quarter": 4, "time": "0:00", "play": "Final: Vikings 39, Colts 36. Vikings overcome 33-10 deficit"}
+  ]
+}

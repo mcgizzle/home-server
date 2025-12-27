@@ -407,3 +407,53 @@ func (r *SQLiteRepository) loadCompetitionDetails(compID string) (domain.Competi
 
 	return details, nil
 }
+
+// SentimentRatingRepository implementation
+
+func (r *SQLiteRepository) SaveSentimentRating(rating domain.SentimentRating, competitionID string) error {
+	// Generate a unique ID for the sentiment rating
+	id := fmt.Sprintf("%s_%s", competitionID, rating.Source)
+
+	// Marshal highlights to JSON
+	highlightsJSON, err := json.Marshal(rating.Highlights)
+	if err != nil {
+		return fmt.Errorf("failed to marshal highlights: %w", err)
+	}
+
+	query := `
+		INSERT OR REPLACE INTO sentiment_ratings
+		(id, competition_id, source, thread_url, comment_count, score, sentiment, highlights, generated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+	_, err = r.db.Exec(query, id, competitionID, rating.Source, rating.ThreadURL,
+		rating.CommentCount, rating.Score, rating.Sentiment, string(highlightsJSON), rating.GeneratedAt)
+
+	return err
+}
+
+func (r *SQLiteRepository) GetSentimentRating(competitionID string) (*domain.SentimentRating, error) {
+	query := `
+		SELECT source, thread_url, comment_count, score, sentiment, highlights, generated_at
+		FROM sentiment_ratings WHERE competition_id = ? LIMIT 1`
+
+	var rating domain.SentimentRating
+	var highlightsJSON string
+
+	err := r.db.QueryRow(query, competitionID).Scan(
+		&rating.Source, &rating.ThreadURL, &rating.CommentCount, &rating.Score,
+		&rating.Sentiment, &highlightsJSON, &rating.GeneratedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal highlights JSON
+	if highlightsJSON != "" {
+		err = json.Unmarshal([]byte(highlightsJSON), &rating.Highlights)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal highlights: %w", err)
+		}
+	}
+
+	return &rating, nil
+}

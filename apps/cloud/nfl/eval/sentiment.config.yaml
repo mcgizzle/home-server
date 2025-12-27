@@ -1,0 +1,51 @@
+description: "NFL Sentiment Analysis Evaluation"
+
+prompts:
+  - file://prompts/sentiment.txt
+
+providers:
+  - id: openai:gpt-4o-mini
+    config:
+      temperature: 0.1
+      apiKeyEnvar: OPENAI_API_KEY
+
+tests:
+  # Excited comments - should score high (80+)
+  - vars:
+      comments: file://games/excited_comments.json
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).score >= 80
+      - type: javascript
+        value: JSON.parse(output).sentiment === "excited"
+
+  # Disappointed comments - should score low (under 40)
+  - vars:
+      comments: file://games/disappointed_comments.json
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).score <= 40
+      - type: javascript
+        value: JSON.parse(output).sentiment === "disappointed"
+
+  # Real Reddit: Rams @ Seahawks 2025 Week 16
+  - vars:
+      comments: file://games/rams_seahawks_reddit.json
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).score >= 90
+      - type: javascript
+        value: JSON.parse(output).sentiment === "excited"
+
+outputPath: ./results/sentiment.json
+
+defaultTest:
+  options:
+    transformVars: |
+      if (typeof vars.comments === 'object') {
+        vars.comments = JSON.stringify(vars.comments, null, 2);
+      }
+      return vars;

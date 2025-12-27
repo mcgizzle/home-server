@@ -1,0 +1,54 @@
+description: "NFL Game Rating Evaluation"
+
+prompts:
+  - file://prompts/harsh_judge.txt
+  - file://prompts/lenient.txt
+
+providers:
+  - id: openai:gpt-4o-mini
+    config:
+      temperature: 0.1
+      apiKeyEnvar: OPENAI_API_KEY
+
+tests:
+  # Close game - should score high (60-95)
+  - vars:
+      game: file://games/close_game.json
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).score >= 60
+
+  # Blowout - should score low (under 50)
+  - vars:
+      game: file://games/blowout.json
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).score <= 50
+
+  # Comeback game - should score very high (75+)
+  - vars:
+      game: file://games/comeback.json
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).score >= 75
+
+  # Real game: Rams @ Seahawks 2025 Week 16 (37-38)
+  - vars:
+      game: file://games/rams_at_seahawks_2025_w16.json
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).score >= 80
+
+outputPath: ./results/game_ratings.json
+
+defaultTest:
+  options:
+    transformVars: |
+      if (typeof vars.game === 'object') {
+        vars.game = JSON.stringify(vars.game, null, 2);
+      }
+      return vars;
