@@ -58,6 +58,7 @@ func main() {
 		periodType    = flag.String("periodtype", "", "Specific period type (regular|playoff|preseason)")
 		generateRatings   = flag.Bool("ratings", false, "Generate AI ratings for games without ratings (requires OPENAI_API_KEY)")
 		generateSentiment = flag.Bool("sentiment", false, "Generate Reddit sentiment analysis for completed games (requires OPENAI_API_KEY)")
+		overwrite         = flag.Bool("overwrite", false, "Overwrite existing ratings/sentiment (use with -ratings or -sentiment)")
 		help          = flag.Bool("help", false, "Show help")
 	)
 	flag.Parse()
@@ -179,8 +180,8 @@ func main() {
 		// Get competitions that need ratings
 		competitions := getCompetitionsForPeriod(repo, *season, *period, *periodType, *sport)
 		for _, comp := range competitions {
-			// Skip if already has a rating
-			if comp.Rating != nil && comp.Rating.Score > 0 {
+			// Skip if already has a rating (unless overwrite is set)
+			if comp.Rating != nil && comp.Rating.Score > 0 && !*overwrite {
 				continue
 			}
 			// Skip if not completed
@@ -222,8 +223,8 @@ func main() {
 				continue
 			}
 
-			// Check if already has sentiment
-			if existing, _ := repo.GetSentimentRating(comp.ID); existing != nil {
+			// Check if already has sentiment (unless overwrite is set)
+			if existing, _ := repo.GetSentimentRating(comp.ID); existing != nil && !*overwrite {
 				continue
 			}
 
