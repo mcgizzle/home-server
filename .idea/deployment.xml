@@ -9,6 +9,12 @@
           <mappings>
             <mapping deploy="/code/home-server" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/data" />
+            <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/nfl-app" />
+            <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/reddit-client" />
+            <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/eval-export" />
+          </excludedPaths>
         </serverdata>
       </paths>
       <paths name="primary">
@@ -18,6 +24,9 @@
           </mappings>
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/data" />
+            <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/nfl-app" />
+            <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/reddit-client" />
+            <excludedPath local="true" path="$PROJECT_DIR$/apps/cloud/nfl/eval-export" />
           </excludedPaths>
         </serverdata>
       </paths>
