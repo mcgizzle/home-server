@@ -5,16 +5,16 @@
   vars:
     git_user_email: mcgroas@tcd.ie
     git_user_name: mcgizzle
-    dotfiles_repo: "https://github.com/mcgizzle/dotfiles"
+    dotfiles_repo: "git@github.com:mcgizzle/dotfiles.git"
     cfg_dir: "{{ ansible_facts.env.HOME }}/.cfg"
   tasks:
-    - name: Homebrew
-      ansible.builtin.include_tasks:
-        file: tasks/homebrew.yml
-
     - name: Dotfiles
       ansible.builtin.include_tasks:
         file: tasks/dotfiles.yml
+
+    - name: Homebrew
+      ansible.builtin.include_tasks:
+        file: tasks/homebrew.yml
 
     - name: Zsh + Zim
       ansible.builtin.include_tasks:
