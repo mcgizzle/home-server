@@ -1,0 +1,29 @@
+- name: macOS Laptop Setup
+  gather_facts: true
+  hosts: localhost
+  connection: local
+  vars:
+    git_user_email: mcgroas@tcd.ie
+    git_user_name: mcgizzle
+    dotfiles_repo: "https://github.com/mcgizzle/dotfiles"
+    cfg_dir: "{{ ansible_facts.env.HOME }}/.cfg"
+  tasks:
+    - name: Homebrew
+      ansible.builtin.include_tasks:
+        file: tasks/homebrew.yml
+
+    - name: Dotfiles
+      ansible.builtin.include_tasks:
+        file: tasks/dotfiles.yml
+
+    - name: Zsh + Zim
+      ansible.builtin.include_tasks:
+        file: tasks/zsh-zim.yml
+
+    - name: Git
+      ansible.builtin.include_tasks:
+        file: tasks/git.yml
+
+    - name: macOS Defaults
+      ansible.builtin.include_tasks:
+        file: tasks/macos-defaults.yml

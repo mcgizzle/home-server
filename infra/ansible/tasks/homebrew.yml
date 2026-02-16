@@ -1,0 +1,23 @@
+- name: Check if Homebrew is installed
+  ansible.builtin.stat:
+    path: /opt/homebrew/bin/brew
+  register: homebrew_installed
+
+- name: Install Homebrew
+  ansible.builtin.shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    executable: /bin/bash
+  environment:
+    NONINTERACTIVE: "1"
+  when: not homebrew_installed.stat.exists
+
+- name: Add Homebrew to PATH for this session
+  ansible.builtin.set_fact:
+    ansible_env_path: "/opt/homebrew/bin:{{ ansible_facts.env.PATH }}"
+
+- name: Install packages from Brewfile
+  ansible.builtin.shell: /opt/homebrew/bin/brew bundle --file={{ ansible_facts.env.HOME }}/Brewfile
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "/opt/homebrew/bin:{{ ansible_facts.env.PATH }}"

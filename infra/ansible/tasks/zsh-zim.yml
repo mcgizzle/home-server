@@ -1,0 +1,27 @@
+- name: Install zsh
+  ansible.builtin.package:
+    name: zsh
+    state: present
+
+- name: Set default shell to zsh
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: /bin/zsh
+
+- name: Check if Zim is already installed
+  ansible.builtin.stat:
+    path: "{{ ansible_facts.env.HOME }}/.zim/zimfw.zsh"
+  register: zim_installed
+
+- name: Download Zim
+  ansible.builtin.get_url:
+    url: https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+    dest: "{{ ansible_facts.env.HOME }}/.zim/zimfw.zsh"
+    mode: "0644"
+  when: not zim_installed.stat.exists
+
+- name: Install Zim modules
+  ansible.builtin.shell: zsh -c 'source {{ ansible_facts.env.HOME }}/.zim/zimfw.zsh init -q && zimfw install'
+  args:
+    executable: /bin/zsh
+  when: not zim_installed.stat.exists
