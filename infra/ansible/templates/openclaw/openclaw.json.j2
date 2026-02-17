@@ -49,6 +49,16 @@
         }
       },
       "thinkingDefault": "high",
+      "heartbeat": {
+        "every": "4h",
+        "model": "google/gemini-2.5-flash",
+        "target": "last",
+        "activeHours": {
+          "start": "08:00",
+          "end": "23:00",
+          "timezone": "Europe/London"
+        }
+      },
       "maxConcurrent": 2,
       "subagents": {
         "maxConcurrent": 4,
