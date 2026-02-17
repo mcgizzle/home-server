@@ -1,0 +1,28 @@
+[Unit]
+Description=OpenClaw Gateway ({{ openclaw_agent }})
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ openclaw_user }}
+Group={{ openclaw_user }}
+WorkingDirectory={{ openclaw_home }}
+Environment=HOME={{ openclaw_home }}
+Environment=NODE_ENV=production
+Environment=ANTHROPIC_API_KEY={{ anthropic_api_key }}
+Environment=GEMINI_API_KEY={{ gemini_api_key }}
+ExecStart=/usr/bin/openclaw gateway --port 18789
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths={{ openclaw_home }}
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

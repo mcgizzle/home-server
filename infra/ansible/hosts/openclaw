@@ -1,0 +1,2 @@
+[openclaw]
+openclaw_lxc ansible_host=192.168.88.215 ansible_port=22 ansible_user=root

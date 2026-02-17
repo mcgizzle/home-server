@@ -1,0 +1,108 @@
+{
+  "env": {
+    "ANTHROPIC_API_KEY": "{{ anthropic_api_key }}",
+    "GEMINI_API_KEY": "{{ gemini_api_key }}"
+  },
+  "models": {
+    "providers": {
+      "anthropic": {
+        "baseUrl": "https://api.anthropic.com",
+        "apiKey": "{{ anthropic_api_key }}",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "claude-sonnet-4-5-20250929",
+            "name": "Claude Sonnet 4.5",
+            "reasoning": true,
+            "input": ["text", "image"],
+            "contextWindow": 200000,
+            "maxTokens": 64000
+          },
+          {
+            "id": "claude-sonnet-4-20250514",
+            "name": "Claude Sonnet 4",
+            "reasoning": true,
+            "input": ["text", "image"],
+            "contextWindow": 200000,
+            "maxTokens": 16384
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-5-20250929"
+      },
+      "workspace": "{{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}",
+      "memorySearch": {
+        "provider": "gemini",
+        "sources": ["memory"],
+        "fallback": "none"
+      },
+      "compaction": {
+        "mode": "safeguard",
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 8000
+        }
+      },
+      "thinkingDefault": "high",
+      "maxConcurrent": 2,
+      "subagents": {
+        "maxConcurrent": 4,
+        "model": "google/gemini-2.5-flash"
+      }
+    },
+    "list": [
+      {
+        "id": "{{ openclaw_agent }}",
+        "default": true,
+        "name": "{{ openclaw_agent }}",
+        "workspace": "{{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}",
+        "identity": {
+          "name": "Grimes",
+          "emoji": "🦞"
+        }
+      }
+    ]
+  },
+  "channels": {
+    "telegram": {
+      "botToken": "{{ telegram_bot_token }}",
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist"
+    }
+  },
+{# 
+  SECURITY NOTE: allowInsecureAuth lets the Control UI work over plain HTTP
+  with token-only auth (no WebCrypto / device identity). Acceptable for now
+  since this is on a home LAN behind Tailscale subnet routing, but ideally
+  we'd move to Tailscale Serve (HTTPS) or install Tailscale directly on
+  this LXC in the future. — 2026-02-17
+#}
+  "gateway": {
+    "mode": "local",
+    "bind": "lan",
+    "controlUi": {
+      "allowInsecureAuth": true
+    },
+    "auth": {
+      "mode": "token",
+      "token": "{{ lookup('ansible.builtin.password', playbook_dir + '/.credentials/openclaw_gateway_token', length=32, chars=['ascii_letters', 'digits']) }}"
+    },
+    "http": {
+      "endpoints": {
+        "chatCompletions": {
+          "enabled": false
+        }
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
+  }
+}

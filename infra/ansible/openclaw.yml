@@ -1,0 +1,21 @@
+- name: OpenClaw agent (grimes)
+  gather_facts: true
+  hosts: openclaw
+  vars:
+    openclaw_user: openclaw
+    openclaw_home: /opt/openclaw
+    openclaw_agent: grimes
+
+    # --- Secrets (pass via --extra-vars or ansible-vault) ---
+    telegram_bot_token: "{{ vault_telegram_bot_token | default('CHANGEME') }}"
+    gemini_api_key: "{{ vault_gemini_api_key | default('CHANGEME') }}"
+    anthropic_api_key: "{{ vault_anthropic_api_key | default('CHANGEME') }}"
+
+  tasks:
+    - name: Initial setup
+      ansible.builtin.include_tasks:
+        file: tasks/initial-setup.yml
+
+    - name: Install and configure OpenClaw
+      ansible.builtin.include_tasks:
+        file: tasks/openclaw.yml
