@@ -67,17 +67,155 @@
     group: "{{ openclaw_user }}"
     mode: '0640'
 
-- name: Deploy workspace files
+- name: Deploy workspace seed files (first deploy only)
   ansible.builtin.copy:
     src: "openclaw/{{ item }}"
     dest: "{{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}/{{ item }}"
     owner: "{{ openclaw_user }}"
     group: "{{ openclaw_user }}"
     mode: '0640'
+    force: no
   loop:
     - SOUL.md
     - AGENTS.md
     - HEARTBEAT.md
+
+## Git workspace backup
+- name: Install git
+  ansible.builtin.apt:
+    name: git
+    state: present
+
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "{{ openclaw_home }}/.ssh"
+    state: directory
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+    mode: '0700'
+
+- name: Generate deploy key for workspace backup
+  ansible.builtin.command:
+    cmd: ssh-keygen -t ed25519 -f {{ openclaw_home }}/.ssh/id_ed25519 -N "" -C "openclaw-grimes-deploy"
+    creates: "{{ openclaw_home }}/.ssh/id_ed25519"
+
+- name: Fix deploy key ownership
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+  loop:
+    - "{{ openclaw_home }}/.ssh/id_ed25519"
+    - "{{ openclaw_home }}/.ssh/id_ed25519.pub"
+
+- name: Read deploy public key
+  ansible.builtin.slurp:
+    src: "{{ openclaw_home }}/.ssh/id_ed25519.pub"
+  register: deploy_key_pub
+
+- name: Show deploy key (add to GitHub repo as deploy key with write access)
+  ansible.builtin.debug:
+    msg: |
+      📋 Deploy key (add to https://github.com/mcgizzle/openclaw-grimes/settings/keys with write access):
+      {{ deploy_key_pub.content | b64decode }}
+
+- name: Configure git for openclaw user
+  ansible.builtin.copy:
+    content: |
+      [user]
+        email = grimes@openclaw.local
+        name = Grimes (OpenClaw)
+      [init]
+        defaultBranch = main
+      [safe]
+        directory = {{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}
+    dest: "{{ openclaw_home }}/.gitconfig"
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+    mode: '0644'
+
+- name: Fix workspace ownership
+  ansible.builtin.file:
+    path: "{{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}"
+    state: directory
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+    recurse: yes
+
+- name: Configure SSH to use deploy key for GitHub
+  ansible.builtin.copy:
+    content: |
+      Host github.com
+        IdentityFile {{ openclaw_home }}/.ssh/id_ed25519
+        StrictHostKeyChecking accept-new
+    dest: "{{ openclaw_home }}/.ssh/config"
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+    mode: '0600'
+
+- name: Initialize git repo in workspace
+  ansible.builtin.shell: |
+    cd {{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}
+    if [ ! -d .git ]; then
+      git init
+      git branch -M main
+    fi
+  become_user: "{{ openclaw_user }}"
+  register: git_init
+  changed_when: "'Initialized' in git_init.stdout"
+
+- name: Create .gitignore in workspace
+  ansible.builtin.copy:
+    content: |
+      # Session data (lives in ~/.openclaw/, not workspace)
+      sessions/
+      # OS files
+      .DS_Store
+      # Secrets
+      .env
+      **/*.key
+      **/*.pem
+      **/secrets*
+    dest: "{{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}/.gitignore"
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+    mode: '0640'
+    force: no
+
+- name: Set git remote
+  ansible.builtin.shell: |
+    cd {{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}
+    if ! git remote | grep -q origin; then
+      git remote add origin git@github.com:mcgizzle/openclaw-grimes.git
+    fi
+  become_user: "{{ openclaw_user }}"
+  changed_when: false
+
+- name: Deploy workspace auto-commit script
+  ansible.builtin.copy:
+    content: |
+      #!/bin/bash
+      # Auto-commit and push workspace changes
+      cd {{ openclaw_home }}/.openclaw/agents/{{ openclaw_agent }}
+      
+      # Stage all changes
+      git add -A
+      
+      # Only commit if there are changes
+      if ! git diff --cached --quiet; then
+        git commit -m "auto: workspace sync $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        git push -u origin main 2>&1 || echo "Push failed — deploy key may not be configured yet"
+      fi
+    dest: /usr/local/bin/openclaw-workspace-sync
+    mode: '0755'
+
+- name: Set up cron for workspace auto-commit (every 6 hours)
+  ansible.builtin.cron:
+    name: "openclaw workspace sync"
+    user: "{{ openclaw_user }}"
+    minute: "0"
+    hour: "*/6"
+    job: "/usr/local/bin/openclaw-workspace-sync >> /var/log/openclaw-workspace-sync.log 2>&1"
 
 - name: Install Tailscale
   block:
