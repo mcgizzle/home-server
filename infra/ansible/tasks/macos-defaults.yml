@@ -1,51 +1,17 @@
-- name: Set key repeat rate
-  community.general.osx_defaults:
-    domain: NSGlobalDomain
-    key: KeyRepeat
-    type: int
-    value: 2
-
-- name: Set initial key repeat delay
-  community.general.osx_defaults:
-    domain: NSGlobalDomain
-    key: InitialKeyRepeat
-    type: int
-    value: 15
-
-- name: Show all file extensions in Finder
-  community.general.osx_defaults:
-    domain: NSGlobalDomain
-    key: AppleShowAllExtensions
-    type: bool
-    value: true
-
-- name: Show hidden files in Finder
-  community.general.osx_defaults:
-    domain: com.apple.finder
-    key: AppleShowAllFiles
-    type: bool
-    value: true
-
-- name: Show path bar in Finder
-  community.general.osx_defaults:
-    domain: com.apple.finder
-    key: ShowPathbar
-    type: bool
-    value: true
-
-- name: Set Dock icon size
-  community.general.osx_defaults:
-    domain: com.apple.dock
-    key: tilesize
-    type: int
-    value: 36
-
+# Dock
 - name: Autohide Dock
   community.general.osx_defaults:
     domain: com.apple.dock
     key: autohide
     type: bool
     value: true
+
+- name: Position Dock on right
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: orientation
+    type: string
+    value: right
 
 - name: Remove Dock autohide delay
   community.general.osx_defaults:
@@ -54,27 +20,104 @@
     type: float
     value: 0
 
-- name: Disable natural scrolling
+- name: Set hot corner bottom-right to Mission Control
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: wvous-br-corner
+    type: int
+    value: 14
+
+- name: Set hot corner bottom-right modifier
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: wvous-br-modifier
+    type: int
+    value: 0
+
+# Keyboard
+- name: Set fastest key repeat rate
   community.general.osx_defaults:
     domain: NSGlobalDomain
-    key: com.apple.swipescrolldirection
+    key: KeyRepeat
+    type: int
+    value: 2
+
+- name: Set shortest initial key repeat delay
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: InitialKeyRepeat
+    type: int
+    value: 15
+
+- name: Disable press-and-hold for accents (enables key repeat)
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: ApplePressAndHoldEnabled
     type: bool
     value: false
 
-- name: Enable tap to click on trackpad
+# Mouse
+- name: Set mouse tracking speed
   community.general.osx_defaults:
-    domain: com.apple.AppleMultitouchTrackpad
-    key: Clicking
+    domain: NSGlobalDomain
+    key: com.apple.mouse.scaling
+    type: int
+    value: 3
+
+# Finder
+- name: Set Finder default to list view
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: FXPreferredViewStyle
+    type: string
+    value: Nlsv
+
+- name: Show path bar in Finder
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: ShowPathbar
     type: bool
     value: true
 
-- name: Disable auto-correct
+# Appearance
+- name: Enable dark mode
   community.general.osx_defaults:
     domain: NSGlobalDomain
-    key: NSAutomaticSpellingCorrectionEnabled
-    type: bool
-    value: false
+    key: AppleInterfaceStyle
+    type: string
+    value: Dark
 
+# Locale
+- name: Set locale to British English
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleLocale
+    type: string
+    value: en_GB
+
+# Screenshots
+- name: Create screenshots directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/Documents/Screenshots"
+    state: directory
+    mode: "0755"
+
+- name: Set screenshot save location
+  community.general.osx_defaults:
+    domain: com.apple.screencapture
+    key: location
+    type: string
+    value: "{{ ansible_facts.env.HOME }}/Documents/Screenshots"
+
+# Text replacements
+- name: Disable screen flash for alert sound
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: com.apple.sound.beep.flash
+    type: int
+    value: 0
+
+# Apply changes
 - name: Restart Dock to apply changes
   ansible.builtin.command: killall Dock
   changed_when: true

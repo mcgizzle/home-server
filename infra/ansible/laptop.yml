@@ -27,3 +27,7 @@
     - name: macOS Defaults
       ansible.builtin.include_tasks:
         file: tasks/macos-defaults.yml
+
+    - name: Cursor Editor
+      ansible.builtin.include_tasks:
+        file: tasks/cursor.yml

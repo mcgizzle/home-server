@@ -1,0 +1,19 @@
+- name: Create Cursor User settings directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/Library/Application Support/Cursor/User"
+    state: directory
+    mode: "0755"
+
+- name: Symlink Cursor settings.json from dotfiles
+  ansible.builtin.file:
+    src: "{{ ansible_facts.env.HOME }}/.config/cursor/settings.json"
+    dest: "{{ ansible_facts.env.HOME }}/Library/Application Support/Cursor/User/settings.json"
+    state: link
+    force: true
+
+- name: Symlink Cursor keybindings.json from dotfiles
+  ansible.builtin.file:
+    src: "{{ ansible_facts.env.HOME }}/.config/cursor/keybindings.json"
+    dest: "{{ ansible_facts.env.HOME }}/Library/Application Support/Cursor/User/keybindings.json"
+    state: link
+    force: true
