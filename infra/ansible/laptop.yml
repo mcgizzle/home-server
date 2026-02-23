@@ -35,3 +35,7 @@
     - name: Cursor Editor
       ansible.builtin.include_tasks:
         file: tasks/cursor.yml
+
+    - name: Dotfiles Sync LaunchAgent
+      ansible.builtin.include_tasks:
+        file: tasks/dotfiles-sync.yml

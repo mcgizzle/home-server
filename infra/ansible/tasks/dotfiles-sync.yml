@@ -1,0 +1,18 @@
+- name: Create log directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.local/log"
+    state: directory
+    mode: "0755"
+
+- name: Symlink dotfiles-sync LaunchAgent
+  ansible.builtin.file:
+    src: "{{ ansible_facts.env.HOME }}/.config/launchagents/com.mcgizzle.dotfiles-sync.plist"
+    dest: "{{ ansible_facts.env.HOME }}/Library/LaunchAgents/com.mcgizzle.dotfiles-sync.plist"
+    state: link
+    force: true
+
+- name: Load dotfiles-sync LaunchAgent
+  ansible.builtin.command:
+    cmd: launchctl load {{ ansible_facts.env.HOME }}/Library/LaunchAgents/com.mcgizzle.dotfiles-sync.plist
+  changed_when: true
+  ignore_errors: true
