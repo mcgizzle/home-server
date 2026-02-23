@@ -5,8 +5,8 @@
   vars:
     git_user_email: mcgroas@tcd.ie
     git_user_name: mcgizzle
-    dotfiles_repo: "git@github.com:mcgizzle/dotfiles.git"
-    cfg_dir: "{{ ansible_facts.env.HOME }}/.cfg"
+    dotfiles_repo: "git@github.com:mcgizzle/home-server.git"
+    repo_dir: "{{ ansible_facts.env.HOME }}/code/personal/home-server"
   tasks:
     - name: Dotfiles
       ansible.builtin.include_tasks:

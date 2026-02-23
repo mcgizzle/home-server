@@ -1,0 +1,187 @@
+{
+  "window.commandCenter": 1,
+  "workbench.preferredDarkColorTheme": "Quiet Light",
+  "keyboard.touchbar.enabled": false,
+  "files.autoSave": "afterDelay",
+  "window.titleBarStyle": "custom",
+  "window.title": "${separator}${activeRepositoryName}${separator}${activeRepositoryBranchName}",
+  "editor.cursorStyle": "block-outline",
+  "workbench.colorTheme": "Default Dark Modern",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "vscode-dataform-tools.enableLogging": true,
+  "vscode-dataform-tools.gcpProjectId": "dragonfly-data-0001",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "[sqlx]": {
+    "editor.defaultFormatter": "ashishalex.dataform-lsp-vscode",
+    "editor.formatOnSave": true
+  },
+  "[dataform]": {
+    "editor.defaultFormatter": "ashishalex.dataform-lsp-vscode",
+    "editor.formatOnSave": true
+  },
+  "vscode-dataform-tools.compileAndDryRunBeforeFormatting": false,
+  "git.autofetch": true,
+  "go.toolsManagement.autoUpdate": true,
+  "githubPullRequests.fileListLayout": "tree",
+  "git.confirmSync": false,
+  "files.exclude": {
+    ".idea": true,
+    "node_modules": true
+  },
+  "cursor.windowSwitcher.sidebarHoverCollapsed": true,
+  "files.watcherExclude": {
+    "**/.bloop": true,
+    "**/.metals": true
+  },
+  "vscode-dataform-tools.currencyFoDryRunCost": "GBP",
+  "vscode-dataform-tools.formattingCli": "dataform",
+  "makefile.configureOnOpen": false,
+  "githubPullRequests.defaultMergeMethod": "squash",
+  "ruff.interpreter": [
+    "/Users/mcgizzle/code/dragonfly-prototype-2/server/.venv/bin/python"
+  ],
+  "githubPullRequests.pullBranch": "never",
+  "claudeCode.allowDangerouslySkipPermissions": true,
+  "claudeCode.environmentVariables": [
+    {
+      "name": "DISABLE_PROMPT_CACHING",
+      "value": "0"
+    },
+    {
+      "name": "CLAUDE_CODE_USE_BEDROCK",
+      "value": "1"
+    },
+    {
+      "name": "AWS_PROFILE",
+      "value": "bedrock-access-316332150940"
+    },
+    {
+      "name": "AWS_REGION",
+      "value": "us-east-1"
+    },
+    {
+      "name": "CLAUDE_CODE_SKIP_AUTH_LOGIN",
+      "value": "1"
+    }
+  ],
+  "claudeCode.provider": "bedrock",
+  "claudeCode.initialPermissionMode": "bypassPermissions",
+  "claudeCode.preferredLocation": "panel",
+  "claudeCode.selectedModel": "us.anthropic.claude-opus-4-6-v1",
+  "editor.accessibilitySupport": "on",
+  "accessibility.signals.lineHasBreakpoint": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.chatEditModifiedFile": {
+    "sound": "off"
+  },
+  "accessibility.signals.chatRequestSent": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.chatResponseReceived": {
+    "sound": "off"
+  },
+  "accessibility.signals.clear": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.codeActionApplied": {
+    "sound": "off"
+  },
+  "accessibility.signals.codeActionTriggered": {
+    "sound": "off"
+  },
+  "accessibility.signals.onDebugBreak": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.diffLineDeleted": {
+    "sound": "off"
+  },
+  "accessibility.signals.diffLineInserted": {
+    "sound": "off"
+  },
+  "accessibility.signals.diffLineModified": {
+    "sound": "off"
+  },
+  "accessibility.signals.editsKept": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.positionHasError": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.lineHasError": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.lineHasFoldedArea": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.lineHasInlineSuggestion": {
+    "sound": "off"
+  },
+  "accessibility.signals.noInlayHints": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.notebookCellCompleted": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.notebookCellFailed": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.progress": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.taskCompleted": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.taskFailed": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.terminalBell": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.terminalCommandFailed": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.terminalCommandSucceeded": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.terminalQuickFix": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.editsUndone": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.voiceRecordingStarted": {
+    "sound": "off"
+  },
+  "accessibility.signals.voiceRecordingStopped": {
+    "sound": "off"
+  },
+  "accessibility.signals.positionHasWarning": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+  "accessibility.signals.lineHasWarning": {
+    "sound": "off",
+    "announcement": "auto"
+  },
+}

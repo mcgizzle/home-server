@@ -1,0 +1,40 @@
+#!/bin/bash
+# Syncs Brewfile and app preferences to the dotfiles repo.
+# Intended to be run by a LaunchAgent on a weekly schedule.
+
+set -e
+
+REPO="$HOME/code/personal/home-server"
+DOTFILES="$REPO/dotfiles"
+PREFS_DIR="$DOTFILES/.config/macos-preferences"
+LOG="$HOME/.local/log/dotfiles-sync.log"
+
+mkdir -p "$(dirname "$LOG")"
+exec >> "$LOG" 2>&1
+echo "--- $(date) ---"
+
+# Brewfile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+brew bundle dump --force --file="$DOTFILES/Brewfile"
+
+# App preferences
+mkdir -p "$PREFS_DIR"
+for domain in \
+  eu.exelban.Stats \
+  com.lwouis.alt-tab-macos \
+  com.knollsoft.Rectangle \
+  com.mowglii.ItsycalApp \
+  com.dwarvesv.minimalbar; do
+  defaults export "$domain" "$PREFS_DIR/$domain.plist" 2>/dev/null || true
+done
+
+# Check for changes and commit if any
+cd "$REPO"
+if ! git diff --quiet -- dotfiles/Brewfile dotfiles/.config/macos-preferences 2>/dev/null; then
+  git add dotfiles/Brewfile dotfiles/.config/macos-preferences
+  git commit -m "Auto-sync Brewfile and app preferences ($(date +%Y-%m-%d))"
+  git push
+  echo "Changes committed and pushed."
+else
+  echo "No changes detected."
+fi

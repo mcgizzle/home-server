@@ -2,6 +2,7 @@
   ansible.builtin.find:
     paths: "{{ ansible_facts.env.HOME }}/.config/macos-preferences"
     patterns: "*.plist"
+    follow: true
   register: plist_files
 
 - name: Import app preferences

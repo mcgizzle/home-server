@@ -1,40 +1,50 @@
-- name: Clone dotfiles repository as a bare repository
+- name: Ensure stow is installed
+  community.general.homebrew:
+    name: stow
+    state: present
+
+- name: Clone home-server repository
   git:
     repo: "{{ dotfiles_repo }}"
-    dest: "{{ cfg_dir }}"
-    bare: yes
+    dest: "{{ repo_dir }}"
+    version: main
   ignore_errors: yes
 
-- name: Attempt to checkout the dotfiles repository
-  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ansible_facts.env.HOME }} checkout"
-  register: checkout
-  ignore_errors: yes
-  changed_when: "'Checked out config.' in checkout.stdout"
+- name: Create backup directory for conflicting files
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.config-backup"
+    state: directory
+    mode: "0755"
 
-- name: Backup existing dotfiles if checkout fails
-  block:
-    - name: Find files that would be overwritten by checkout
-      shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ansible_facts.env.HOME }} checkout 2>&1 | egrep '\\s+\\.' | awk '{print $1}'"
-      register: files_to_backup
-      ignore_errors: true
+- name: Check for files that would conflict with stow
+  ansible.builtin.command:
+    cmd: stow --simulate -t {{ ansible_facts.env.HOME }} dotfiles
+    chdir: "{{ repo_dir }}"
+  register: stow_check
+  ignore_errors: true
+  changed_when: false
 
-    - name: Create backup directory
-      file:
-        path: "{{ansible_facts.env.HOME }}/.config-backup"
-        state: directory
-      when: files_to_backup.stderr != ""
+- name: Back up conflicting files
+  ansible.builtin.shell: |
+    cd {{ repo_dir }}
+    stow --simulate -t {{ ansible_facts.env.HOME }} dotfiles 2>&1 \
+      | grep 'existing target' \
+      | sed 's/.*over existing target //' \
+      | sed 's/ since.*//' \
+      | while read -r f; do
+          if [ -f "{{ ansible_facts.env.HOME }}/$f" ] && [ ! -L "{{ ansible_facts.env.HOME }}/$f" ]; then
+            mkdir -p "{{ ansible_facts.env.HOME }}/.config-backup/$(dirname "$f")"
+            mv "{{ ansible_facts.env.HOME }}/$f" "{{ ansible_facts.env.HOME }}/.config-backup/$f"
+            echo "Backed up: $f"
+          fi
+        done
+  when: stow_check.rc != 0
+  register: backup_result
+  changed_when: "'Backed up:' in backup_result.stdout"
 
-    - name: Move files to backup directory
-      command: "mv {{ item }} {{ansible_facts.env.HOME }}/.config-backup/{{ item | basename }}"
-      loop: "{{ files_to_backup.stderr_lines }}"
-      loop_control:
-        label: "{{ item }}"
-      when: files_to_backup.stderr != ""
-  when: checkout.rc != 0
-
-- name: Retry checkout after moving conflicting files
-  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ansible_facts.env.HOME }} checkout"
-  when: checkout.rc != 0
-
-- name: Set Git configuration to ignore untracked files
-  shell: "/usr/bin/git --git-dir={{ cfg_dir }} --work-tree={{ansible_facts.env.HOME }} config status.showUntrackedFiles no"
+- name: Stow dotfiles into home directory
+  ansible.builtin.command:
+    cmd: stow -t {{ ansible_facts.env.HOME }} dotfiles
+    chdir: "{{ repo_dir }}"
+  register: stow_result
+  changed_when: stow_result.rc == 0
