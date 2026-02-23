@@ -117,6 +117,15 @@
     type: int
     value: 0
 
+# Menu bar icon spacing (tighter icons)
+- name: Reduce menu bar icon spacing
+  ansible.builtin.command: defaults -currentHost write -globalDomain NSStatusItemSpacing -int 4
+  changed_when: true
+
+- name: Reduce menu bar icon selection padding
+  ansible.builtin.command: defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 4
+  changed_when: true
+
 # Apply changes
 - name: Restart Dock to apply changes
   ansible.builtin.command: killall Dock
