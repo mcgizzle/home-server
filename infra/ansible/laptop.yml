@@ -32,9 +32,9 @@
       ansible.builtin.include_tasks:
         file: tasks/app-preferences.yml
 
-    - name: Cursor Editor
+    - name: VS Code
       ansible.builtin.include_tasks:
-        file: tasks/cursor.yml
+        file: tasks/vscode.yml
 
     - name: Dotfiles Sync LaunchAgent
       ansible.builtin.include_tasks:
