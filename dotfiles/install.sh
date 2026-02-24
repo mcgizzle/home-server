@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-# Minimal bootstrap for a fresh macOS laptop.
-# Gets Claude Code running with the laptop-setup skill, then Claude handles everything else.
+# Bootstrap a fresh macOS laptop.
+# Installs prerequisites, waits for 1Password, then hands off to Claude Code.
 #
 # On a fresh machine:
-#   curl -fsSL https://gist.githubusercontent.com/mcgizzle/04942da061d62a43b74ec489e2fcd1de/raw/install.sh | bash
+#   curl -fsSL https://gist.githubusercontent.com/mcgizzle/04942da061d62a43b74ec489e2fcd1de/raw/install.sh -o /tmp/install.sh && bash /tmp/install.sh
 
 GIST_BASE="https://gist.githubusercontent.com/mcgizzle/04942da061d62a43b74ec489e2fcd1de/raw"
 SKILL_DIR="$HOME/.claude/skills/laptop-setup"
@@ -32,10 +32,23 @@ mkdir -p "$SKILL_DIR"
 curl -fsSL "$GIST_BASE/SKILL.md" -o "$SKILL_DIR/SKILL.md"
 
 echo ""
-echo "========================================"
-echo "  Bootstrap complete!"
+echo "==> Opening 1Password"
+open -a "1Password"
+
 echo ""
-echo "  1. Open 1Password and sign in"
-echo "  2. Open a new terminal and run: claude"
-echo "  3. Type: /laptop-setup"
 echo "========================================"
+echo "  Sign into 1Password and enable the"
+echo "  SSH Agent (Settings > Developer)."
+echo ""
+echo "  Press Enter when ready..."
+echo "========================================"
+read -r
+
+if [ -S "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ]; then
+  echo "==> 1Password SSH agent detected"
+else
+  echo "==> Warning: SSH agent not detected. Claude will help you fix this."
+fi
+
+echo "==> Handing off to Claude Code..."
+exec claude "/laptop-setup"

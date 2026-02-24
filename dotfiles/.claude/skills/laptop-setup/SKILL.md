@@ -1,28 +1,22 @@
 ---
 name: laptop-setup
-description: Bootstrap a fresh macOS laptop. Guides 1Password setup, configures SSH, clones dotfiles, installs Ansible, and runs the full laptop playbook. Use this skill when the user says they want to set up a new laptop, bootstrap their machine, or run the laptop setup.
+description: Bootstrap a fresh macOS laptop. Configures SSH via 1Password, clones the home-server repo, and runs the Ansible playbook to fully provision the machine. Use this skill when the user says they want to set up a new laptop, bootstrap their machine, or run the laptop setup.
 allowed-tools: Bash, AskUserQuestion
 ---
 
 # Fresh macOS Laptop Setup
 
-This skill orchestrates the full setup of a new Mac. The bootstrap script (install.sh) has already installed Homebrew, 1Password, and Claude Code. This skill handles everything from here.
+This skill orchestrates the full setup of a new Mac. The bootstrap script (install.sh) has already installed Homebrew, 1Password, and Claude Code, and the user has signed into 1Password.
 
 Run each step in order. Confirm success before moving to the next. If a step fails, diagnose and fix before continuing.
 
-## Step 1: 1Password Setup
-
-Ask the user to confirm they have done the following:
-1. Opened **1Password** and signed in to their account
-2. Enabled the **SSH Agent**: 1Password > Settings > Developer > SSH Agent
-
-Then verify the agent socket exists:
+## Step 1: Verify 1Password SSH agent
 
 ```bash
 test -S "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" && echo "OK: 1Password SSH agent is running" || echo "FAIL: SSH agent socket not found"
 ```
 
-If this fails, tell the user to check 1Password settings. Do not proceed until this passes.
+If this fails, ask the user to open 1Password > Settings > Developer > enable SSH Agent. Do not proceed until this passes.
 
 ## Step 2: Configure SSH to use 1Password agent
 
@@ -53,12 +47,12 @@ The user may see a 1Password prompt to authorize the SSH key. Tell them to appro
 ```bash
 eval "$(/opt/homebrew/bin/brew shellenv)"
 brew install ansible 2>/dev/null || true
+ansible-galaxy collection install community.general 2>/dev/null || true
 ```
 
 ## Step 5: Clone the home-server repo
 
 ```bash
-eval "$(/opt/homebrew/bin/brew shellenv)"
 mkdir -p "$HOME/code/personal"
 if [ ! -d "$HOME/code/personal/home-server" ]; then
   git clone git@github.com:mcgizzle/home-server.git "$HOME/code/personal/home-server"
@@ -87,7 +81,7 @@ ansible-playbook "$HOME/code/personal/home-server/infra/ansible/laptop.yml"
 If ansible-playbook fails on a specific task, diagnose the error and retry. Common issues:
 - SSH key not authorized: user needs to approve the key in 1Password
 - brew bundle timeout: re-run, it picks up where it left off
-- dotfiles checkout conflict: backed-up files go to `~/.config-backup`
+- stow conflict: existing files backed up to `~/.config-backup`
 - `community.general` collection missing: run `ansible-galaxy collection install community.general`
 
 ## Step 7: Post-setup
