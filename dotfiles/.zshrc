@@ -159,10 +159,10 @@ export PATH="$PROTO_HOME/shims:$PROTO_HOME/bin:$PATH";
 export PATH="$HOME/.local/bin:$PATH"
 
 # Added by Antigravity
-export PATH="/Users/mcgizzle/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 # direnv hook
 eval "$(direnv hook zsh)"
 
 # OpenClaw Completion
-source "/Users/mcgizzle/.openclaw/completions/openclaw.zsh"
+source "$HOME/.openclaw/completions/openclaw.zsh"

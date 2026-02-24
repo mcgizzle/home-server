@@ -3,6 +3,12 @@
     name: stow
     state: present
 
+- name: Create repo parent directory
+  ansible.builtin.file:
+    path: "{{ repo_dir | dirname }}"
+    state: directory
+    mode: "0755"
+
 - name: Clone home-server repository
   git:
     repo: "{{ dotfiles_repo }}"

@@ -72,13 +72,22 @@ The primary tunnel authenticates via `CLOUDFLARE_TOKEN_PRIMARY` and routes `requ
 
 A DDNS updater script (`infra/cloudflare-template.sh`) runs daily at 11:00 UTC via crontab to update the `requests.mcgizzle.casa` A record.
 
+## Dotfiles
+
+Managed via GNU Stow. All dotfiles live in `dotfiles/` and are symlinked into `$HOME` by running `stow -t $HOME dotfiles` from the repo root. The Ansible laptop playbook handles this automatically on fresh machines.
+
+Key files: `.zshrc`, `.aliases.sh`, `.gitconfig`, `.ssh/config`, `.config/vscode/`, `.config/macos-preferences/`, `Brewfile`, `.claude/skills/`.
+
+A LaunchAgent (`dotfiles/.config/launchagents/com.mcgizzle.dotfiles-sync.plist`) auto-syncs Brewfile and app preferences every Monday at 9am.
+
 ## Ansible
 
 Provisioning playbooks in `infra/ansible/`:
 
+- `laptop.yml` - Provisions macOS laptop (localhost): dotfiles via stow, Homebrew, Zsh+Zim, Git, macOS defaults, app preferences, VS Code, dotfiles-sync LaunchAgent
 - `primary.yml` - Provisions primary VMs (targets `vms` group from `infra/ansible/vms` inventory)
 - `dublin.yml` - Provisions Dublin Pi (targets `dublin` group from `infra/ansible/hosts/dublin` inventory)
-- Tasks in `infra/ansible/tasks/` (SSH config, etc.)
+- Tasks in `infra/ansible/tasks/`
 
 ## Docker Networking
 
