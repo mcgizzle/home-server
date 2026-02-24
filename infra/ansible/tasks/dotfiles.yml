@@ -7,7 +7,7 @@
   git:
     repo: "{{ dotfiles_repo }}"
     dest: "{{ repo_dir }}"
-    version: main
+    version: master
   ignore_errors: yes
 
 - name: Create backup directory for conflicting files
