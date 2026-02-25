@@ -39,3 +39,7 @@
     - name: Dotfiles Sync LaunchAgent
       ansible.builtin.include_tasks:
         file: tasks/dotfiles-sync.yml
+
+    - name: OpenClaw Daemon Reinstall LaunchAgent
+      ansible.builtin.include_tasks:
+        file: tasks/openclaw-daemon-reinstall.yml

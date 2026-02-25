@@ -1,0 +1,26 @@
+#!/bin/bash
+# Reinstall the openclaw gateway daemon after a Homebrew upgrade.
+# Triggered by WatchPaths on the openclaw opt symlink.
+
+set -euo pipefail
+
+LOG="$HOME/.local/log/openclaw-daemon-reinstall.log"
+mkdir -p "$(dirname "$LOG")"
+exec >> "$LOG" 2>&1
+
+echo "---"
+echo "$(date -Iseconds) openclaw upgrade detected"
+
+plist="$HOME/Library/LaunchAgents/ai.openclaw.gateway.plist"
+[[ -f "$plist" ]] || { echo "No existing plist, skipping"; exit 0; }
+
+# Give Homebrew a moment to finish relinking
+sleep 2
+
+echo "Reinstalling daemon..."
+/opt/homebrew/bin/openclaw gateway stop 2>/dev/null || true
+/opt/homebrew/bin/openclaw daemon uninstall 2>/dev/null || true
+/opt/homebrew/bin/openclaw daemon install 2>/dev/null
+/opt/homebrew/bin/openclaw daemon start 2>/dev/null
+
+echo "$(date -Iseconds) done (pid $(pgrep -f 'openclaw.*gateway' | head -1 || echo '?'))"

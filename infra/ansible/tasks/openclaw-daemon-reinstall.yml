@@ -1,0 +1,18 @@
+- name: Create log directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.local/log"
+    state: directory
+    mode: "0755"
+
+- name: Symlink openclaw-daemon-reinstall LaunchAgent
+  ansible.builtin.file:
+    src: "{{ ansible_facts.env.HOME }}/.config/launchagents/com.mcgizzle.openclaw-daemon-reinstall.plist"
+    dest: "{{ ansible_facts.env.HOME }}/Library/LaunchAgents/com.mcgizzle.openclaw-daemon-reinstall.plist"
+    state: link
+    force: true
+
+- name: Load openclaw-daemon-reinstall LaunchAgent
+  ansible.builtin.command:
+    cmd: launchctl load {{ ansible_facts.env.HOME }}/Library/LaunchAgents/com.mcgizzle.openclaw-daemon-reinstall.plist
+  changed_when: true
+  ignore_errors: true
