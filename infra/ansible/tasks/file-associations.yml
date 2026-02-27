@@ -1,0 +1,50 @@
+- name: Set VS Code as default editor for code and text files
+  ansible.builtin.command:
+    cmd: "duti -s com.microsoft.VSCode .{{ item }} all"
+  loop:
+    - md
+    - txt
+    - json
+    - yml
+    - yaml
+    - js
+    - jsx
+    - ts
+    - tsx
+    - py
+    - sh
+    - bash
+    - zsh
+    - css
+    - html
+    - htm
+    - xml
+    - toml
+    - ini
+    - cfg
+    - conf
+    - csv
+    - log
+    - sql
+    - rb
+    - rs
+    - go
+    - java
+    - kt
+    - swift
+    - c
+    - cpp
+    - h
+    - hpp
+    - Makefile
+    - Dockerfile
+  changed_when: true
+
+- name: Set VS Code as default for plain text and source code UTIs
+  ansible.builtin.command:
+    cmd: "duti -s com.microsoft.VSCode {{ item }} all"
+  loop:
+    - public.plain-text
+    - public.source-code
+    - public.shell-script
+  changed_when: true

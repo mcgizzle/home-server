@@ -236,6 +236,29 @@
         state: present
         update_cache: yes
 
+- name: Install sudo
+  ansible.builtin.apt:
+    name: sudo
+    state: present
+
+- name: Install ClawHub CLI
+  community.general.npm:
+    name: clawhub
+    global: yes
+    state: present
+
+- name: Configure sudoers for openclaw user
+  ansible.builtin.copy:
+    content: |
+      # Allow openclaw to install packages, manage its own service, and update itself
+      {{ openclaw_user }} ALL=(root) NOPASSWD: /usr/bin/apt-get update, /usr/bin/apt-get install *, /usr/bin/apt install *
+      {{ openclaw_user }} ALL=(root) NOPASSWD: /usr/bin/npm install -g *
+      {{ openclaw_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl restart openclaw-gateway, /usr/bin/systemctl status openclaw-gateway
+      {{ openclaw_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl daemon-reload
+    dest: /etc/sudoers.d/{{ openclaw_user }}
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
+
 - name: Deploy systemd service
   ansible.builtin.template:
     src: openclaw/openclaw-gateway.service.j2

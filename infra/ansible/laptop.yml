@@ -32,6 +32,10 @@
       ansible.builtin.include_tasks:
         file: tasks/app-preferences.yml
 
+    - name: File Associations
+      ansible.builtin.include_tasks:
+        file: tasks/file-associations.yml
+
     - name: VS Code
       ansible.builtin.include_tasks:
         file: tasks/vscode.yml

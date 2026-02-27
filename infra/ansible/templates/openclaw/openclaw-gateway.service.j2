@@ -12,6 +12,8 @@ Environment=HOME={{ openclaw_home }}
 Environment=NODE_ENV=production
 Environment=ANTHROPIC_API_KEY={{ anthropic_api_key }}
 Environment=GEMINI_API_KEY={{ gemini_api_key }}
+Environment=GOG_KEYRING_PASSWORD=openclaw-grimes
+Environment=GOG_ACCOUNT=smcgroarty96@gmail.com
 ExecStart=/usr/bin/openclaw gateway --port 18789
 Restart=always
 RestartSec=5
@@ -21,7 +23,7 @@ StandardError=journal
 # Hardening
 NoNewPrivileges=yes
 ProtectSystem=strict
-ReadWritePaths={{ openclaw_home }}
+ReadWritePaths={{ openclaw_home }} /usr/local/bin /tmp
 PrivateTmp=yes
 
 [Install]

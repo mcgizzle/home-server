@@ -13,9 +13,27 @@
 
   tasks:
     - name: Initial setup
-      ansible.builtin.include_tasks:
+      ansible.builtin.import_tasks:
         file: tasks/initial-setup.yml
+      tags: [setup]
 
     - name: Install and configure OpenClaw
-      ansible.builtin.include_tasks:
+      ansible.builtin.import_tasks:
         file: tasks/openclaw.yml
+      tags: [openclaw]
+
+    - name: Set up cross-LXC SSH access
+      ansible.builtin.import_tasks:
+        file: tasks/openclaw-ssh-access.yml
+      tags: [ssh-access]
+
+- name: Authorize OpenClaw SSH key on LXCs
+  gather_facts: false
+  hosts: lxcs
+  tags: [ssh-access]
+  tasks:
+    - name: Authorize OpenClaw public key
+      ansible.posix.authorized_key:
+        user: root
+        key: "{{ hostvars['openclaw_lxc']['openclaw_lxc_pubkey']['content'] | b64decode }}"
+        state: present

@@ -1,0 +1,23 @@
+# Authorize the OpenClaw deploy key on target LXCs for cross-LXC SSH access.
+# The keypair already exists at {{ openclaw_home }}/.ssh/id_ed25519 (created by openclaw.yml).
+
+- name: Read OpenClaw public key
+  ansible.builtin.slurp:
+    src: "{{ openclaw_home }}/.ssh/id_ed25519.pub"
+  register: openclaw_lxc_pubkey
+
+- name: Ensure known_hosts for primary LXC
+  ansible.builtin.known_hosts:
+    name: 192.168.88.212
+    key: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 192.168.88.212 2>/dev/null') }}"
+    path: "{{ openclaw_home }}/.ssh/known_hosts"
+    state: present
+  become_user: "{{ openclaw_user }}"
+
+- name: Ensure known_hosts for network LXC
+  ansible.builtin.known_hosts:
+    name: 192.168.88.213
+    key: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 192.168.88.213 2>/dev/null') }}"
+    path: "{{ openclaw_home }}/.ssh/known_hosts"
+    state: present
+  become_user: "{{ openclaw_user }}"

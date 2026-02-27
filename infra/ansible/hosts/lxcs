@@ -1,0 +1,6 @@
+[lxcs]
+primary_lxc ansible_host=192.168.88.212 ansible_port=22 ansible_user=root
+network_lxc ansible_host=192.168.88.213 ansible_port=22 ansible_user=root
+
+[openclaw]
+openclaw_lxc ansible_host=192.168.88.215 ansible_port=22 ansible_user=root
