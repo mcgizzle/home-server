@@ -1,7 +1,8 @@
 export VISUAL="nvim"
 export EDITOR="nvim"
 export SBT_CREDENTIALS=${HOME}/.sbt/.credentials
-export CLOUDSDK_PYTHON=/usr/bin/python3
+# gcloud needs 3.10+; pin to avoid breakage with bleeding-edge Python
+export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3.12
 export PATH=${PATH}:$HOME/.local/bin
 export PATH=${PATH}:$HOME/code/permutive/blobby/bin
 export PATH=${PATH}:$HOME/code/scripts/db-proxy/bin
