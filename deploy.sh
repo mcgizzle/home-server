@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eo pipefail
 
@@ -19,41 +19,81 @@ function usage() {
   echo "  -u, --update Pull latest image & restart"
 }
 
+function get_ssh_target() {
+  case $1 in
+    primary) echo "root@${PRIMARY_IP}" ;;
+    network) echo "root@${NETWORK_IP}" ;;
+    dublin)  echo "admin@192.168.1.38" ;;
+  esac
+}
+
+function get_remote_path() {
+  case $1 in
+    dublin) echo "/home/admin/home-server" ;;
+    *)      echo "/root/home-server" ;;
+  esac
+}
+
+function sync_files() {
+  local target=$1
+  local ssh_target=$(get_ssh_target "$target")
+  local remote_path=$(get_remote_path "$target")
+
+  echo "📦 Syncing files to ${ssh_target}:${remote_path}"
+
+  ssh -o ConnectTimeout=5 "${ssh_target}" "mkdir -p ${remote_path}/apps/${target}"
+
+  rsync -az --delete \
+    -e "ssh -o ConnectTimeout=5" \
+    "${SCRIPT_DIR}/apps/${target}/" \
+    "${ssh_target}:${remote_path}/apps/${target}/"
+
+  rsync -az \
+    -e "ssh -o ConnectTimeout=5" \
+    "${SCRIPT_DIR}/env.sh" \
+    "${ssh_target}:${remote_path}/env.sh"
+}
+
+function ensure_network() {
+  local target=$1
+  local ssh_target=$(get_ssh_target "$target")
+
+  if [ "$target" = "primary" ]; then
+    echo "🔗 Ensuring internal-net network exists"
+    ssh "${ssh_target}" "docker network inspect internal-net >/dev/null 2>&1 || docker network create internal-net"
+  fi
+}
+
 function deploy() {
-  deploys=$1
-  for dir in $deploys; do
-    echo "🚀 $dir"
-    options=""
-    cmd="docker compose -f $dir/docker-compose.yml"
+  local target=$1
+  local ssh_target=$(get_ssh_target "$target")
+  local remote_path=$(get_remote_path "$target")
+  local app_dirs
+
+  app_dirs=$(ssh "${ssh_target}" "find ${remote_path}/apps/${target} -mindepth 1 -maxdepth 1 -type d | sort")
+
+  for dir in $app_dirs; do
+    echo "🚀 $(basename "$dir")"
+    local cmd="cd ${remote_path} && source env.sh && docker compose -f ${dir}/docker-compose.yml"
 
     if [ "$restart" = true ]; then
-      options="up --force-recreate -d"
+      ssh "${ssh_target}" "${cmd} up --force-recreate -d"
     elif [ "$pull_only" = true ]; then
-      options="pull"
+      ssh "${ssh_target}" "${cmd} pull"
     elif [ "$down" = true ]; then
-      options="down"
+      ssh "${ssh_target}" "${cmd} down"
     elif [ "$update" = true ]; then
-      eval "$cmd pull"
-      options="up --force-recreate -d"
+      ssh "${ssh_target}" "${cmd} pull"
+      ssh "${ssh_target}" "${cmd} up --force-recreate -d"
     else
-      options="up -d"
+      ssh "${ssh_target}" "${cmd} up -d"
     fi
-    full_cmd="$cmd $options"
-    eval "$full_cmd"
   done
 }
 
-command=$1
-if [ "$command" = "primary" ]; then
-  apps=$(find apps/primary -mindepth 1 -maxdepth 1 -type d)
-
-elif [ "$command" = "network" ]; then
-  apps=$(find apps/network -mindepth 1 -maxdepth 1 -type d)
-
-elif [ "$command" = "dublin" ]; then
-  apps=$(find apps/dublin -mindepth 1 -maxdepth 1 -type d)
-else
-  echo "Unknown command: $command"
+target=$1
+if [ -z "$(get_ssh_target "$target")" ]; then
+  echo "Unknown target: $target"
   usage
   exit 1
 fi
@@ -65,7 +105,7 @@ while [[ "$#" -gt 1 ]]; do
   -d | --down) down=true ;;
   -u | --update) update=true ;;
   *)
-    echo "Unknown option: $2$"
+    echo "Unknown option: $2"
     usage
     exit 1
     ;;
@@ -73,6 +113,8 @@ while [[ "$#" -gt 1 ]]; do
   shift
 done
 
-deploy "$apps"
+sync_files "$target"
+ensure_network "$target"
+deploy "$target"
 
 echo "👍 Done"

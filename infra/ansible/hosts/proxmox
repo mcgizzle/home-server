@@ -1,0 +1,2 @@
+[proxmox]
+proxmox_host ansible_host=192.168.88.211 ansible_port=22 ansible_user=root

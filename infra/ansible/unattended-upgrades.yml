@@ -1,0 +1,7 @@
+- name: Configure unattended upgrades
+  hosts: proxmox,lxcs,openclaw,dublin
+  gather_facts: true
+  tasks:
+    - name: Unattended upgrades
+      ansible.builtin.include_tasks:
+        file: tasks/unattended-upgrades.yml
