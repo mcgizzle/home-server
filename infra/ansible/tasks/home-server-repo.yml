@@ -1,5 +1,5 @@
 - name: Clone home-server repository
   git:
-    repo: 'git@github.com:mcgizzle/home-server.git'
-    dest: "{{ home_server_path }}"
-
+    repo: "git@github.com:mcgizzle/home-server.git"
+    dest: "{{ repo_dir }}"
+    update: no

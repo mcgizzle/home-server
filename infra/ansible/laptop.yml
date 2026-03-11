@@ -8,6 +8,10 @@
     dotfiles_repo: "git@github.com:mcgizzle/home-server.git"
     repo_dir: "{{ ansible_facts.env.HOME }}/code/personal/home-server"
   tasks:
+    - name: Clone home-server repo
+      ansible.builtin.include_tasks:
+        file: tasks/home-server-repo.yml
+
     - name: Dotfiles
       ansible.builtin.include_tasks:
         file: tasks/dotfiles.yml

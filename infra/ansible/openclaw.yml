@@ -27,6 +27,11 @@
         file: tasks/openclaw-ssh-access.yml
       tags: [ssh-access]
 
+    - name: Unattended upgrades
+      ansible.builtin.import_tasks:
+        file: tasks/unattended-upgrades.yml
+      tags: [unattended-upgrades]
+
 - name: Authorize OpenClaw SSH key on LXCs
   gather_facts: false
   hosts: lxcs

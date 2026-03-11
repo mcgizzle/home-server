@@ -1,5 +1,5 @@
-- name: Configure unattended upgrades
-  hosts: proxmox,lxcs,openclaw,dublin
+- name: Proxmox host
+  hosts: proxmox
   gather_facts: true
   tasks:
     - name: Unattended upgrades

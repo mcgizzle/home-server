@@ -1,0 +1,8 @@
+- name: Schedule weekly docker system prune
+  become: true
+  ansible.builtin.cron:
+    name: "docker system prune"
+    weekday: "0"
+    hour: "3"
+    minute: "0"
+    job: "docker system prune -af --volumes > /dev/null 2>&1"

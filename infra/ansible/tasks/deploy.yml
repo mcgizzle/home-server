@@ -1,0 +1,60 @@
+- name: Set deploy path
+  set_fact:
+    deploy_path: "{{ remote_path | default('/root/home-server') }}"
+
+- name: Sync compose files to remote
+  ansible.posix.synchronize:
+    src: "{{ playbook_dir }}/../../apps/{{ target }}/"
+    dest: "{{ deploy_path }}/apps/{{ target }}/"
+    delete: yes
+
+- name: Sync env.sh to remote
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../env.sh"
+    dest: "{{ deploy_path }}/env.sh"
+    mode: "0600"
+
+- name: Ensure internal-net Docker network exists
+  community.docker.docker_network:
+    name: internal-net
+  when: target == "primary"
+
+- name: Find app directories
+  ansible.builtin.find:
+    paths: "{{ deploy_path }}/apps/{{ target }}"
+    file_type: directory
+    recurse: no
+  register: app_dirs
+
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ item.path }}"
+    env_files:
+      - "{{ deploy_path }}/env.sh"
+  loop: "{{ app_dirs.files | sort(attribute='path') }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when: deploy_action in ["pull", "update"]
+
+- name: Start services
+  community.docker.docker_compose_v2:
+    project_src: "{{ item.path }}"
+    env_files:
+      - "{{ deploy_path }}/env.sh"
+    state: present
+    recreate: "{{ 'always' if deploy_action in ['restart', 'update'] else 'auto' }}"
+  loop: "{{ app_dirs.files | sort(attribute='path') }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when: deploy_action in ["up", "restart", "update"]
+
+- name: Stop services
+  community.docker.docker_compose_v2:
+    project_src: "{{ item.path }}"
+    env_files:
+      - "{{ deploy_path }}/env.sh"
+    state: absent
+  loop: "{{ app_dirs.files | sort(attribute='path') }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when: deploy_action == "down"

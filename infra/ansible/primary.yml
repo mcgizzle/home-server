@@ -1,33 +1,14 @@
 - name: x86
   gather_facts: true
-  hosts: vms
-  vars:
-    git_user_email: mcgroas@tcd.ie
-    git_user_name: mcgizzle
-    dotfiles_repo: "https://github.com/mcgizzle/dotfiles"
-    cfg_dir: "{{ ansible_facts.env.HOME }}/.cfg"
-    home_server_repo: "git@github.com:mcgizzle/home-server.git"
-    home_server_path: "{{ ansible_facts.env.HOME }}/code/home-server"
+  hosts: primary_lxc
   tasks:
-    - name: Debug user home directory
-      debug:
-        msg: "Home directory on target machine: {{ home_server_path }}"
-
     - name: Initial setup
       ansible.builtin.include_tasks:
         file: tasks/initial-setup.yml
 
-    - name: GIT
-      ansible.builtin.include_tasks:
-        file: tasks/git.yml
-
     - name: zsh
       ansible.builtin.include_tasks:
         file: tasks/zsh.yml
-
-    - name: Dotfiles
-      ansible.builtin.include_tasks:
-        file: tasks/dotfiles.yml
 
     - name: Setup nvim
       ansible.builtin.include_tasks:
@@ -45,6 +26,10 @@
       ansible.builtin.include_tasks:
         file: tasks/hw-transcode.yml
 
-    - name: Pull code
+    - name: Unattended upgrades
       ansible.builtin.include_tasks:
-        file: tasks/home-server-repo.yml
+        file: tasks/unattended-upgrades.yml
+
+    - name: Docker prune
+      ansible.builtin.include_tasks:
+        file: tasks/docker-prune.yml

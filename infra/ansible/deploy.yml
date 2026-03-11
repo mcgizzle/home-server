@@ -1,0 +1,9 @@
+- name: Deploy services
+  gather_facts: false
+  hosts: "{{ host }}"
+  vars:
+    deploy_action: up
+  tasks:
+    - name: Deploy
+      ansible.builtin.include_tasks:
+        file: tasks/deploy.yml
